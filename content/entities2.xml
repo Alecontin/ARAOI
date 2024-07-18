@@ -1,0 +1,5 @@
+<entities anm2root="gfx/" version="5">
+    <entity anm2path="inverted_card.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Inverted Card" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="8800">
+           <preload-snd id="8" /> <!-- BOOK_PAGE_TURN_12 -->
+    </entity>
+</entities>

@@ -1,0 +1,67 @@
+<pocketitems>
+	<card type="tarot" name="0 - Inverted Fool" description="Pack your stuff and let's go" hud="Inverted Fool"
+    announcer="512" announcerdelay="60" mimiccharge="12" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="I - Inverted Magician" description="Overwhelm them with magic" hud="Inverted Magician"
+    announcer="513" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="II - Inverted High Priestess" description="You sure about this?" hud="Inverted High Priestess"
+    announcer="514" announcerdelay="120" mimiccharge="4" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="III - Inverted Empress" description="You are just like your mother" hud="Inverted Empress"
+    announcer="515" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="IV - Inverted Emperor" description="Yesterday's enemies are today's friends" hud="Inverted Emperor"
+    announcer="516" announcerdelay="30" mimiccharge="12" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="V - Inverted Hierophant" description="Two prayers for the devil" hud="Inverted Hierophant"
+    announcer="517" announcerdelay="70" mimiccharge="12" pickup="8800" achievement="759807" />
+
+	<card type="tarot" name="VI - Inverted Lovers" description="You shall sacrifice your loved ones" hud="Inverted Lovers"
+    announcer="518" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="VII - Inverted Chariot" description="May your enemies stand in fear" hud="Inverted Chariot"
+    announcer="519" announcerdelay="0" mimiccharge="2" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="VIII - Inverted Justice" description="May it help bring justice" hud="Inverted Justice"
+    announcer="520" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
+
+	<card type="tarot" name="IX - Inverted Hermit" description="One man's trash is another man's treasure" hud="Inverted Hermit"
+    announcer="521" announcerdelay="60" mimiccharge="3" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="X - Inverted Wheel Of Fortune" description="Feeling lucky?" hud="Inverted Wheel of Fortune"
+    announcer="522" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XI - Inverted Strength" description="May yo be stronger than your enemies" hud="Inverted Strength"
+    announcer="523" announcerdelay="0" mimiccharge="3" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XII - Inverted Hanged Man" description="Take from the rich and make yourself richer" hud="Inverted Hanged Man"
+    announcer="524" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XIII - Inverted Death" description="Become friends with The Death" hud="Inverted Death"
+    announcer="525" announcerdelay="0" mimiccharge="4" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XIV - Inverted Temperance" description="Blood = Power" hud="Inverted Temperance"
+    announcer="526" announcerdelay="120" mimiccharge="6" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XV - Inverted Devil" description="Treasure tainted in blood" hud="Inverted Devil"
+    announcer="527" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XVI - Inverted Tower" description="No rock left undestroyed" hud="Inverted Tower"
+    announcer="528" announcerdelay="140" mimiccharge="3" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XVII - Inverted Stars" description="May you get something useful" hud="Inverted Stars"
+    announcer="529" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XVIII - Inverted Moon" description="May you roll a good number" hud="Inverted Moon"
+    announcer="530" announcerdelay="0" mimiccharge="2" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XIX - Inverted Sun" description="May the curse become a blessing" hud="Inverted Sun"
+    announcer="531" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XX - Inverted Judgement" description="Confess your sins in front of God" hud="Inverted Judgement"
+    announcer="532" announcerdelay="30" mimiccharge="12" pickup="8800" achievement="759807" />
+
+    <card type="tarot" name="XXI - Inverted World" description="Not everything is sweet, the world is sour" hud="Inverted World"
+    announcer="533" announcerdelay="30" mimiccharge="2" pickup="8800" achievement="759807" />
+</pocketitems>
