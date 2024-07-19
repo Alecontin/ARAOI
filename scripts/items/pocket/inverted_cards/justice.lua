@@ -25,7 +25,7 @@ function card:init(Mod)
 
         local item = NewItem()
         local options_index = item:SetNewOptionsPickupIndex()
-        for _ = 1,3 do
+        for _ = 1, rng:RandomInt(1, 3) do
             local choice_item = NewItem()
             choice_item.OptionsPickupIndex = options_index
         end
