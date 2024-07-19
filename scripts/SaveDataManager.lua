@@ -147,8 +147,7 @@ function save:init(Mod)
     -- CLEARERS --
     --------------
 
-    -- LEVEL context clearer, also saves data so it can be restored in case of the game crashing
-    -- This is also what the game does
+    -- LEVEL context clearer
     local function onLevelChanged(_)
         if game:GetFrameCount() <= 1 then return end
         save.LEVEL = {}
@@ -161,6 +160,7 @@ function save:init(Mod)
     local function onRoomChanged(_)
         if game:GetFrameCount() <= 1 then return end
         save.ROOM = {}
+        Mod:SaveData(saveData())
     end
     Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, onRoomChanged)
 
