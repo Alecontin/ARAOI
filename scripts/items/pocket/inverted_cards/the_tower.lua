@@ -14,16 +14,13 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        player:UseCard(Card.CARD_REVERSE_TOWER, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
+        local rng = player:GetCardRNG(tower)
+        local room = game:GetRoom()
 
-        Isaac.CreateTimer(function ()
-            for _, entity in ipairs(Helper.GetRoomGridEntities()) do
-                local rock = entity:ToRock()
-                if rock then
-                    rock:Destroy(true)
-                end
-            end
-        end, 80, 1, false)
+        for _ = 1, rng:RandomInt(2, 4) do
+            local position = room:GetRandomPosition(50)
+            Isaac.Spawn(EntityType.ENTITY_MOVABLE_TNT, 1, 0, position, Vector.Zero, player)
+        end
     end, tower)
 
     ---@param rng RNG
@@ -36,8 +33,9 @@ function card:init(Mod)
 
     ---@class EID
     if EID then
+        local tnt = CollectibleType.COLLECTIBLE_MINE_CRAFTER
         EID:addCard(tower,
-            "#{{Card"..reverse.."}} Uses The Tower? and destroys all rocks"
+            "#{{Collectible"..tnt.."}} Spawns 2-4 TNT"
         )
     end
 end

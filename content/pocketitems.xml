@@ -47,8 +47,8 @@
     <card type="tarot_reverse" name="XV - Inverted Devil" description="Treasure tainted in blood" hud="Inverted Devil"
     announcer="527" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="XVI - Inverted Tower" description="No rock left undestroyed" hud="Inverted Tower"
-    announcer="528" announcerdelay="140" mimiccharge="3" pickup="8800" achievement="759807" />
+    <card type="tarot_reverse" name="XVI - Inverted Tower" description="Controlled demolition" hud="Inverted Tower"
+    announcer="528" announcerdelay="20" mimiccharge="3" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVII - Inverted Stars" description="May you get something useful" hud="Inverted Stars"
     announcer="529" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
