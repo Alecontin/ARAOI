@@ -14,8 +14,6 @@
   <passive name="Duality Halo" achievement="306" id="1" quality="3" gfx="duality_halo.png" description="May you get a second chance" tags="offensive" />
   <!-- Destroy 5 rainbow poops -->
   <passive name="Rainbow Headband" achievement="353" id="4" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive" />
-  <!-- Increase in size 5 times in a single run -->
-  <passive name="Magnifying Glass" achievement="361" quality="0" gfx="magnifying_glass.png" description="Bigger pickups" tags="nolostbr" />
   <!-- Defeat Hush as Eden -->
   <passive name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
 

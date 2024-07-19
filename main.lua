@@ -32,7 +32,6 @@ local files = {
     passive.."sacrificial_heart",
     passive.."duality_halo",
     passive.."rainbow_headband",
-    passive.."magnifying_glass",
     passive.."blessings_petal",
 
     --[[ POCKET ITEMS ]]--
