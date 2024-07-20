@@ -95,4 +95,7 @@
   <Pool Name="ultraSecret">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
   </Pool>
+  <Pool Name="secret">
+    <Item Name="Bag of Holding" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
 </ItemPools>

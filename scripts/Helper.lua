@@ -358,10 +358,23 @@ function Helper.Lerp(A, B, t)
 end
 
 
----@param table table
+---@param t table
+---@return integer
+function Helper.FindFirstInstanceInTable(value, t)
+    for i, item in ipairs(t) do
+        if value == item then
+            return i
+        end
+    end
+
+    return 0
+end
+
+
+---@param t table
 ---@return boolean
-function Helper.IsValueInTable(value, table)
-    for _, item in pairs(table) do
+function Helper.IsValueInTable(value, t)
+    for _, item in ipairs(t) do
         if value == item then
             return true
         end

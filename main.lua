@@ -26,6 +26,7 @@ local files = {
     active.."eternal_dplopia",
     active.."rubiks_cube", -- + Trinket
     active.."3d_glasses",
+    active.."bag_of_holding",
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",

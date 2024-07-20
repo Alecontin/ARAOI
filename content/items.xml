@@ -1,3 +1,5 @@
+<!-- LAST ID USED: 5 -->
+
 <items gfxroot="gfx/items/" version="1">
   <!-- Complete The Corpse with Blue Baby -->
   <active name="Eternal Dplopia" achievement="448" id="2" quality="4" maxcharges="6" devilprice="2" gfx="eternal_dplopia.png" description="Rerolls duplicates, at a cost." tags="offensive nocantrip" />
@@ -5,6 +7,8 @@
   <active name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive nocantrip" />
   <!-- Complete challenge Seeing Double -->
   <active name="3D Glasses" achievement="521" id="3" quality="2" maxcharges="30" chargetype="timed" gfx="3d_glasses.png" description="Seeing in 2 colors!" addcostumeonpickup="true" tags="offensive nocantrip" />
+  <!-- Defeat Delirium as Tainted Cain -->
+  <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="6" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
 
   <!-- Defeat Mega Satan as Tainted Samson -->
   <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive" />

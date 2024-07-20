@@ -155,8 +155,7 @@ function save:init(Mod)
     end
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, onLevelChanged)
 
-    -- ROOM context clearer,
-    -- also saves contexts to last room state, used for hourglass
+    -- ROOM context clearer
     local function onRoomChanged(_)
         if game:GetFrameCount() <= 1 then return end
         save.ROOM = {}
@@ -279,6 +278,7 @@ function save:init(Mod)
         if value ~= nil then
             data[tostring(key)] = value
             access[tostring(point)] = data
+            Mod:SaveData(saveData())
         end
         if data[tostring(key)] ~= nil then
             return data[tostring(key)]
@@ -296,12 +296,17 @@ function save:init(Mod)
     function save:Key(access, key, default, value)
         if value ~= nil then
             access[tostring(key)] = value
+            Mod:SaveData(saveData())
         end
         if access[tostring(key)] ~= nil then
             return access[tostring(key)]
         else
             return default
         end
+    end
+
+    if game:GetFrameCount() > 0 then
+        onGameStarted(nil, true)
     end
 end
 

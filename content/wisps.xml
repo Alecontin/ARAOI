@@ -110,4 +110,5 @@
 
 	<wisp id="2" hp="1" flameColor="flame_white" canShoot="false" coreColor="core_white" coreGfx="eternal_dplopia.png" count="1" />
 	<wisp id="3" count="0" />
+	<wisp id="5" count="0" />
 </wisps>

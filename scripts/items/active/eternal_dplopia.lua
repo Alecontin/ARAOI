@@ -184,9 +184,6 @@ function modded_item:init(Mod)
     ---@param collectibleType CollectibleType
     ---@param player EntityPlayer
     local function onItemPickup(_, collectibleType, charge, firstTime, slot, data, player)
-        -- Get info to determine the ItemType later
-        local info = ItemConfig:GetCollectible(collectibleType)
-
         -- Check if we just picked up our item, if so, remove the charges
         if collectibleType == ETERNAL_DPLOPIA and firstTime == true and SHOULD_ITEM_SPAWN_DISCHARGED then
             return {collectibleType, 0, firstTime, slot, data}
@@ -250,7 +247,7 @@ function modded_item:init(Mod)
     --------------------------
 
     local function renderCursedItems(_)
-        for i, entity in ipairs(Isaac.GetRoomEntities()) do
+        for _, entity in ipairs(Isaac.GetRoomEntities()) do
             local pickup = entity:ToPickup()
             if not pickup then goto continue end
 
@@ -275,7 +272,7 @@ function modded_item:init(Mod)
     Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, renderCursedItems)
 
     local function cursePedestals()
-        for i, entity in ipairs(Isaac.GetRoomEntities()) do
+        for _, entity in ipairs(Isaac.GetRoomEntities()) do
             local pickup = entity:ToPickup()
             if not pickup then goto continue end
 

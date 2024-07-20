@@ -224,8 +224,6 @@ function modded_item:init(Mod)
         -- Checking for collectible
         if not player:HasCollectible(GAMBLING_CHIP) then return end
 
-        -- Getting player type for later use
-
         -- Get rng so it behaves the same per seed
         local rng = player:GetCollectibleRNG(GAMBLING_CHIP)
 
@@ -261,7 +259,7 @@ function modded_item:init(Mod)
             local data = pickup:GetData()
 
             local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{MiniBoss}}"
-            
+
             local max_luck = math.ceil((MAX_CHANCE - BASE_CHANCE) / LUCK_MODIFIER)
 
             local areKeepers = #Helper.GetPlayersOfType(PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_KEEPER_B) > 0
