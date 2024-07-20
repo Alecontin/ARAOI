@@ -1,8 +1,3 @@
-local temperance = Isaac.GetCardIdByName("Inverted Temperance")
-local reverse = Card.CARD_REVERSE_TEMPERANCE
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -15,6 +10,9 @@ local function HeartsLost(player, set)
 end
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Temperance")
+card.Replace = Card.CARD_REVERSE_TEMPERANCE
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -34,7 +32,7 @@ function card:init(Mod)
 
         player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
         player:EvaluateItems()
-    end, temperance)
+    end, card.ID)
 
     ---@param player EntityPlayer
     ---@param flag CacheFlag
@@ -52,17 +50,9 @@ function card:init(Mod)
         end
     end)
 
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return temperance
-        end
-    end)
-
     ---@class EID
     if EID then
-        EID:addCard(temperance,
+        EID:addCard(card.ID,
             "#{{Heart}} Sets Isaac's health to {{HalfHeart}} Half a Heart"..
             "#{{ArrowUp}} Damage Up for every heart lost"
         )

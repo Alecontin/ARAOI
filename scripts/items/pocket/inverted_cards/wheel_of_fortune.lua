@@ -1,12 +1,10 @@
-local wheel_of_fortune = Isaac.GetCardIdByName("Inverted Wheel of Fortune")
-local reverse = Card.CARD_REVERSE_WHEEL_OF_FORTUNE
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Wheel of Fortune")
+card.Replace = Card.CARD_REVERSE_WHEEL_OF_FORTUNE
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -18,7 +16,7 @@ function card:init(Mod)
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
         local ItemPool = game:GetItemPool()
 
-        local rng = player:GetCardRNG(wheel_of_fortune)
+        local rng = player:GetCardRNG(card.ID)
 
         local use_card = ItemPool:GetCard(rng:RandomInt(1, 99999999), false, false, false)
 
@@ -33,21 +31,13 @@ function card:init(Mod)
         HUD:ShowItemText(name)
 
         if rng:RandomFloat() > 0.1 then
-            player:AddCard(wheel_of_fortune)
+            player:AddCard(card.ID)
         end
-    end, wheel_of_fortune)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return wheel_of_fortune
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(wheel_of_fortune,
+        EID:addCard(card.ID,
             "#{{Card}} Mimics a random card on use"..
             "# Has a 10% chance to destroy itself with each use"
         )

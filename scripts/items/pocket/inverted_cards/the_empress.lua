@@ -15,24 +15,16 @@ local NUM_MOM_ITEMS_TO_GIVE = 5 -- *Default: `5` — The number of Mom items to 
 
 
 
-local empress = Isaac.GetCardIdByName("Inverted Empress")
-local reverse = Card.CARD_REVERSE_EMPRESS
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@param player EntityPlayer
----@param set? boolean
-local function CardEffect(player, set)
-    return SaveData:Data(SaveData.RUN, "CardEffectInvertedEmpress", {}, Helper.GetPlayerId(player), false, set)
-end
-
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Empress")
+card.Replace = Card.CARD_REVERSE_EMPRESS
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -41,7 +33,7 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        local rng = player:GetCardRNG(empress)
+        local rng = player:GetCardRNG(card.ID)
 
         ---@diagnostic disable-next-line: param-type-mismatch
         local mom_items = ItemConfig:GetTaggedItems(ItemTag.TAG_MOM)
@@ -64,25 +56,11 @@ function card:init(Mod)
 
             show = show + 1
         end, 30, NUM_MOM_ITEMS_TO_GIVE, false)
-    end, empress)
-
-    -- Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, function ()
-    --     for _, player in ipairs(PlayerManager.GetPlayers()) do
-    --         CardEffect(player, false)
-    --     end
-    -- end)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return empress
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(empress,
+        EID:addCard(card.ID,
             "#{{Mom}} Gives Isaac "..NUM_MOM_ITEMS_TO_GIVE.." random Mom items for the room"
         )
     end

@@ -1,12 +1,10 @@
-local fool = Isaac.GetCardIdByName("Inverted Fool")
-local reverse = Card.CARD_REVERSE_FOOL
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Fool")
+card.Replace = Card.CARD_REVERSE_FOOL
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -14,7 +12,7 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        local rng = player:GetCardRNG(fool)
+        local rng = player:GetCardRNG(card.ID)
         local room = game:GetRoom()
 
         local items = {}
@@ -40,20 +38,12 @@ function card:init(Mod)
                 end
             end
         end
-    end, fool)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return fool
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
-        EID:addCard(fool,
+        EID:addCard(card.ID,
             "#{{Collectible}} Drops all of Isaac's collectibles into 10 pedestals"..
             "#{{Collectible"..restock.."}} Excess items will be added to the pedestal's item cycle"
         )

@@ -1,8 +1,3 @@
-local high_priestess = Isaac.GetCardIdByName("Inverted High Priestess")
-local reverse = Card.CARD_REVERSE_HIGH_PRIESTESS
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -17,18 +12,21 @@ end
 
 local card = {}
 
+card.ID = Isaac.GetCardIdByName("Inverted High Priestess")
+card.Replace = Card.CARD_REVERSE_HIGH_PRIESTESS
+
 ---@param Mod ModReference
 function card:init(Mod)
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        player:UseCard(reverse, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
+        player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 
         CardEffect(player, 1800)
 
         for _ = 1, 8 do
             player:AddSmeltedTrinket(TrinketType.TRINKET_MOMS_TOENAIL, false)
         end
-    end, high_priestess)
+    end, card.ID)
 
     Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         for _, player in ipairs(PlayerManager.GetPlayers()) do
@@ -43,19 +41,11 @@ function card:init(Mod)
         end
     end)
 
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return high_priestess
-        end
-    end)
-
     ---@class EID
     if EID then
         local toenail = TrinketType.TRINKET_MOMS_TOENAIL
-        EID:addCard(high_priestess,
-            "#{{MomBoss}} Activates the effects of {{Card"..reverse.."}} The High Priestess? and 8 {{Trinket"..toenail.."}} Mom's Toenail"
+        EID:addCard(card.ID,
+            "#{{MomBoss}} Activates the effects of {{Card"..card.Replace.."}} The High Priestess? and 8 {{Trinket"..toenail.."}} Mom's Toenail"
         )
     end
 end

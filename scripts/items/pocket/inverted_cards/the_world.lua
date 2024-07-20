@@ -1,12 +1,10 @@
-local world = Isaac.GetCardIdByName("Inverted World")
-local reverse = Card.CARD_REVERSE_WORLD
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted World")
+card.Replace = Card.CARD_REVERSE_WORLD
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -15,7 +13,7 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        local rng = player:GetCardRNG(world)
+        local rng = player:GetCardRNG(card.ID)
         rng:RandomFloat()
 
         local room = RoomConfigHolder.GetRandomRoom(rng:GetSeed(), true, StbType.SPECIAL_ROOMS, RoomType.ROOM_BLACK_MARKET)
@@ -25,19 +23,11 @@ function card:init(Mod)
         Isaac.CreateTimer(function ()
             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TALL_LADDER, 0, player.Position, Vector.Zero, player)
         end, 1, 1, true)
-    end, world)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return world
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(world,
+        EID:addCard(card.ID,
             "#{{BlackSack}} Teleports Isaac to a random Black Market"
         )
     end

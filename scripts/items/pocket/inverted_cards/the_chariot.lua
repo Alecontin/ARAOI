@@ -1,12 +1,10 @@
-local chariot = Isaac.GetCardIdByName("Inverted Chariot")
-local reverse = Card.CARD_REVERSE_CHARIOT
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Chariot")
+card.Replace = Card.CARD_REVERSE_CHARIOT
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -27,19 +25,11 @@ function card:init(Mod)
                 end
             end
         end
-    end, chariot)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return chariot
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(chariot,
+        EID:addCard(card.ID,
             "#{{Freezing}} Petrifies all enemies in the room"
         )
     end

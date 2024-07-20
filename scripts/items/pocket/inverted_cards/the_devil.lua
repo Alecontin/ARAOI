@@ -1,8 +1,3 @@
-local devil = Isaac.GetCardIdByName("Inverted Devil")
-local reverse = Card.CARD_REVERSE_DEVIL
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -16,6 +11,9 @@ end
 
 local card = {}
 
+card.ID = Isaac.GetCardIdByName("Inverted Devil")
+card.Replace = Card.CARD_REVERSE_DEVIL
+
 ---@param Mod ModReference
 function card:init(Mod)
     local game = Game()
@@ -27,10 +25,10 @@ function card:init(Mod)
 
         local level = game:GetLevel()
 
-        local treasure_idx = level:QueryRoomTypeIndex(RoomType.ROOM_TREASURE, false, player:GetCardRNG(devil))
+        local treasure_idx = level:QueryRoomTypeIndex(RoomType.ROOM_TREASURE, false, player:GetCardRNG(card.ID))
 
         game:StartRoomTransition(treasure_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
-    end, devil)
+    end, card.ID)
 
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         for _, player in ipairs(PlayerManager.GetPlayers()) do
@@ -41,18 +39,10 @@ function card:init(Mod)
         end
     end)
 
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return devil
-        end
-    end)
-
     ---@class EID
     if EID then
         local devils_crown = TrinketType.TRINKET_DEVILS_CROWN
-        EID:addCard(devil,
+        EID:addCard(card.ID,
             "#{{TreasureRoom}} Teleports Isaac to the {{Trinket"..devils_crown.."}} Devil's Crown Treasure Room"
         )
     end

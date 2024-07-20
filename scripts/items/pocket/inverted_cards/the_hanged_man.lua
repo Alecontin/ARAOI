@@ -1,8 +1,3 @@
-local hanged_man = Isaac.GetCardIdByName("Inverted Hanged Man")
-local reverse = Card.CARD_REVERSE_HANGED_MAN
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -14,6 +9,9 @@ local function GreedSpawns(set)
 end
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Hanged Man")
+card.Replace = Card.CARD_REVERSE_HANGED_MAN
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -58,19 +56,11 @@ function card:init(Mod)
             CloseDoors()
             sfx:Play(SoundEffect.SOUND_SUMMONSOUND)
         end
-    end, hanged_man)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return hanged_man
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(hanged_man,
+        EID:addCard(card.ID,
             "#{{Player14}} Spawns the Greed boss"..
             "#{{Player33}} Spawns Super Greed if Greed was already spawned"..
             "#{{SecretRoom}} Spawns 2-10 secret room shopkeepers if Super Greed was already spawned"..

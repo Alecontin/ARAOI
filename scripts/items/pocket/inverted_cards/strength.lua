@@ -1,12 +1,10 @@
-local strength = Isaac.GetCardIdByName("Inverted Strength")
-local reverse = Card.CARD_REVERSE_STRENGTH
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Strength")
+card.Replace = Card.CARD_REVERSE_STRENGTH
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -27,19 +25,11 @@ function card:init(Mod)
                 end
             end
         end
-    end, strength)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return strength
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
-        EID:addCard(strength,
+        EID:addCard(card.ID,
             "#{{Weakness}} Applies weakness to all enemies in the room"
         )
     end

@@ -1,8 +1,3 @@
-local sun = Isaac.GetCardIdByName("Inverted Sun")
-local reverse = Card.CARD_REVERSE_SUN
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -16,6 +11,9 @@ local function CardEffect(player, set)
 end
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Sun")
+card.Replace = Card.CARD_REVERSE_SUN
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -40,11 +38,11 @@ function card:init(Mod)
         end
 
         if NumRoomsVisited() ~= 1 then
-            player:UseCard(reverse, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
+            player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
             return
         end
 
-        local rng = player:GetCardRNG(sun)
+        local rng = player:GetCardRNG(card.ID)
 
         for _, any_player in ipairs(Helper.GetPlayersWithCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE)) do
             for _ = 1, any_player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BLACK_CANDLE) do
@@ -62,7 +60,7 @@ function card:init(Mod)
         level:AddCurse(LevelCurse.CURSE_OF_THE_LOST, false)
         level:AddCurse(LevelCurse.CURSE_OF_THE_UNKNOWN, false)
         level:AddCurse(LevelCurse.CURSE_OF_BLIND, false)
-    end, sun)
+    end, card.ID)
 
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
         for _, player in ipairs(PlayerManager.GetPlayers()) do
@@ -83,22 +81,14 @@ function card:init(Mod)
         end
     end)
 
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return sun
-        end
-    end)
-
     ---@class EID
     if EID then
         local candle = CollectibleType.COLLECTIBLE_BLACK_CANDLE
         local damocles = CollectibleType.COLLECTIBLE_DAMOCLES
-        EID:addCard(sun,
+        EID:addCard(card.ID,
             "#{{Collectible"..damocles.."}} Gives you all curses and Damocles for the floor"..
             "#{{Collectible"..candle.."}} Removes Black Candle and spawns an item from the {{Shop}} Shop item pool"..
-            "#!!! Only works at the start of a new floor, otherwise it will act like {{Card"..reverse.."}} The Sun?"
+            "#!!! Only works at the start of a new floor, otherwise it will act like {{Card"..card.Replace.."}} The Sun?"
         )
     end
 end

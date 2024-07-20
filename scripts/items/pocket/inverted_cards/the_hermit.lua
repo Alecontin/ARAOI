@@ -1,12 +1,10 @@
-local hermit = Isaac.GetCardIdByName("Inverted Hermit")
-local reverse = Card.CARD_REVERSE_HERMIT
-
-local card_config = include("scripts.items.pocket.inverted_cards")
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
 local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Hermit")
+card.Replace = Card.CARD_REVERSE_HERMIT
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -16,7 +14,7 @@ function card:init(Mod)
 
         local collectible = collectibles[#collectibles]
         if collectible == nil then
-            player:UseCard(reverse, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
+            player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
             return
         end
 
@@ -27,8 +25,9 @@ function card:init(Mod)
         player:RemoveCollectible(collectibleID)
         player:AnimateCollectible(collectibleID)
 
-        if collectible:GetRoomType() == RoomType.ROOM_DEVIL and not Helper.IsKeeper(player) then
-            player:AddMaxHearts(config.DevilPrice, true)
+        if collectible:GetItemPoolType() == ItemPoolType.POOL_DEVIL
+        and not Helper.IsKeeper(player) then
+            player:AddMaxHearts(config.DevilPrice * 2, true)
         else
             local coins = config.ShopPrice
             if Helper.IsKeeper(player) then
@@ -66,22 +65,14 @@ function card:init(Mod)
                 DropCoin()
             end
         end
-    end, hermit)
-
-    ---@param rng RNG
-    ---@param currentCard Card
-    Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == reverse and rng:RandomFloat() <= card_config.ReplaceChance then
-            return hermit
-        end
-    end)
+    end, card.ID)
 
     ---@class EID
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
-        EID:addCard(hermit,
+        EID:addCard(card.ID,
             "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the room it was picked up"..
-            "#{{Card"..reverse.."}} If used without having any collectibles, it will act like {{Card"..reverse.."}} The Hermit?"
+            "#{{Card"..card.Replace.."}} If used without having any collectibles, it will act like {{Card"..card.Replace.."}} The Hermit?"
         )
     end
 end
