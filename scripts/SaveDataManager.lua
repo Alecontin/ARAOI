@@ -121,7 +121,7 @@ function save:init(Mod)
     -- otherwise wipe everything except the PERSISTANT context
 
     local function loadSaveData(isContinued)
-        if isContinued == false then
+        if isContinued then
             -- Clearing all the contexts
 
             save.RUN    = {}
@@ -147,7 +147,7 @@ function save:init(Mod)
     local function onGameStarted(_, isContinued)
         loadSaveData(isContinued)
     end
-    Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onGameStarted)
+    Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, onGameStarted)
 
     --------------
     -- CLEARERS --
