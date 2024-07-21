@@ -106,7 +106,6 @@ function save:init(Mod)
 
     -- Gets the data to save
     local function saveData()
-        print("Requested Save")
         local data = json.encode({
             save.PERSISTANT, save.RUN, save.LEVEL, save.ROOM, save.TIMERS
         })
@@ -121,7 +120,7 @@ function save:init(Mod)
     -- otherwise wipe everything except the PERSISTANT context
 
     local function loadSaveData(isContinued)
-        if isContinued then
+        if not isContinued then
             -- Clearing all the contexts
 
             save.RUN    = {}
@@ -311,7 +310,7 @@ function save:init(Mod)
         end
     end
 
-    if game:GetFrameCount() > 0 then
+    if game:GetFrameCount() > 1 then
         loadSaveData(true)
     end
 end
