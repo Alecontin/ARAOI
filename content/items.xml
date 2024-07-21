@@ -4,18 +4,18 @@
   <!-- Complete The Corpse with Blue Baby -->
   <active name="Eternal Dplopia" achievement="448" id="2" quality="4" maxcharges="6" devilprice="2" gfx="eternal_dplopia.png" description="Rerolls duplicates, at a cost." tags="offensive nocantrip" />
   <!-- Defeat Ultra Greed as Blue Baby -->
-  <active name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive nocantrip" />
+  <active name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive" />
   <!-- Complete challenge Seeing Double -->
   <active name="3D Glasses" achievement="521" id="3" quality="2" maxcharges="30" chargetype="timed" gfx="3d_glasses.png" description="Seeing in 2 colors!" addcostumeonpickup="true" tags="offensive nocantrip" />
   <!-- Defeat Delirium as Tainted Cain -->
-  <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="6" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
+  <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="2" devilprice="2" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
 
   <!-- Defeat Mega Satan as Tainted Samson -->
   <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive" />
   <!-- Beat Mega Satan with Maggie -->
   <passive name="Sacrificial Heart" achievement="206" quality="3" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr" />
   <!-- Beat Greedier Mode with Lilith -->
-  <passive name="Duality Halo" achievement="306" id="1" quality="3" gfx="duality_halo.png" description="May you get a second chance" tags="offensive" />
+  <passive name="Duality Halo" achievement="306" id="1" quality="3" devilprice="2" gfx="duality_halo.png" description="May you get a second chance" tags="offensive" />
   <!-- Destroy 5 rainbow poops -->
   <passive name="Rainbow Headband" achievement="353" id="4" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive" />
   <!-- Defeat Hush as Eden -->

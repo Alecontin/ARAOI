@@ -106,6 +106,7 @@ function save:init(Mod)
 
     -- Gets the data to save
     local function saveData()
+        print("Requested Save")
         local data = json.encode({
             save.PERSISTANT, save.RUN, save.LEVEL, save.ROOM, save.TIMERS
         })
@@ -118,9 +119,9 @@ function save:init(Mod)
 
     -- Load the save file data when a game is continued,
     -- otherwise wipe everything except the PERSISTANT context
-    ---@param isContinued boolean
-    local function onGameStarted(_, isContinued)
-        if not isContinued then
+
+    local function loadSaveData(isContinued)
+        if isContinued == false then
             -- Clearing all the contexts
 
             save.RUN    = {}
@@ -141,7 +142,12 @@ function save:init(Mod)
             end
         end
     end
-    Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, onGameStarted)
+
+    ---@param isContinued boolean
+    local function onGameStarted(_, isContinued)
+        loadSaveData(isContinued)
+    end
+    Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, onGameStarted)
 
     --------------
     -- CLEARERS --
@@ -198,7 +204,7 @@ function save:init(Mod)
     Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onRewind, CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS)
 
     local function roomChangedStore(_)
-        if Game():GetFrameCount() <= 1 then return end
+        if game:GetFrameCount() <= 1 then return end
 
         save.LAST_ROOM_RUN    = ShallowCopy(save.RUN)
         save.LAST_ROOM_LEVEL  = ShallowCopy(save.LEVEL)
@@ -306,7 +312,7 @@ function save:init(Mod)
     end
 
     if game:GetFrameCount() > 0 then
-        onGameStarted(nil, true)
+        loadSaveData(true)
     end
 end
 

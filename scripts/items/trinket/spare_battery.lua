@@ -15,13 +15,17 @@ function modded_item:init(Mod)
     --------------------------------
 
     ---@param entity Entity
-    local function onSpacebarPressed(_, entity, _, _)
+    ---@param inputHook any
+    ---@param buttonAction any
+    local function onSpacebarPressed(_, entity, inputHook, buttonAction)
         -- Noone pressed anything
         if not entity then return end
 
         -- Getting the player that pressed the active button
         local player = entity:ToPlayer()
         if not player then return end
+
+        if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_ITEM then return end
 
         -- End the function prematurely if the player doesn't have the trinket
         if not player:HasTrinket(SPARE_BATTERY) then return end

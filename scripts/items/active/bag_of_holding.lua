@@ -23,6 +23,8 @@ local SINGLE_USE_ITEMS = {
     CollectibleType.COLLECTIBLE_R_KEY
 }
 
+local RENDERING_ENABLED = true
+
 local bag_of_holding = Isaac.GetItemIdByName("Bag of Holding")
 local KEY_BOH_LAST_USE = "BagOfHoldingLastItemUse"
 local KEY_BOH_RENDER_SPRITE = "BagOfHoldingSpriteHUD"
@@ -34,7 +36,7 @@ local KEY_BOH_LAST_SELECTION = "BagOfHoldingLastSelection"
 local function BagOfHoldingStoredItems(player, add, removeInstead)
     local data = SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {})
     if add then
-        if removeInstead == true then   
+        if removeInstead == true then
             local index = Helper.FindFirstInstanceInTable(add, data)
             if index > 0 then
                 table.remove(data, index)
@@ -42,8 +44,10 @@ local function BagOfHoldingStoredItems(player, add, removeInstead)
         else
             table.insert(data, add)
         end
+
+        SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {}, data)
     end
-    return SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {}, data)
+    return data
 end
 
 ---@param player EntityPlayer
@@ -271,12 +275,21 @@ function modded_item:init(Mod)
     -- RENDERING OF THE ITEM --
     ---------------------------
 
+
+    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
+        if not RENDERING_ENABLED then
+            RENDERING_ENABLED = true
+        end
+    end)
+
     ---@param player EntityPlayer
     ---@param slot ActiveSlot
     ---@param offset Vector
     ---@param alpha number
     ---@param scale number
-    Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)
+    Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)-- Do not render if the game JUST started
+        if not RENDERING_ENABLED then return end
+
         -- Don't render if the item is not ours
         local collectible_id = player:GetActiveItem(slot)
         if collectible_id ~= bag_of_holding then return end
