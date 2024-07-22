@@ -193,6 +193,8 @@ function modded_item:init(Mod)
                             player:RemoveCollectible(bag_of_holding)
                             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
 
+                            return true
+
                         -- Otherwise, just absorb it
                         else
                             -- Make the player collide with the collectible
