@@ -86,57 +86,59 @@ RoomDescriptor.FLAG_ROTGUT_CLEARED = 1 << 16
 RoomDescriptor.FLAG_PORTAL_LINKED = 1 << 17
 RoomDescriptor.FLAG_BLUE_REDIRECT = 1 << 18
 
----@class EID.DescriptionObject
--- Helper table to type the DescriptionObject so I don't have to check the wiki every time.
-EID.DescriptionObject = {
-    -- Type of the described entity. Example: `5`
-    ---@type integer
-    ObjType = 0,
+if EID then
+    ---@class EID.DescriptionObject
+    -- Helper table to type the DescriptionObject so I don't have to check the wiki every time.
+    EID.DescriptionObject = {
+        -- Type of the described entity. Example: `5`
+        ---@type integer
+        ObjType = 0,
 
-    -- Variant of the described entity. Example: `100`
-    ---@type integer
-    ObjVariant = 0,
+        -- Variant of the described entity. Example: `100`
+        ---@type integer
+        ObjVariant = 0,
 
-    -- SubType of the described entity. Example for Sad Onion: `1`
-    ---@type integer
-    ObjSubType = 0,
+        -- SubType of the described entity. Example for Sad Onion: `1`
+        ---@type integer
+        ObjSubType = 0,
 
-    -- Combined string that describes the entity. Example for Sad Onion: `"5.100.1"`
-    ---@type string
-    fullItemString = "",
+        -- Combined string that describes the entity. Example for Sad Onion: `"5.100.1"`
+        ---@type string
+        fullItemString = "",
 
-    -- Translated EID object name. Example for Sad Onion: `"Sad Onion"` or `"悲伤洋葱"` when chinese language is active
-    ---@type string
-    Name = "",
+        -- Translated EID object name. Example for Sad Onion: `"Sad Onion"` or `"悲伤洋葱"` when chinese language is active
+        ---@type string
+        Name = "",
 
-    -- Unformatted but translated EID description. Example for Sad Onion: "↑ +0.7 Tears up" or ↑ +0.7射速" when chinese language is active
-    ---@type string
-    Description = "",
+        -- Unformatted but translated EID description. Example for Sad Onion: "↑ +0.7 Tears up" or ↑ +0.7射速" when chinese language is active
+        ---@type string
+        Description = "",
 
-    -- EID Transformation information object.
-    ---@type unknown
-    Transformation = nil,
+        -- EID Transformation information object.
+        ---@type unknown
+        Transformation = nil,
 
-    -- Name of the mod this item comes from. Can be nil!
-    ---@type string
-    ModName = nil,
+        -- Name of the mod this item comes from. Can be nil!
+        ---@type string
+        ModName = nil,
 
-    -- Quality of the displayed object. Number between 0 and 4. Set to nil to remove it.
-    ---@type number
-    Quality = 0,
+        -- Quality of the displayed object. Number between 0 and 4. Set to nil to remove it.
+        ---@type number
+        Quality = 0,
 
-    -- Object icon displayed in the top left of the description. Set to nil to not display it. Format like any EID icon: `{Animationname, Frame, Width, Height, LeftOffset [Default: -1], TopOffset [Default: 0], SpriteObject [Default: EID.InlineIconSprite]}`
-    ---@type table
-    Icon = table,
+        -- Object icon displayed in the top left of the description. Set to nil to not display it. Format like any EID icon: `{Animationname, Frame, Width, Height, LeftOffset [Default: -1], TopOffset [Default: 0], SpriteObject [Default: EID.InlineIconSprite]}`
+        ---@type table
+        Icon = table,
 
-    -- Entity Object which currently is described.
-    ---@type Entity
-    Entity = nil,
+        -- Entity Object which currently is described.
+        ---@type Entity
+        Entity = nil,
 
-    -- Allows description modifiers to be shown when the pill is still unidentified
-    ---@type boolean
-    ShowWhenUnidentified = false
-}
+        -- Allows description modifiers to be shown when the pill is still unidentified
+        ---@type boolean
+        ShowWhenUnidentified = false
+    }
+end
 
 ---@param descObj EID.DescriptionObject
 ---@param entityType? integer
