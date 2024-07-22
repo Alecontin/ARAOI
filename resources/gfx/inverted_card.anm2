@@ -1,9 +1,9 @@
 <AnimatedActor>
-	<Info CreatedBy="robot" CreatedOn="17/7/2024 8:43:07 AM" Version="106" Fps="30"/>
+	<Info CreatedBy="robot" CreatedOn="21/7/2024 9:38:54 PM" Version="108" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="items\pickups\inverted_card.png" Id="0"/>
-			<Spritesheet Path="ui\inverted_card_ui.png" Id="1"/>
+			<Spritesheet Path="ui\ui_inverted_card.png" Id="1"/>
 			<Spritesheet Path="Effects\Effect_023_StarFlash.png" Id="2"/>
 		</Spritesheets>
 		<Layers>
