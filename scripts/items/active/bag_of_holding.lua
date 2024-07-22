@@ -26,7 +26,6 @@ local SINGLE_USE_ITEMS = {
 local RENDERING_ENABLED = true
 
 local bag_of_holding = Isaac.GetItemIdByName("Bag of Holding")
-local KEY_BOH_LAST_USE = "BagOfHoldingLastItemUse"
 local KEY_BOH_RENDER_SPRITE = "BagOfHoldingSpriteHUD"
 local KEY_BOH_LAST_SELECTION = "BagOfHoldingLastSelection"
 
@@ -144,11 +143,6 @@ function modded_item:init(Mod)
         -- if we WERE to just ignore this, items would be used 4 times!
         if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
-        local function Collapse()
-            player:RemoveCollectible(bag_of_holding)
-            Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
-        end
-
         -- Check if we have an item selected
         local selected = BagOfHoldingGetSelectedItem(player)
 
@@ -157,21 +151,24 @@ function modded_item:init(Mod)
             -- Make the last item used be our item
             BagOfHoldingLastItemUsed(player, bag_of_holding)
 
-            -- I couldn't find a way to boot the player out of
-            -- death certificate upon absorbing an item so I had to make some sacrifices
-            if game:GetLevel():GetDimension() == Dimension.DEATH_CERTIFICATE then
-                Collapse()
-                return true
-            end
+            local options_voided = {}
 
             -- Check every entity in the room
             for _, entity in ipairs(Isaac.GetRoomEntities()) do
+                player:FlushQueueItem()
 
                 -- Is the entity a pickup
                 local pickup = entity:ToPickup()
 
                 -- Is the pickup a non-empty pedestal
                 if pickup and pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE and pickup.SubType ~= 0 then
+
+                    -- Check if we already voided an item from this option index, if so, we delete it
+                    if Helper.IsValueInTable(pickup.OptionsPickupIndex, options_voided) then
+                        Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, pickup.Position, Vector.Zero, nil)
+                        pickup:Remove()
+                        goto continue
+                    end
 
                     -- Make a reference to the subtype
                     local absorb_id = pickup.SubType
@@ -184,20 +181,40 @@ function modded_item:init(Mod)
                     and config.ChargeType ~= ChargeType.Special
                     and not config:HasTags(ItemTag.TAG_QUEST)
                     and not pickup:IsShopItem() then
-                        -- Remove the collectible from the pedestal
-                        pickup:TryRemoveCollectible()
+                        -- If the item is part of an options index
+                        if pickup.OptionsPickupIndex ~= 0 then
+                            -- Add it to the list of voided options
+                            table.insert(options_voided, pickup.OptionsPickupIndex)
+                        end
 
                         -- If the item we are trying to absorb is another bag of holding, have a special interaction
                         if absorb_id == bag_of_holding then
                             pickup:Remove()
-                            Collapse()
+                            player:RemoveCollectible(bag_of_holding)
+                            Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
 
                         -- Otherwise, just absorb it
                         else
+                            -- Make the player collide with the collectible
+                            -- This makes the other options get deleted if there are any
+                            -- And also, forces the player to pick an item from the death certificate room
+                            player:ForceCollide(pickup, false)
+
+                            -- Replace the queued item with our item
+                            player:QueueItem(ItemConfig:GetCollectible(bag_of_holding))
+
+                            -- Flush the queue early
+                            player:FlushQueueItem()
+
+                            -- Remove the collectible from the pedestal, if there is any
+                            pickup:TryRemoveCollectible()
+
+                            -- Store the voided item
                             BagOfHoldingStoredItems(player, absorb_id)
                         end
                     end
                 end
+                ::continue::
             end
 
 
@@ -258,6 +275,9 @@ function modded_item:init(Mod)
         -- Don't do anything if we don't have our item equipped
         if player:GetActiveItem() ~= bag_of_holding then return end
 
+        -- If the player has the item in their inventory, don't trigger the removal from our item
+        if player:HasCollectible(collectibleType) then return end
+
         -- Get all the stored items
         local stored_items = BagOfHoldingStoredItems(player)
 
@@ -288,6 +308,7 @@ function modded_item:init(Mod)
     ---@param alpha number
     ---@param scale number
     Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)-- Do not render if the game JUST started
+        -- Getting the data also sets it, so we make sure we loaded it first
         if not RENDERING_ENABLED then return end
 
         -- Don't render if the item is not ours
@@ -339,11 +360,8 @@ function modded_item:init(Mod)
             player:GetData()[KEY_BOH_LAST_SELECTION] = selected_item
         end
 
-        -- If the sprite is smaller we have to account for that
-        local pos = Vector(16, 16) * scale
-
         -- Render the sprite to the screen
-        hud_boh:Render(pos + offset)
+        hud_boh:Render(offset)
     end)
 
     ---@class EID
