@@ -171,7 +171,7 @@ function modded_item:init(Mod)
                     enemy:AddSlowing(eref, 60, 0.513, Color(2, 2, 2, 1, 0.196, 0.196, 0.196))
                 end
                 if flags & TearFlags.TEAR_POISON > 0 then
-                    enemy:AddPoison(eref, 30, player.Damage)
+                    enemy:AddPoison(eref, 30, damage)
                 end
                 if flags & TearFlags.TEAR_FREEZE > 0 then
                     enemy:AddFreeze(eref, 30)
@@ -180,7 +180,7 @@ function modded_item:init(Mod)
                     player:AddBlueFlies(1, player.Position, enemy)
                 end
                 if flags & TearFlags.TEAR_EXPLOSIVE > 0 then
-                    Isaac.Explode(enemy.Position, effect, player.Damage)
+                    Isaac.Explode(enemy.Position, effect, damage)
                 end
                 if flags & TearFlags.TEAR_CHARM > 0 then
                     enemy:AddCharmed(eref, 150)
@@ -197,7 +197,7 @@ function modded_item:init(Mod)
                     enemy:AddFear(eref, 150)
                 end
                 if flags & TearFlags.TEAR_BURN > 0 then
-                    enemy:AddBurn(eref, 30, player.Damage)
+                    enemy:AddBurn(eref, 30, damage)
                 end
                 if flags & TearFlags.TEAR_MYSTERIOUS_LIQUID_CREEP > 0 then
                     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, enemy.Position, Vector.Zero, player)
@@ -236,7 +236,10 @@ function modded_item:init(Mod)
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
                 end
                 if flags & TearFlags.TEAR_RIFT > 0 then
-                    Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RIFT, 0, enemy.Position, Vector.Zero, player)
+                    local rift = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RIFT, 0, enemy.Position, Vector.Zero, player):ToEffect()
+                    rift.SpriteScale = effect.SpriteScale
+                    rift.CollisionDamage = damage
+                    rift:SetTimeout(90)
                 end
                 if flags & TearFlags.TEAR_BACKSTAB > 0 and rng:RandomFloat() <= 0.2 then
                     enemy:SetBleedingCountdown(0)
