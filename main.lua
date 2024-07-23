@@ -34,6 +34,7 @@ local files = {
     passive.."duality_halo",
     passive.."rainbow_headband",
     passive.."blessings_petal",
+    passive.."voodoo_body",
 
     --[[ POCKET ITEMS ]]--
     pocket.."inverted_cards",
