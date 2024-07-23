@@ -1,5 +1,9 @@
 <entities anm2root="gfx/" version="5">
-    <entity anm2path="inverted_card.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" name="Inverted Card" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="8800">
+    <entity anm2path="inverted_card.anm2" name="Inverted Card" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="5" numGridCollisionPoints="24" shadowSize="16" stageHP="0" variant="300" subtype="8800">
            <preload-snd id="8" /> <!-- BOOK_PAGE_TURN_12 -->
+    </entity>
+    
+    <entity anm2path="curse_pin.anm2" name="Curse Pin" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="1" id="1000" numGridCollisionPoints="1" shadowSize="0" stageHP="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
     </entity>
 </entities>

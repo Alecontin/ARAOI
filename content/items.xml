@@ -11,15 +11,17 @@
   <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="2" devilprice="2" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
 
   <!-- Defeat Mega Satan as Tainted Samson -->
-  <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive" />
+  <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
   <!-- Beat Mega Satan with Maggie -->
-  <passive name="Sacrificial Heart" achievement="206" quality="3" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr" />
+  <passive name="Sacrificial Heart" achievement="206" quality="3" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr summonable" />
   <!-- Beat Greedier Mode with Lilith -->
-  <passive name="Duality Halo" achievement="306" id="1" quality="3" devilprice="2" gfx="duality_halo.png" description="May you get a second chance" tags="offensive" />
+  <passive name="Duality Halo" achievement="306" id="1" quality="3" devilprice="2" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable" />
   <!-- Destroy 5 rainbow poops -->
-  <passive name="Rainbow Headband" achievement="353" id="4" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive" />
+  <passive name="Rainbow Headband" achievement="353" id="4" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive summonable" />
   <!-- Defeat Hush as Eden -->
   <passive name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
+  <!-- Beat the "Cursed!" challenge -->
+  <passive name="Voodoo Body" achievement="98" quality="4" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
