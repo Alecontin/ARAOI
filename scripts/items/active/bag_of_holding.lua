@@ -153,10 +153,10 @@ function modded_item:init(Mod)
 
             local options_voided = {}
 
+            local charges = player:GetTotalActiveCharge(ActiveSlot.SLOT_PRIMARY)
+
             -- Check every entity in the room
             for _, entity in ipairs(Isaac.GetRoomEntities()) do
-                player:FlushQueueItem()
-
                 -- Is the entity a pickup
                 local pickup = entity:ToPickup()
 
@@ -215,6 +215,8 @@ function modded_item:init(Mod)
                             BagOfHoldingStoredItems(player, absorb_id)
                         end
                     end
+                    -- Setting the queue to our item with depleted charges
+                    player:QueueItem(ItemConfig:GetCollectible(bag_of_holding), charges - ItemConfig:GetCollectible(bag_of_holding).MaxCharges)
                 end
                 ::continue::
             end
