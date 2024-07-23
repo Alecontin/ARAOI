@@ -193,11 +193,11 @@ function modded_item:init(Mod)
         local CB = CollectibleType.COLLECTIBLE_CAR_BATTERY
         local TT = CollectibleType.COLLECTIBLE_20_20
 
-        ---@param descObject EID.DescriptionObject 
+        ---@param descObject EIDDescriptionObject 
         local function check(descObject)
             return Helper.DescObjIs(descObject, 5, 100, THREED_GLASSES) and PlayerManager.AnyoneHasCollectible(CB)
         end
-        ---@param descObject EID.DescriptionObject 
+        ---@param descObject EIDDescriptionObject 
         local function modifier(descObject)
             EID:appendToDescription(descObject, "#{{Collectible"..CB.."}} Gives the 20/20{{Collectible"..TT.."}} effect while held")
             return descObject
@@ -206,11 +206,11 @@ function modded_item:init(Mod)
 
         local BOV = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
 
-        ---@param descObject EID.DescriptionObject 
+        ---@param descObject EIDDescriptionObject 
         local function check(descObject)
             return Helper.DescObjIs(descObject, 5, 100, THREED_GLASSES) and PlayerManager.AnyoneHasCollectible(BOV)
         end
-        ---@param descObject EID.DescriptionObject 
+        ---@param descObject EIDDescriptionObject 
         local function modifier(descObject)
             EID:appendToDescription(descObject, "#{{Collectible"..BOV.."}} Does nothing")
             return descObject

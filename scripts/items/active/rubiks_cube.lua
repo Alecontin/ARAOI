@@ -208,11 +208,11 @@ function modded_item:init(Mod)
 
         local BOV = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
 
-        ---@param descObject EID.DescriptionObject 
+        ---@param descObject EIDDescriptionObject 
         local function check(descObject)
             return Helper.DescObjIs(descObject, 5, 100, RUBIKS_CUBE) and PlayerManager.AnyoneHasCollectible(BOV)
         end
-        ---@param descObject EID.DescriptionObject
+        ---@param descObject EIDDescriptionObject
         local function modifier(descObject)
             EID:appendToDescription(descObject, "#{{Collectible"..BOV.."}} Each wisp will enhance the Solved Rubik's Cube stats by 10%")
             return descObject

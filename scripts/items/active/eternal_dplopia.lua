@@ -305,7 +305,7 @@ function modded_item:init(Mod)
         local VIRTUES = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
         local VIRTUES_ICON =  "#{{Collectible"..VIRTUES.."}} "
 
-        ---@param descObject EID.DescriptionObject
+        ---@param descObject EIDDescriptionObject
         local function anyPlayerHasBookOfVirtues(descObject)
             if descObject.ObjType == EntityType.ENTITY_PICKUP
             and descObject.ObjVariant == PickupVariant.PICKUP_COLLECTIBLE
@@ -313,7 +313,7 @@ function modded_item:init(Mod)
             then return PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) end
         end
 
-        ---@param descObject EID.DescriptionObject
+        ---@param descObject EIDDescriptionObject
         local function showWisps(descObject)
             EID:appendToDescription(descObject, VIRTUES_ICON.." Wisp has a "..WISP_DELETE_CHANCE.."% chance of getting deleted instead of an item. 2 wisps max")
             return descObject
