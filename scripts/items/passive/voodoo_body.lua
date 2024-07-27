@@ -290,7 +290,6 @@ function modded_item:init(Mod)
                     sfx:Play(SoundEffect.SOUND_MEATY_DEATHS)
                 end
 
-
                 if flags & TearFlags.TEAR_BURSTSPLIT > 0 then
                     for i = 1, rng:RandomInt(6, 11) do
                         Isaac.CreateTimer(function ()
