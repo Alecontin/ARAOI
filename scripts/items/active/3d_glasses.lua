@@ -185,9 +185,9 @@ function modded_item:init(Mod)
     ---@class EID
     if EID then
         EID:addCollectible(THREED_GLASSES,
-            "#{{Timer}} On use, toggles the player's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
+            "#{{Timer}} On use, toggles the Isaac's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
             "#{{Tearsize}} Enemy tears will now be {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
-            "#{{HolyMantle}} Player will not take damage from tears of the same color"
+            "#{{HolyMantle}} Isaac will not take damage from tears of the same color as him"
         )
 
         local CB = CollectibleType.COLLECTIBLE_CAR_BATTERY

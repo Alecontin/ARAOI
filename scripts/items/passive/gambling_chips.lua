@@ -282,11 +282,11 @@ function modded_item:init(Mod)
                                 "#{{DeathMark}} "..COIN_CHANCE.."% "..keeper_desc.."chance for enemies to spawn a coin "..eden_desc.."on death"..
                                 lost_desc..
                                 "#{{MiniBoss}} {{ColorGray}}This icon refers to shell games as there is no icon for them"
-                                
+
             data["EID_Description"] = description
         end
         Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, addDescription, PickupVariant.PICKUP_COLLECTIBLE)
-        
+
     end
 end
 
