@@ -17,6 +17,7 @@ function card:init(Mod)
         end
     end, card.ID)
 
+
     ---@class EID
     if EID then
         EID:addCard(card.ID,
