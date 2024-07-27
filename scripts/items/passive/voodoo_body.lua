@@ -42,12 +42,22 @@ local function SpawnPin(attack, spawner, damage, spriteScale, effects)
     return pin
 end
 
+---@param player EntityPlayer
+local function GetDamageScale(player)
+    local damage_scale = DAMAGE_SCALE
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD) then damage_scale = damage_scale + VOODOO_HEAD_ADD end
+
+    return damage_scale
+end
+
 
 local modded_item = {}
 
 ---@param Mod ModReference
 function modded_item:init(Mod)
+    local game = Game()
     local sfx = SFXManager()
+    local ItemPool = game:GetItemPool()
 
     ---@param entity Entity
     ---@param damage number
@@ -65,7 +75,7 @@ function modded_item:init(Mod)
         local tear = source.Entity:ToTear()
         local scale
 
-        -- Get the tear flags for synergies
+        -- Get the tear flags for tear effects
         local flags
 
         -- If the source entity was a tear then
@@ -107,15 +117,14 @@ function modded_item:init(Mod)
         local random_enemy = Helper.Choice(enemies, nil, rng)
         if not random_enemy then return end
 
-        -- Get the damage scale, defined by the configuration at the top of the script
-        local damage_scale = DAMAGE_SCALE
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD) then damage_scale = damage_scale + VOODOO_HEAD_ADD end
+        -- Get the damage sale
+        local damage_scale = GetDamageScale(player)
 
         -- Multiply the damage by the damage scale
         damage = damage * damage_scale
 
         -- Get the effect's scale
-        local sprite_scale = math.max(scale * damage_scale, 0.5)
+        local sprite_scale = math.max(scale * damage_scale, 0.3)
 
         -- Spawn the effect
         local pin = SpawnPin(random_enemy, player, damage, sprite_scale, flags)
@@ -128,6 +137,20 @@ function modded_item:init(Mod)
 
     ---@param effect EntityEffect
     Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
+        if effect.SpawnerEntity then
+            local player = effect.SpawnerEntity:ToPlayer()
+            if not player then goto skip end
+
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_ANTI_GRAVITY)
+            and player:GetLastActionTriggers() & ActionTriggers.ACTIONTRIGGER_SHOOTING > 0
+            and effect.Timeout >= 19 then
+                effect:SetTimeout(20)
+                effect:GetSprite():SetFrame(1)
+            end
+
+            ::skip::
+        end
+
         -- Check if the effect triggered the event
         if effect:GetSprite():IsEventTriggered("Blood") then
             -- Check if we are still attached to an enemy
@@ -165,6 +188,22 @@ function modded_item:init(Mod)
 
                 -- Get the tear flags, preferably the custom ones
                 local flags = customEffects or player:GetTearHitParams(WeaponType.WEAPON_TEARS, nil, nil, player).TearFlags
+
+                -- Get a reference to the player
+                local pref = EntityRef(player)
+
+                -- Item-specifig synergies
+                if player:HasCollectible(CollectibleType.COLLECTIBLE_BRIMSTONE) then
+                    enemy:AddBrimstoneMark(pref, 150)
+                end
+
+                local function playerHasDrFetus()
+                    return (player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS) or player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS))
+                end
+
+                if playerHasDrFetus() and not (flags & TearFlags.TEAR_EXPLOSIVE > 0) then
+                    flags = flags | TearFlags.TEAR_EXPLOSIVE
+                end
 
                 -- Apply some effects based on each tear flag
                 if flags & TearFlags.TEAR_SLOW > 0 then
@@ -231,6 +270,9 @@ function modded_item:init(Mod)
                 end
                 if flags & TearFlags.TEAR_BAIT > 0 then
                     enemy:AddBaited(eref, 150)
+                end
+                if flags & TearFlags.TEAR_BLOOD_BOMB > 0 then
+                    Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, enemy.Position, Vector.Zero, player)
                 end
                 if flags & TearFlags.TEAR_COIN_DROP_DEATH > 0 then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)

@@ -189,6 +189,7 @@ function modded_item:init(Mod)
 
                         -- If the item we are trying to absorb is another bag of holding, have a special interaction
                         if absorb_id == bag_of_holding then
+                            player:FlushQueueItem()
                             pickup:Remove()
                             player:RemoveCollectible(bag_of_holding)
                             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
