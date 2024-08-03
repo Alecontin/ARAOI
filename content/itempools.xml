@@ -21,7 +21,6 @@
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-    <Item Name="Voodoo Head" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedShop">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -29,14 +28,15 @@
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-    <Item Name="Voodoo Head" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="devil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Duality Halo" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedDevil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="angel">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -67,6 +67,7 @@
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
   </Pool>
   <Pool Name="oldChest">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
@@ -84,16 +85,18 @@
   <Pool Name="curse">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedCurse">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
   </Pool>
   <Pool Name="craneGame">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
-    <Item Name="Voodoo Head" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="ultraSecret">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />

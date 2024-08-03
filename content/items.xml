@@ -21,7 +21,7 @@
   <!-- Defeat Hush as Eden -->
   <passive name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
   <!-- Beat the "Cursed!" challenge -->
-  <passive name="Voodoo Body" achievement="98" quality="4" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
+  <passive name="Voodoo Body" achievement="98" quality="3" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
