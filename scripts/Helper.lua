@@ -765,6 +765,10 @@ function Helper.EntityRefToPlayer(ref)
         player = ref.Entity.Parent:ToPlayer()
     end
 
+    if not player and ref.Entity.Parent and ref.Entity.Parent:ToEffect() and ref.Entity.Parent.SpawnerEntity then
+        player = ref.Entity.Parent.SpawnerEntity:ToPlayer()
+    end
+
     if not player and ref.Entity:ToTear() and ref.Entity.SpawnerEntity then
         player = ref.Entity.SpawnerEntity:ToPlayer()
     end
