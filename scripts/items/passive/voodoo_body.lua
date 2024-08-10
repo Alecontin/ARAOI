@@ -175,6 +175,11 @@ function modded_item:init(Mod)
                 -- Damage the enemy
                 enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, eref, 0)
 
+                -- Function that checks if the enemy would die, since the damage dealt doesn't immediately update
+                local function EnemyWouldDie()
+                    return (enemy.HitPoints - damage) <= 0 and not enemy:IsDead()
+                end
+
                 -- Check if we were spawned by a player
                 if not effect.SpawnerEntity then goto skip end
                 local player = effect.SpawnerEntity:ToPlayer()
@@ -219,7 +224,7 @@ function modded_item:init(Mod)
                     player:AddBlueFlies(1, player.Position, enemy)
                 end
                 if flags & TearFlags.TEAR_EXPLOSIVE > 0 then
-                    Isaac.Explode(enemy.Position, effect, damage)
+                    Isaac.Explode(enemy.Position, enemy, damage)
                 end
                 if flags & TearFlags.TEAR_CHARM > 0 then
                     enemy:AddCharmed(eref, 150)
@@ -227,7 +232,7 @@ function modded_item:init(Mod)
                 if flags & TearFlags.TEAR_CONFUSION > 0 then
                     enemy:AddConfusion(eref, 120, true)
                 end
-                if flags & TearFlags.TEAR_HP_DROP > 0 then
+                if flags & TearFlags.TEAR_HP_DROP > 0 and EnemyWouldDie() then
                     if rng:RandomFloat() < 0.33 then
                         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, 0, player.Position, Vector.Zero, player)
                     end
@@ -247,7 +252,7 @@ function modded_item:init(Mod)
                 if flags & TearFlags.TEAR_COIN_DROP > 0 then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
                 end
-                if flags & TearFlags.TEAR_BLACK_HP_DROP > 0 then
+                if flags & TearFlags.TEAR_BLACK_HP_DROP > 0 and EnemyWouldDie() then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_BLACK, enemy.Position, Vector.Zero, player)
                 end
                 if flags & TearFlags.TEAR_EGG > 0 then
@@ -274,7 +279,7 @@ function modded_item:init(Mod)
                 if flags & TearFlags.TEAR_BLOOD_BOMB > 0 then
                     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, enemy.Position, Vector.Zero, player)
                 end
-                if flags & TearFlags.TEAR_COIN_DROP_DEATH > 0 then
+                if flags & TearFlags.TEAR_COIN_DROP_DEATH > 0 and EnemyWouldDie() then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
                 end
                 if flags & TearFlags.TEAR_RIFT > 0 then
@@ -288,6 +293,14 @@ function modded_item:init(Mod)
                     enemy:AddBleeding(eref, 150)
                     enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, eref, 0)
                     sfx:Play(SoundEffect.SOUND_MEATY_DEATHS)
+                end
+                if flags & TearFlags.TEAR_CARD_DROP_DEATH > 0 and EnemyWouldDie() then
+                    local card = ItemPool:GetCardEx(rng:GetSeed(), 0, 0, 0, false)
+                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card, enemy.Position, Vector.Zero, nil)
+                end
+                if flags & TearFlags.TEAR_RUNE_DROP_DEATH > 0 and EnemyWouldDie() then
+                    local rune = ItemPool:GetCard(rng:GetSeed(), false, true, true)
+                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, rune, enemy.Position, Vector.Zero, nil)
                 end
 
                 if flags & TearFlags.TEAR_BURSTSPLIT > 0 then
