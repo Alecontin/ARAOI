@@ -46,15 +46,10 @@ function card:init(Mod)
             GreedSpawns(2)
             CloseDoors()
             sfx:Play(SoundEffect.SOUND_SUMMONSOUND)
-        elseif rng:RandomFloat() > 0.01 then
-            local room = game:GetRoom()
+        else
             for _ = 2, rng:RandomInt(2, 10) do
                 Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 1, 0, room:GetRandomPosition(0), Vector.Zero, player)
             end
-        else
-            Isaac.Spawn(EntityType.ENTITY_ULTRA_GREED, 0, 0, room:GetRandomPosition(0), Vector.Zero, player)
-            CloseDoors()
-            sfx:Play(SoundEffect.SOUND_SUMMONSOUND)
         end
     end, card.ID)
 
@@ -63,8 +58,7 @@ function card:init(Mod)
         EID:addCard(card.ID,
             "#{{Player14}} Spawns the Greed boss"..
             "#{{Player33}} Spawns Super Greed if Greed was already spawned"..
-            "#{{SecretRoom}} Spawns 2-10 secret room shopkeepers if Super Greed was already spawned"..
-            "#{{GreedMode}} 1% chance to spawn Ultra Greed instead"
+            "#{{SecretRoom}} Spawns 2-10 secret room shopkeepers if Super Greed was already spawned using"
         )
     end
 end
