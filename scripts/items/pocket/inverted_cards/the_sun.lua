@@ -47,7 +47,7 @@ function card:init(Mod)
         for _, any_player in ipairs(Helper.GetPlayersWithCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE)) do
             for _ = 1, any_player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BLACK_CANDLE) do
                 any_player:RemoveCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE)
-                Helper.SpawnCollectiblePool(ItemPoolType.POOL_SHOP, room:FindFreePickupSpawnPosition(any_player.Position, 50), Vector.Zero, any_player, true, true, rng)
+                Helper.SpawnCollectiblePool(ItemPoolType.POOL_SHOP, room:FindFreePickupSpawnPosition(any_player.Position, 50), Vector.Zero, any_player, true, rng)
             end
         end
 

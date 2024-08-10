@@ -69,7 +69,7 @@ function modded_item:init(Mod)
                 local position = room:GetCenterPos() - offset
 
                 -- Spawn the item from the pool, respecting Glitched Crown, T. Isaac, Isaac's Birthright and Binge Eater
-                local item = Helper.SpawnCollectiblePool(item_pool, Isaac.GetCollectibleSpawnPosition(position), Vector.Zero, nil, true, true,
+                local item = Helper.SpawnCollectiblePool(item_pool, Isaac.GetCollectibleSpawnPosition(position), Vector.Zero, nil, true,
                     PlayerManager.FirstCollectibleOwner(DUALITY_HALO):GetCollectibleRNG(DUALITY_HALO)
                 )
                 Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, item.Position, Vector.Zero, nil) -- Smoke effect!

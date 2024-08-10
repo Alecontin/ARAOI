@@ -631,21 +631,25 @@ end
 -- This works by first spawning a dummy pickup (5.42.0) and then using the Morph() function
 -- to change it into the desired collectible. If we were to first spawn the collectible then T. Isaac,
 -- Glitched Crown, etc. would be able to add an item to the cycle of the pedestal, which
--- would remove the item from the pool.
+-- would remove that item from the pool.
+--
+-- Basically, this function spawns the desired item, and **ONLY** the desired item.
 ---@param SubType CollectibleType
----@param Position Vector
----@param Velocity Vector
----@param Spawner Entity | nil
+---@param Position? Vector *Default: `Game():GetRoom():GetCenterPos()`*
+---@param Velocity? Vector *Default: `Vector.Zero`*
+---@param Spawner? Entity | nil *Default: `nil`*
 ---@param IgnoreModifiers? boolean *Default: `false`*
+---@param KeepPrice? boolean *Default: `false`*
+---@param KeepSeed? boolean *Default: `false`*
 ---@return EntityPickup
-function Helper.SpawnCollectible(SubType, Position, Velocity, Spawner, IgnoreModifiers)
+function Helper.SpawnCollectible(SubType, Position, Velocity, Spawner, IgnoreModifiers, KeepPrice, KeepSeed)
     local entity = Isaac.Spawn(
         EntityType.ENTITY_PICKUP,
         PickupVariant.PICKUP_POOP,
         PoopPickupSubType.POOP_SMALL,
-        Position,
-        Velocity,
-        Spawner
+        Position or game:GetRoom():GetCenterPos(),
+        Velocity or Vector.Zero,
+        Spawner or nil
     ):ToPickup()
 
     -- The sprite can be flipped so we are preventing that
@@ -655,8 +659,8 @@ function Helper.SpawnCollectible(SubType, Position, Velocity, Spawner, IgnoreMod
         EntityType.ENTITY_PICKUP,
         PickupVariant.PICKUP_COLLECTIBLE,
         SubType,
-        false,
-        false,
+        KeepPrice or false,
+        KeepSeed or false,
         IgnoreModifiers or false
     )
 
@@ -668,23 +672,24 @@ function Helper.SpawnCollectible(SubType, Position, Velocity, Spawner, IgnoreMod
     return entity
 end
 
--- This function spawns a collectible from the given pool, and will add item cycles respecting Glitched Crown and Binge Eater
+-- This function spawns a collectible from the given pool, and will add item cycles respecting Glitched Crown, Binge Eater, T. Isaac and Isaac's Birthright.
 ---@param ItemPool ItemPoolType
----@param Position Vector
----@param Velocity Vector
----@param Spawner Entity | nil
----@param IgnoreModifiers? boolean *Default: `false`*
+---@param Position? Vector *Default: `Game():GetRoom():GetCenterPos()`*
+---@param Velocity? Vector *Default: `Vector.Zero`*
+---@param Spawner? Entity | nil *Default: `nil`*
 ---@param Decrease? boolean *Default: `false`*
----@param Seed? RNG *Default: `Random()`*
+---@param Seed? RNG *Default: `math.random(10000000000)`*
 ---@param DefaultItem? integer *Default: `CollectibleType.COLLECTIBLE_BREAKFAST`*
 ---@return EntityPickup
-function Helper.SpawnCollectiblePool(ItemPool, Position, Velocity, Spawner, IgnoreModifiers, Decrease, Seed, DefaultItem)
-    local pool = Game():GetItemPool()
+function Helper.SpawnCollectiblePool(ItemPool, Position, Velocity, Spawner, Decrease, Seed, DefaultItem)
+    local pool = game:GetItemPool()
+    local config = Isaac.GetItemConfig()
+    local room = game:GetRoom()
 
     local numExtraItems = 0
 
     local max = 10000000000
-    
+
     local rng = RNG()
     if Seed then
         rng = Seed
@@ -703,10 +708,10 @@ function Helper.SpawnCollectiblePool(ItemPool, Position, Velocity, Spawner, Igno
 
     local entity = Helper.SpawnCollectible(
         pool:GetCollectible(ItemPool, Decrease, rng:RandomInt(max), DefaultItem),
-        Position,
-        Velocity,
-        Spawner,
-        IgnoreModifiers
+        Position or room:GetCenterPos(),
+        Velocity or Vector.Zero,
+        Spawner or nil,
+        true
     )
 
     for _ = 1, numExtraItems do
@@ -714,16 +719,14 @@ function Helper.SpawnCollectiblePool(ItemPool, Position, Velocity, Spawner, Igno
     end
 
     if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_BINGE_EATER) then
-        entity:AddCollectibleCycle(pool:GetCollectibleFromList({
-            CollectibleType.COLLECTIBLE_BREAKFAST,
-            CollectibleType.COLLECTIBLE_DESSERT,
-            CollectibleType.COLLECTIBLE_DINNER,
-            CollectibleType.COLLECTIBLE_LUNCH,
-            CollectibleType.COLLECTIBLE_MIDNIGHT_SNACK,
-            CollectibleType.COLLECTIBLE_ROTTEN_MEAT,
-            CollectibleType.COLLECTIBLE_SNACK,
-            CollectibleType.COLLECTIBLE_SUPPER
-        }, rng:RandomInt(max), DefaultItem, Decrease, false))
+        ---@diagnostic disable-next-line: param-type-mismatch
+        local item_config_items = config:GetTaggedItems(ItemConfig.TAG_FOOD)
+        local food_items = {}
+        for _, item in ipairs(item_config_items) do
+            table.insert(food_items, item.ID)
+        end
+        local food_item = pool:GetCollectibleFromList(food_items, rng:RandomInt(max), DefaultItem, Decrease, false)
+        entity:AddCollectibleCycle(food_item)
     end
 
     -- We ALWAYS return a pickup, but the code editor yells at me to check
