@@ -32,6 +32,7 @@ local KEY_BOH_LAST_SELECTION = "BagOfHoldingLastSelection"
 ---@param player EntityPlayer
 ---@param add? integer
 ---@param removeInstead? boolean
+---@return CollectibleType[]
 local function BagOfHoldingStoredItems(player, add, removeInstead)
     local data = SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {})
     if add then
@@ -62,6 +63,7 @@ local function BagOfHoldingCycleItem(player)
 end
 
 ---@param player EntityPlayer
+---@return integer
 local function BagOfHoldingGetSelectedItem(player)
     local slot = player:GetActiveItemSlot(bag_of_holding)
     local desc = player:GetActiveItemDesc(slot)
@@ -72,7 +74,7 @@ local function BagOfHoldingGetSelectedItem(player)
         desc.VarData = 0
     end
 
-    return stored_items[desc.VarData] or 0
+    return tonumber(stored_items[desc.VarData]) or 0
 end
 
 ---@param player EntityPlayer
@@ -153,8 +155,6 @@ function modded_item:init(Mod)
 
             local options_voided = {}
 
-            local charges = player:GetTotalActiveCharge(ActiveSlot.SLOT_PRIMARY)
-
             -- Check every entity in the room
             for _, entity in ipairs(Isaac.GetRoomEntities()) do
                 -- Is the entity a pickup
@@ -189,7 +189,6 @@ function modded_item:init(Mod)
 
                         -- If the item we are trying to absorb is another bag of holding, have a special interaction
                         if absorb_id == bag_of_holding then
-                            player:FlushQueueItem()
                             pickup:Remove()
                             player:RemoveCollectible(bag_of_holding)
                             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
@@ -198,26 +197,17 @@ function modded_item:init(Mod)
 
                         -- Otherwise, just absorb it
                         else
-                            -- Make the player collide with the collectible
-                            -- This makes the other options get deleted if there are any
-                            -- And also, forces the player to pick an item from the death certificate room
-                            player:ForceCollide(pickup, false)
+                            -- Act as if the player picked up the item as if it was an option between various items
+                            -- Thanks to Repentogon 1.0.11 😭
+                            pickup:TriggerTheresOptionsPickup()
 
-                            -- Replace the queued item with our item
-                            player:QueueItem(ItemConfig:GetCollectible(bag_of_holding))
-
-                            -- Flush the queue early
-                            player:FlushQueueItem()
-
-                            -- Remove the collectible from the pedestal, if there is any
+                            -- Remove the collectible from the pedestal, otherwise it would get "cloned"
                             pickup:TryRemoveCollectible()
 
                             -- Store the voided item
                             BagOfHoldingStoredItems(player, absorb_id)
                         end
                     end
-                    -- Setting the queue to our item with depleted charges
-                    player:QueueItem(ItemConfig:GetCollectible(bag_of_holding), charges - ItemConfig:GetCollectible(bag_of_holding).MaxCharges)
                 end
                 ::continue::
             end
@@ -240,16 +230,17 @@ function modded_item:init(Mod)
             end
 
             -- Use the active item as if it was owned by the player
-            player:UseActiveItem(selected, UseFlag.USE_OWNED | UseFlag.USE_ALLOWWISPSPAWN)
+            -- This for some reason does not spawn wisps, even after adding the corresponding flags
+            player:UseActiveItem(selected)
 
-            -- If we have book of virtues
+            -- If we have book of virtues, we artificially spawn wisps
             if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-                -- For some reason wisps don't get spawned, so we do that artificially
+                -- Spawn a wisp
                 player:AddWisp(selected, player.Position)
                 sfx:Play(SoundEffect.SOUND_CANDLE_LIGHT)
             end
 
-            -- Store the last item to use it for the new charges
+            -- Store the last item used to set the new charges
             BagOfHoldingLastItemUsed(player, selected)
 
             return false
