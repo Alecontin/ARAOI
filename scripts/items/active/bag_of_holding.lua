@@ -20,7 +20,10 @@ local SINGLE_USE_ITEMS = {
     CollectibleType.COLLECTIBLE_DAMOCLES,
     CollectibleType.COLLECTIBLE_DEATH_CERTIFICATE,
     CollectibleType.COLLECTIBLE_GENESIS,
-    CollectibleType.COLLECTIBLE_R_KEY
+    CollectibleType.COLLECTIBLE_R_KEY,
+
+    -- Exploitable items:
+    CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS
 }
 
 local RENDERING_ENABLED = true
@@ -255,8 +258,8 @@ function modded_item:init(Mod)
     -- CHARGING AND REMOVING ITEMS --
     ---------------------------------
 
-    ---@param collectibleType any
-    ---@param player any
+    ---@param collectibleType CollectibleType
+    ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_, collectibleType, player, _)
         if collectibleType ~= bag_of_holding then return end
 
@@ -265,8 +268,8 @@ function modded_item:init(Mod)
         return config.MaxCharges
     end)
 
-    ---@param collectibleType any
-    ---@param player any
+    ---@param collectibleType CollectibleType
+    ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, function (_, player, collectibleType)
         -- Don't do anything if we don't have our item equipped
         if player:GetActiveItem() ~= bag_of_holding then return end
