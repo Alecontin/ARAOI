@@ -100,7 +100,7 @@ function modded_item:init(Mod)
         if collectible_id ~= glass_die then return end
 
         -- Get the currently selected pool
-        local selected_pool = player:GetActiveItemDesc().VarData
+        local selected_pool = player:GetActiveItemDesc(slot).VarData
 
         -- The selected item is 0, which means we don't need to do anything
         if selected_pool == 0 then return end
@@ -150,8 +150,6 @@ function modded_item:init(Mod)
 
     ---@class EID
     if EID then
-        local d6 = CollectibleType.COLLECTIBLE_D6
-
         EID:addCollectible(glass_die,
             "#{{MirrorRoom}} Copies the current room's item pool on use"..
             "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
