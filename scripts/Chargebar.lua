@@ -1,3 +1,10 @@
+--[[
+
+    It seems like the game doesn't have an built-in chargebar function so I made my own
+    I know it's a bit messy but it's the only thing I could come up with
+
+--]]
+
 
 ---@class Chargebar
 local chargebar = {}
