@@ -41,6 +41,12 @@ function modded_item:init(Mod)
     local sfx = SFXManager()
 
 
+
+    --------------
+    -- ITEM USE --
+    --------------
+
+
     ---@param player EntityPlayer
     ---@param rng RNG
     Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
@@ -49,27 +55,53 @@ function modded_item:init(Mod)
         local desc = player:GetActiveItemDesc()
         local offset = 1
 
+        -- Is the item empty?
         if desc.VarData == 0 then
+            -- Get the room's pool and offset it
             local pool_id = room:GetItemPool(1)
             local offset_id = pool_id + offset
+
+            -- Set the item's var data to the room's pool
             desc.VarData = offset_id
+
+
+        -- The item has a pool stored
         else
+            -- Check all room entities
             for _, entity in ipairs(Isaac.GetRoomEntities()) do
+
+                -- Try to convert the entity into a pickup
                 local pickup = entity:ToPickup()
+
+                -- The entity was converted, the pickup is a collectible and it can be rerolled?
                 if pickup and Helper.IsCollectible(pickup) and pickup:CanReroll() then
 
+                    -- Get a list of collectibles from the stored pool
                     local collectibles = Helper.GetCollectibleCycle(desc.VarData - offset)
+
+                    -- For every item in the list
                     for i, collectible in ipairs(collectibles) do
+                        -- If it's the first item
                         if i == 1 then
+                            -- We morph the pickup, this makes it have only the first item
                             pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectible, true, false, true)
                         else
+                            -- Else, we add the item to the cycle
                             pickup:AddCollectibleCycle(collectible)
                         end
                     end
+
+                    -- The above workaround was made because if we were to just morph the item with ignoremodifiers set to false
+                    -- we would have 1 item from the selected pool and the rest, if we have items such as glitched croun, would
+                    -- be from the room's item pool, which is not how I wanted the item to work
                 end
             end
+
+            -- Remove the selected item pool
             desc.VarData = 0
         end
+
+        -- Play the item animation
         return true
     end, glass_die)
 
