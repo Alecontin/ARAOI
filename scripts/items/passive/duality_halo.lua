@@ -72,7 +72,6 @@ function modded_item:init(Mod)
                 local item = Helper.SpawnCollectiblePool(item_pool, Isaac.GetCollectibleSpawnPosition(position), Vector.Zero, nil, true,
                     PlayerManager.FirstCollectibleOwner(DUALITY_HALO):GetCollectibleRNG(DUALITY_HALO)
                 )
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, item.Position, Vector.Zero, nil) -- Smoke effect!
 
                 -- Make the devil deal item to cost hearts
                 if not isAngel then
@@ -129,7 +128,8 @@ function modded_item:init(Mod)
     ---@class EID
     if EID then
         EID:addCollectible(DUALITY_HALO,
-            "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a Deal item in the boss room using the Deal spawn chance"
+            "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a deal item in the boss room using the deal spawn chance"..
+            "#{{Collectible}} Taking an item spawned this way will not affect deal chance"
         )
     end
 end
