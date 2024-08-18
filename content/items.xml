@@ -10,7 +10,7 @@
   <!-- Defeat Delirium as Tainted Cain -->
   <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="2" devilprice="2" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
   <!-- Defeat Isaac, ???, Satan, and The Lamb as Tainted Lost -->
-  <active name="Glass Die" achievement="568" id="6" quality="4" maxcharges="4" devilprice="2" gfx="glass_die.png" description="You can see through it, don't break it!" tags="offensive nocantrip" />
+  <active name="Glass Die" achievement="568" id="6" quality="4" maxcharges="2" devilprice="2" gfx="glass_die.png" description="You can see through it, don't break it!" tags="offensive nocantrip" />
 
   <!-- Defeat Mega Satan as Tainted Samson -->
   <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
