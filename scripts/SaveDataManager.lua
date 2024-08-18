@@ -190,11 +190,12 @@ function save:init(Mod)
 
     local function onRewind(_, COMMAND)
         -- if COMMAND == "rewind" or COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+        if save.LAST_ROOM_RUN or save.LAST_ROOM_LEVEL or save.LAST_ROOM_ROOM or save.LAST_ROOM_TIMERS then
             save.RUN    = ShallowCopy(save.LAST_ROOM_RUN)
             save.LEVEL  = ShallowCopy(save.LAST_ROOM_LEVEL)
             save.ROOM   = ShallowCopy(save.LAST_ROOM_ROOM)
             save.TIMERS = ShallowCopy(save.LAST_ROOM_TIMERS)
-
+        end
             -- if COMMAND == "rewind" then return "" end
             -- if COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then return true end
         -- end
