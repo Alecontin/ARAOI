@@ -25,13 +25,8 @@ local SaveData = require("scripts.SaveDataManager")
 local Helper = include("scripts.Helper")
 
 local ETERNAL_DPLOPIA = Isaac.GetItemIdByName("Eternal Dplopia")
-local ItemConfig = Isaac.GetItemConfig()
 
 local CURSE_PEDESTALS_CALLBACK = "Eternal Dplopia Curse All Pedestals"
-
-local ItemTags = {
-    TAG_QUEST = 1 << 15
-}
 
 
 ---------------
@@ -55,8 +50,6 @@ end
 ---@param player EntityPlayer
 ---@return number
 local function getDeleteChance(player)
-    -- local item_count = Helper.getCollectibleCountCurated(player, nil, ItemTags.TAG_QUEST)
-
     local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE - player.Luck)
     chance = math.min(chance + pickupCount() * 5, 100)
     chance = chance / 100
@@ -194,7 +187,7 @@ function modded_item:init(Mod)
 
         -- Get the player's item list EXCLUDING quest items
         -- We shouldn't remove them since that's how it works in the vanilla game
-        local player_items = Helper.GetCollectibleListCurated(player, nil, ItemTags.TAG_QUEST)
+        local player_items = Helper.GetCollectibleListCurated(player, nil, ItemTag.TAG_QUEST)
 
         -- Get the rng for random numbers
         local rng = player:GetCollectibleRNG(ETERNAL_DPLOPIA)
