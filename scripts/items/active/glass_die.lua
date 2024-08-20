@@ -1,19 +1,3 @@
-----------------------------
--- START OF CONFIGURATION --
-----------------------------
-
-
--- Setting these values above 12 will cause the EID description to bug out, however, the item will still work as expected.
-local GLASS_DIE_CHARGE_EMPTY = 2 -- *Default: `2` — How many charges does it take to recharge an empty Glass Die.*
-local GLASS_DIE_CHARGE_POOL  = 6 -- *Default: `6` — How many charges does it take to recharge a Glass Die with a copied item pool.*
-
-
-
---------------------------
--- END OF CONFIGURATION --
---------------------------
-
-
 ---@class Helper
 local Helper = include("scripts.Helper")
 
@@ -79,8 +63,6 @@ function modded_item:init(Mod)
             local pool_id = room:GetItemPool(1)
             local offset_id = pool_id + offset
 
-            print("Item Pool is "..offset_id.." ("..pool_id.."), aka: "..tostring(PoolName[offset_id]))
-
             -- Set the item's var data to the room's pool
             desc.VarData = offset_id
 
@@ -123,27 +105,6 @@ function modded_item:init(Mod)
         -- Play the item animation
         return true
     end, glass_die)
-
-
-
-    -------------------------
-    -- SETTING THE CHARGES --
-    -------------------------
-
-
-    ---@param collectibleType CollectibleType
-    ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_, collectibleType, player, _)
-        if collectibleType ~= glass_die then return end
-
-        local desc = player:GetActiveItemDesc(player:GetActiveItemSlot(glass_die))
-
-        if desc.VarData == 0 then
-            return GLASS_DIE_CHARGE_EMPTY
-        else
-            return GLASS_DIE_CHARGE_POOL
-        end
-    end)
 
 
 
@@ -224,10 +185,7 @@ function modded_item:init(Mod)
     if EID then
         EID:addCollectible(glass_die,
             "#{{Mirror}} Copies the current room's item pool on use"..
-            "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"..
-            "#{{Battery}} Charge depends on item state:"..
-            "#{{Blank}} {{Battery}}{{"..GLASS_DIE_CHARGE_EMPTY.."}} charges empty"..
-            "#{{Blank}} {{Battery}}{{"..GLASS_DIE_CHARGE_POOL.."}} charges with a pool"
+            "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
         )
     end
 end
