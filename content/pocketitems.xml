@@ -21,7 +21,7 @@
     announcer="518" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="VII - Inverted Chariot" description="May your enemies stand in fear" hud="Inverted Chariot"
-    announcer="519" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="519" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="VIII - Inverted Justice" description="May it help bring you justice" hud="Inverted Justice"
     announcer="520" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
@@ -48,10 +48,10 @@
     announcer="527" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVI - Inverted Tower" description="Controlled demolition" hud="Inverted Tower"
-    announcer="528" announcerdelay="20" mimiccharge="3" pickup="8800" achievement="759807" />
+    announcer="528" announcerdelay="20" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVII - Inverted Stars" description="May you get something useful" hud="Inverted Stars"
-    announcer="529" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="529" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVIII - Inverted Moon" description="May you roll a good number" hud="Inverted Moon"
     announcer="530" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
@@ -59,7 +59,7 @@
     <card type="tarot_reverse" name="XIX - Inverted Sun" description="May the curse become a blessing" hud="Inverted Sun"
     announcer="531" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="XX - Inverted Judgement" description="Confess your sins in front of God" hud="Inverted Judgement"
+    <card type="tarot_reverse" name="XX - Inverted Judgement" description="Let God judge your sins" hud="Inverted Judgement"
     announcer="532" announcerdelay="30" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XXI - Inverted World" description="The world is a dark place" hud="Inverted World"
