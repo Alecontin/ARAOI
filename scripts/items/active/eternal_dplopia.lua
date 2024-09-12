@@ -6,11 +6,12 @@
 
 local ITEM_DELETE_CHANCE     = 25 -- *Default: `25` — This is the same chance as the `Eternal D6`.*
 local MIN_ITEM_DELETE_CHANCE = 20 -- *Default: `20` — Goes from 1/4 to 1/5 chance of deleting an item, scaling with luck.*
+local ITEM_DELETE_CHANCE_STEP = 5 -- *Default: `5`  — Added chance for an item to getting deleted after picking up a cursed item.*
+
+local LUCK_DECREASE_DELETION_CHANCE = 1 -- *Default: `1` — By how much should 1 luck decrease the chance of an item being deleted?*
 
 local MAX_WISPS = 2 -- *Default: `2` — Maximum wisps that the item can spawn. Max: `8`, but set it to `9` to avoid deleting existing wisps. — WARNING: Setting this to 0 will throw an error!*
 local WISP_DELETE_CHANCE = 35 -- *Default: `35` — The chance of a wisp being deleted instead of an item.*
-
-local SHOULD_ITEM_SPAWN_DISCHARGED = false -- *Default: `false` — Set this to `true` if you plan to start with the item, that way you'll have some items by the time you use it.*
 
 
 
@@ -40,18 +41,17 @@ local function cursed(collectible, set)
     return value
 end
 
----@param set_to? integer
-local function pickupCount(set_to)
-    local PickupCount = SaveData.LEVEL["CursedPickupCount"] or 0
-    SaveData.LEVEL["CursedPickupCount"] = set_to or PickupCount
+---@param set? integer
+local function pickupCount(set)
+    local PickupCount = SaveData:Key(SaveData.LEVEL, "CursedPickupCount", 0, set)
     return PickupCount
 end
 
 ---@param player EntityPlayer
 ---@return number
 local function getDeleteChance(player)
-    local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE - player.Luck)
-    chance = math.min(chance + pickupCount() * 5, 100)
+    local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE - player.Luck * LUCK_DECREASE_DELETION_CHANCE)
+    chance = math.min(chance + pickupCount() * ITEM_DELETE_CHANCE_STEP, 100)
     chance = chance / 100
 
     return chance
@@ -79,7 +79,7 @@ function modded_item:init(Mod)
     ---@param rng RNG
     ---@param player EntityPlayer
     ---@param useFlags UseFlag
-    local function onItemUsed(_, collectibleType, rng, player, useFlags)
+    local function onItemUsed(_, _, rng, player, useFlags)
         if useFlags & UseFlag.USE_CARBATTERY > 0 then return false end
 
         local carBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
@@ -176,13 +176,9 @@ function modded_item:init(Mod)
 
     ---@param collectibleType CollectibleType
     ---@param player EntityPlayer
-    local function onItemPickup(_, collectibleType, charge, firstTime, slot, data, player)
-        -- Check if we just picked up our item, if so, remove the charges
-        if collectibleType == ETERNAL_DPLOPIA and firstTime == true and SHOULD_ITEM_SPAWN_DISCHARGED then
-            return {collectibleType, 0, firstTime, slot, data}
-        end
+    local function onItemPickup(_, collectibleType, _, _, _, _, player)
 
-        -- Don't do anything if the item is cursed
+        -- Don't do anything if the item is not cursed
         if not cursed(collectibleType) then return end
 
         -- Get the player's item list EXCLUDING quest items
@@ -244,6 +240,7 @@ function modded_item:init(Mod)
             local pickup = entity:ToPickup()
             if not pickup then goto continue end
 
+            -- If the pickup is not a collectible, we skip it
             if pickup.Variant ~= PickupVariant.PICKUP_COLLECTIBLE then goto continue end
 
             -- Check if the item is cursed
@@ -288,9 +285,10 @@ function modded_item:init(Mod)
     if EID then
         local description = "Duplicates items and rerolls the duplicated ones"..
                             "#{{ArrowDown}} Adds a curse on the items"..
-                            "#{{BrimstoneCurse}} Picking up a cursed item has a "..ITEM_DELETE_CHANCE.."% chance of deleting one of your items and increases deletion chance by 5%"..
+                            "#{{BrimstoneCurse}} Picking up a cursed item has a "..ITEM_DELETE_CHANCE.."%"..
+                                "chance of deleting one of your items and increases deletion chance by "..ITEM_DELETE_CHANCE_STEP.."%"..
                             "#{{ArrowUp}} Delete chance resets each floor"..
-                            "#{{Luck}} 1% less chance per 1 luck, 20% minimum"..
+                            "#{{Luck}} "..LUCK_DECREASE_DELETION_CHANCE.."% less chance per 1 luck, 20% minimum"..
                             "#!!! Items will remain cursed for the duration of the run"
 
         EID:addCollectible(ETERNAL_DPLOPIA, description)
