@@ -28,6 +28,7 @@ local files = {
     active.."3d_glasses",
     active.."bag_of_holding",
     active.."glass_die",
+    active.."spellbook",
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",
