@@ -17,7 +17,7 @@ local RerollItems = {
 -- 3 = RIGHT
 -- 4 = DOWN
 local ManualSpellOverwrites = {
-    ["22441313"] = CollectibleType.COLLECTIBLE_DEATH_CERTIFICATE
+    -- ["22441313"] = CollectibleType.COLLECTIBLE_DEATH_CERTIFICATE
 }
 
 
