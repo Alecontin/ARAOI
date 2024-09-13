@@ -50,8 +50,8 @@ end
 ---@param player EntityPlayer
 ---@return number
 local function getDeleteChance(player)
-    local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE - player.Luck * LUCK_DECREASE_DELETION_CHANCE)
-    chance = math.min(chance + pickupCount() * ITEM_DELETE_CHANCE_STEP, 100)
+    local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE + pickupCount() * ITEM_DELETE_CHANCE_STEP - player.Luck * LUCK_DECREASE_DELETION_CHANCE)
+    chance = math.min(chance, 100)
     chance = chance / 100
 
     return chance
