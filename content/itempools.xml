@@ -100,4 +100,10 @@
     <Item Name="Glass Die" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
+  <Pool Name="greedSecret">
+    <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Bag of Holding" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Glass Die" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
 </ItemPools>
