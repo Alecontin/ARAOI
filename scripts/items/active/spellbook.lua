@@ -11,6 +11,15 @@ local RerollItems = {
     CollectibleType.COLLECTIBLE_DELIRIOUS
 }
 
+-- If you feel like an item should have a default spell that never changes, you can add it here
+-- 1 = LEFT
+-- 2 = UP
+-- 3 = RIGHT
+-- 4 = DOWN
+local ManualSpellOverwrites = {
+    ["22441313"] = CollectibleType.COLLECTIBLE_DEATH_CERTIFICATE
+}
+
 
 
 --------------------------
@@ -218,7 +227,7 @@ function modded_item:init(Mod)
                 -- Get a random item and it's configuration, then check again
                 -- The line below is here because my code editor screams at me otherwise
                 ---@diagnostic disable-next-line: undefined-field
-                spell_item = rng:RandomInt(ItemConfig:GetCollectibles().Size - 1)
+                spell_item = ManualSpellOverwrites[spell] or rng:RandomInt(ItemConfig:GetCollectibles().Size - 1)
                 config = ItemConfig:GetCollectible(spell_item)
             end
 
