@@ -24,7 +24,6 @@ local COIN_CHANCE_KEEPER = 5  -- *Default: `5` — Chance to spawn a coin on ene
 local Helper = include("scripts.Helper")
 
 local GAMBLING_CHIP = Isaac.GetItemIdByName("Gambling Chips")
-CollectibleType.COLLECTIBLE_GAMBLING_CHIP = GAMBLING_CHIP
 
 -- Some slots should not be available because it's not really a gamble if they reward you every time.
 -- Blood Donation Machines always reward you with coins, and the fortune from Fortune Teller Machines
