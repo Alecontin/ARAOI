@@ -113,6 +113,7 @@ local RENDERING_ENABLED = false
 ---@param Mod ModReference
 function modded_item:init(Mod)
     local game = Game()
+    local sfx = SFXManager()
     local ItemConfig = Isaac.GetItemConfig()
 
     -------------------
@@ -189,10 +190,15 @@ function modded_item:init(Mod)
 
     ---@param player EntityPlayer
     ---@param slot ActiveSlot
-    Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, _, slot)
+    Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
         -- This prevents us from entering the writing state from items such as Void
         -- If that were to happed, it would be a soft-lock
         if not player:HasCollectible(spellbook) then return end
+
+        -- Prevent the item from being used twice with car battery
+        -- The second use casts the spell, but there is no time to write one
+        -- so Car Battery makes the item useless
+        if useFlag & UseFlag.USE_CARBATTERY > 0 then return end
 
         -- Toggle the player's writing ability, which locks and unlocks shooting
         local writing = IsWritingSpell(player, not IsWritingSpell(player))
@@ -239,11 +245,19 @@ function modded_item:init(Mod)
             else -- If the item is not a passive item
                 -- Use it as normal
                 player:UseActiveItem(spell_item, UseFlag.USE_CUSTOMVARDATA, nil, 1)
+
+                -- If we have book of virtues, we artificially spawn wisps
+                if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+                    -- Spawn a wisp
+                    player:AddWisp(spell_item, player.Position)
+                    sfx:Play(SoundEffect.SOUND_CANDLE_LIGHT)
+                end
             end
 
-            -- Show the player what item was used by the spell
+            -- Show the player what item was used by the spell and play a sound
             game:GetHUD():ShowItemText(player, config)
             player:AnimateCollectible(spell_item)
+            sfx:Play(SoundEffect.SOUND_POWERUP1, 0.3, nil, nil, 2)
 
             -- Clear the spell
             WrittenSpell(player, "")
@@ -256,8 +270,9 @@ function modded_item:init(Mod)
             recharge()
 
 
-        -- We used the item to start writing a spell, show the item's use animation
+        -- We used the item to start writing a spell, show the item's use animation and play a sound
         else
+            sfx:Play(SoundEffect.SOUND_MENU_RIP, 3)
             return true
 
         end
@@ -305,21 +320,30 @@ function modded_item:init(Mod)
                 -- Render the book at the offset position
                 book_hud_sprite:Render(pos)
 
+                -- Defining a function to not have to copy-paste this 4 times
+                local function playInputSoundEffect()
+                    sfx:Play(SoundEffect.SOUND_POT_BREAK_2, 0.3, nil, nil, 3)
+                end
+
                 -- If the spell is less than 10 characters long, we can write to it
                 -- This is an arbitrary value good enough to generate a spell for every item
                 -- in the game while not going over the integer limit
                 if #spell < 10 then
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) then
                         WrittenSpell(player, WrittenSpell(player).."1")
+                        playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex) then
                         WrittenSpell(player, WrittenSpell(player).."2")
+                        playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then
                         WrittenSpell(player, WrittenSpell(player).."3")
+                        playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) then
                         WrittenSpell(player, WrittenSpell(player).."4")
+                        playInputSoundEffect()
                     end
                 end
             end

@@ -1,4 +1,4 @@
-<!-- LAST ID USED: 6 -->
+<!-- LAST ID USED: 7 -->
 
 <items gfxroot="gfx/items/" version="1">
   <!-- Complete The Corpse with Blue Baby -->
@@ -12,7 +12,7 @@
   <!-- Defeat Isaac, ???, Satan, and The Lamb as Tainted Lost -->
   <active name="Glass Die" achievement="568" id="6" quality="4" maxcharges="4" devilprice="2" gfx="glass_die.png" description="You can see through it, don't break it!" tags="offensive nocantrip" />
   <!-- Earn all Hard mode Completion Marks for all characters, including tainted ones -->
-  <active name="Spellbook" achievement="636" quality="4" maxcharges="3" devilprice="2" gfx="spellbook.png" description="It's like magic!" tags="offensive nocantrip book" />
+  <active name="Spellbook" achievement="636" id="7" quality="4" maxcharges="3" devilprice="2" gfx="spellbook.png" description="It's like magic!" tags="offensive nocantrip book" />
 
   <!-- Defeat Mega Satan as Tainted Samson -->
   <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
