@@ -316,6 +316,7 @@ function modded_item:init(Mod)
 
                 -- Offset the position so the book get's rendered on top of the player
                 pos.Y = pos.Y - 50
+                pos.X = pos.X + 0.5
 
                 -- Render the book at the offset position
                 book_hud_sprite:Render(pos)
@@ -358,8 +359,8 @@ function modded_item:init(Mod)
 
                 -- Offset the arrows so they end up centered
                 -- I honestly have no idea how I ended up with this formula, it was a lot of trial and error
-                pos.X = pos.X - 5 - (string.len(spell)/2-i) * 10
-                pos.Y = pos.Y - 50
+                pos.X = pos.X - 5.5 - (string.len(spell)/2-i) * 12
+                pos.Y = pos.Y - 51
 
                 -- Get the arrow for that character and render it to the offset position
                 arrows[tonumber(char)]:Render(pos)
