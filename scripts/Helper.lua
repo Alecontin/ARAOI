@@ -423,6 +423,17 @@ function Helper.KeysAndValues(t)
     return keys, values
 end
 
+---@param t table
+---@return table
+function Helper.ShallowCopy(t)
+    local new = {}
+
+    for i,v in pairs(t) do
+        new[i] = v
+    end
+
+    return new
+end
 
 ---@param t table
 ---@param weights? table
@@ -910,6 +921,10 @@ end
 ---@param player? EntityPlayer Default: Isaac.GetPlayer(0) — The `EntityPlayer` to get the ID for
 ---@param collectible? CollectibleType Default: 1 — Change this to another collectible if you want to get the ID of sub-players like Esau
 function Helper.GetPlayerId(player, collectible)
+    if type(player) == "string" then
+        return player
+    end
+
     player = player or Isaac.GetPlayer()
     return tostring(player:GetCollectibleRNG(collectible or 1):GetSeed())
 end
