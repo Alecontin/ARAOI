@@ -1,0 +1,7 @@
+<sounds root="sfx/">
+    <sound name="wing_flaps">
+        <sample weight="1" path="wing_flaps/wing_flaps_1.wav" />
+        <sample weight="1" path="wing_flaps/wing_flaps_2.wav" />
+        <sample weight="1" path="wing_flaps/wing_flaps_3.wav" />
+    </sound>
+</sounds>

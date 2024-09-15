@@ -1,4 +1,4 @@
-<!-- LAST ID USED: 7 -->
+<!-- LAST ID USED: 8 -->
 
 <items gfxroot="gfx/items/" version="1">
   <!-- Complete The Corpse with Blue Baby -->
@@ -26,6 +26,8 @@
   <passive name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
   <!-- Beat the "Cursed!" challenge -->
   <passive name="Voodoo Body" achievement="98" quality="3" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
+  <!-- Donate 879 Coins to the Greed Donation Machine -->
+  <passive name="Vampire Cloak" achievement="250" id="8" quality="4" gfx="vampire_cloak.png" devilprice="2" description="And then he turned himself into a bat!" tags="offensive summonable devil"/>
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
