@@ -103,11 +103,6 @@ function modded_item:init(Mod)
             -- Set the item's ID as cursed
             cursed(collectible.SubType, true)
 
-            -- Schedule setting all pedestals in the room to be cursed
-            -- We need to schedule it so it can curse items spawned by T. Isaac and Glitched Crown
-            -- If you later naturally get a cursed item in the pedestal cycle, only that item will get cursed
-            SaveData:CreateTimer(CURSE_PEDESTALS_CALLBACK, 1, true)
-
             -- Spawn a new item, or multiple with car battery
             local itemsToSpawn = 1
             if carBattery then itemsToSpawn = itemsToSpawn + 1 end
@@ -144,6 +139,11 @@ function modded_item:init(Mod)
             end
             ::next_entity::
         end
+
+        -- Schedule setting all pedestals in the room to be cursed
+        -- We need to schedule it so it can curse items spawned by T. Isaac and Glitched Crown
+        -- If you later naturally get a cursed item in the pedestal cycle, only that item will get cursed
+        SaveData:CreateTimer(CURSE_PEDESTALS_CALLBACK, 1)
 
         ---------------------
         -- BOOK OF VIRTUES --
