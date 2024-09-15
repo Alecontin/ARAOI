@@ -66,19 +66,9 @@ Timer.CALLBACK = ""
 ---@type integer
 Timer.FRAMES = 0
 
+---@type table?
+Timer.PARAMS = {}
 
--- Returns a shallow copy of the provided table
----@param t table
----@return table
-local function ShallowCopy(t)
-    local new = {}
-
-    for i,v in pairs(t) do
-        new[i] = v
-    end
-
-    return new
-end
 
 
 ------------------------------------
@@ -138,6 +128,7 @@ function save:init(Mod)
                 save.RUN        = data[2] or {}
                 save.LEVEL      = data[3] or {}
                 save.ROOM       = data[4] or {}
+                save.TIMERS     = data[5] or {}
             end
         end
     end
@@ -191,10 +182,10 @@ function save:init(Mod)
     local function onRewind(_, COMMAND)
         -- if COMMAND == "rewind" or COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
         if save.LAST_ROOM_RUN or save.LAST_ROOM_LEVEL or save.LAST_ROOM_ROOM or save.LAST_ROOM_TIMERS then
-            save.RUN    = ShallowCopy(save.LAST_ROOM_RUN)
-            save.LEVEL  = ShallowCopy(save.LAST_ROOM_LEVEL)
-            save.ROOM   = ShallowCopy(save.LAST_ROOM_ROOM)
-            save.TIMERS = ShallowCopy(save.LAST_ROOM_TIMERS)
+            save.RUN    = Helper.ShallowCopy(save.LAST_ROOM_RUN)
+            save.LEVEL  = Helper.ShallowCopy(save.LAST_ROOM_LEVEL)
+            save.ROOM   = Helper.ShallowCopy(save.LAST_ROOM_ROOM)
+            save.TIMERS = Helper.ShallowCopy(save.LAST_ROOM_TIMERS)
         end
             -- if COMMAND == "rewind" then return "" end
             -- if COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then return true end
@@ -206,10 +197,10 @@ function save:init(Mod)
     local function roomChangedStore(_)
         if game:GetFrameCount() <= 1 then return end
 
-        save.LAST_ROOM_RUN    = ShallowCopy(save.RUN)
-        save.LAST_ROOM_LEVEL  = ShallowCopy(save.LEVEL)
-        save.LAST_ROOM_ROOM   = ShallowCopy(save.ROOM)
-        save.LAST_ROOM_TIMERS = ShallowCopy(save.TIMERS)
+        save.LAST_ROOM_RUN    = Helper.ShallowCopy(save.RUN)
+        save.LAST_ROOM_LEVEL  = Helper.ShallowCopy(save.LEVEL)
+        save.LAST_ROOM_ROOM   = Helper.ShallowCopy(save.ROOM)
+        save.LAST_ROOM_TIMERS = Helper.ShallowCopy(save.TIMERS)
     end
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, roomChangedStore)
 
@@ -221,7 +212,11 @@ function save:init(Mod)
     local function timerUpdate()
         for i, t in ipairs(save.TIMERS) do
             if t.FRAMES <= 0 then
-                Isaac.RunCallback(t.CALLBACK)
+                if t.PARAMS then
+                    Isaac.RunCallback(t.CALLBACK, table.unpack(t.PARAMS))
+                else
+                    Isaac.RunCallback(t.CALLBACK)
+                end
                 table.remove(save.TIMERS, i)
             else
                 t.FRAMES = t.FRAMES - 1
@@ -230,43 +225,32 @@ function save:init(Mod)
     end
     Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, timerUpdate)
 
-    -- Creates a timer that will run the callback in the amount of defined seconds or update frames
+    -- Creates a timer that will run the callback in the amount of defined seconds
     ---- "But couldn't I just use Isaac.CreateTimer() instead?"
     --
     -- Well, yes, but this persists across saving and loading.
-    --
-    -- That's also why you can't pass callback arguments, since we can't just store userdata for later use
     ---@param callbackID string -- The ID of the callback to be ran
     ---@param time number -- Time, in seconds, after which the callback will run
-    ---@param inFrames? boolean -- Default: `false` — Specifies that the callback time should be in update frames instead of seconds
-    --```
-    -- ---@class SaveDataManager
-    -- local SaveData = require("SaveDataManager")
+    ---@param args? table -- List of parameters to pass to the callback
+    function save:CreateTimer(callbackID, time, args)
+        self:CreateTimerInFrames(callbackID, time * 30, args)
+    end
+
+    -- Creates a timer that will run the callback in the amount of defined update frames
+    ---- "But couldn't I just use Isaac.CreateTimer() instead?"
     --
-    -- Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function ()
-    --     -- Since time is in update frames it will kill the player in 2 seconds
-    --     SaveData:CreateTimer("Kill Player", 60, true)
-    --
-    --     -- Do not add the last argument to make the time be in seconds
-    --     -- (will be converted to update frames automatically)
-    --     SaveData:CreateTimer("Kill Player", 2)
-    -- end, CollectibleType.COLLECTIBLE_D6)
-    --
-    -- -- Create a custom callback like so
-    -- Mod:AddCallback("Kill Player", function (_)
-    --     Isaac.GetPlayer():Kill()
-    -- end)
-    --```
-    function save:CreateTimer(callbackID, time, inFrames)
+    -- Well, yes, but this persists across saving and loading.
+    ---@param callbackID string -- The ID of the callback to be ran
+    ---@param time number -- Time, in seconds, after which the callback will run
+    ---@param args? table -- List of parameters to pass to the callback
+    function save:CreateTimerInFrames(callbackID, time, args)
         local timer = Timer
 
         timer.CALLBACK = callbackID
 
-        if not inFrames then
-            timer.FRAMES = time * 30
-        else
-            timer.FRAMES = time
-        end
+        timer.FRAMES = time
+
+        timer.PARAMS = args
 
         table.insert(save.TIMERS, timer)
     end
@@ -311,9 +295,7 @@ function save:init(Mod)
         end
     end
 
-    if game:GetFrameCount() > 1 then
-        loadSaveData(true)
-    end
+    loadSaveData(true)
 end
 
 return save
