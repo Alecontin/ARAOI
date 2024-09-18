@@ -1,8 +1,29 @@
----@class Helper
-local Helper = include("scripts.Helper")
+-----------------------------
+-- NO CONFIG FOR THIS ITEM --
+-----------------------------
+
+
+
+
+
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
+
+
+
+---------------
+-- CONSTANTS --
+---------------
+
+local BAG_OF_HOLDING = Isaac.GetItemIdByName("Bag of Holding")
+
+local BAG_OF_HOLDING_SPRITE = Sprite("gfx/ui/hud_bag_of_holding.anm2")
+BAG_OF_HOLDING_SPRITE:SetOverlayRenderPriority(true)
+BAG_OF_HOLDING_SPRITE:SetAnimation(BAG_OF_HOLDING_SPRITE:GetDefaultAnimationName())
+BAG_OF_HOLDING_SPRITE:SetFrame(1)
 
 -- Single use items. Modded items do not need to be added as they trigger the RemoveCollectible function,
 -- which will be detected automatically
@@ -26,21 +47,21 @@ local SINGLE_USE_ITEMS = {
     CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS
 }
 
-local RENDERING_ENABLED = true
 
-local bag_of_holding = Isaac.GetItemIdByName("Bag of Holding")
-local KEY_BOH_RENDER_SPRITE = "BagOfHoldingSpriteHUD"
-local KEY_BOH_LAST_SELECTION = "BagOfHoldingLastSelection"
+
+---------------
+-- FUNCTIONS --
+---------------
 
 ---@param player EntityPlayer
 ---@param add? integer
 ---@param removeInstead? boolean
 ---@return CollectibleType[]
-local function BagOfHoldingStoredItems(player, add, removeInstead)
-    local data = SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {})
+local function bagOfHoldingStoredItems(player, add, removeInstead)
+    local data = SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, helper.player.GetID(player), {})
     if add then
         if removeInstead == true then
-            local index = Helper.FindFirstInstanceInTable(add, data)
+            local index = helper.table.FindFirstInstanceInTable(add, data)
             if index > 0 then
                 table.remove(data, index)
             end
@@ -48,17 +69,17 @@ local function BagOfHoldingStoredItems(player, add, removeInstead)
             table.insert(data, add)
         end
 
-        SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, Helper.GetPlayerId(player), {}, data)
+        SaveData:Data(SaveData.RUN, "BagOfHoldingStoredItems", {}, helper.player.GetID(player), {}, data)
     end
     return data
 end
 
 ---@param player EntityPlayer
-local function BagOfHoldingCycleItem(player)
-    local slot = player:GetActiveItemSlot(bag_of_holding)
+local function bagOfHoldingCycleItem(player)
+    local slot = player:GetActiveItemSlot(BAG_OF_HOLDING)
     local desc = player:GetActiveItemDesc(slot)
 
-    local stored_items = BagOfHoldingStoredItems(player)
+    local stored_items = bagOfHoldingStoredItems(player)
 
     desc.VarData = (desc.VarData + 1) % (#stored_items + 1)
 
@@ -67,11 +88,11 @@ end
 
 ---@param player EntityPlayer
 ---@return integer
-local function BagOfHoldingGetSelectedItem(player)
-    local slot = player:GetActiveItemSlot(bag_of_holding)
+local function bagOfHoldingGetSelectedItem(player)
+    local slot = player:GetActiveItemSlot(BAG_OF_HOLDING)
     local desc = player:GetActiveItemDesc(slot)
 
-    local stored_items = BagOfHoldingStoredItems(player)
+    local stored_items = bagOfHoldingStoredItems(player)
 
     if stored_items[desc.VarData] == nil then
         desc.VarData = 0
@@ -82,9 +103,14 @@ end
 
 ---@param player EntityPlayer
 ---@param set? number
-local function BagOfHoldingLastItemUsed(player, set)
-    return SaveData:Data(SaveData.RUN, "BagOfHoldingLastItemUse", {}, Helper.GetPlayerId(player), bag_of_holding, set)
+local function bagOfHoldingLastItemUsed(player, set)
+    return SaveData:Data(SaveData.RUN, "BagOfHoldingLastItemUse", {}, helper.player.GetID(player), BAG_OF_HOLDING, set)
 end
+
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -92,8 +118,7 @@ local modded_item = {}
 function modded_item:init(Mod)
     local game = Game()
     local ItemConfig = Isaac.GetItemConfig()
-    local sfx = SFXManager()
-
+    local SFX = SFXManager()
 
 
     -----------------
@@ -113,12 +138,12 @@ function modded_item:init(Mod)
         if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_DROP then return end
 
         -- Only cycle if the player is holding the bag of crafting
-        if (player:GetActiveItem() == bag_of_holding or player:GetActiveItem(ActiveSlot.SLOT_POCKET) == bag_of_holding)
+        if (player:GetActiveItem() == BAG_OF_HOLDING or player:GetActiveItem(ActiveSlot.SLOT_POCKET) == BAG_OF_HOLDING)
         -- And if the player is pressing the drop key
         and Input.IsActionTriggered(buttonAction, player.ControllerIndex) then
 
             -- Cycle the object and get the current cycle index
-            local cycle = BagOfHoldingCycleItem(player)
+            local cycle = bagOfHoldingCycleItem(player)
 
             -- If we returned to the start, do nothing
             -- We do this to trigger schoolbag and be able to change the selected card
@@ -136,7 +161,6 @@ function modded_item:init(Mod)
     end)
 
 
-
     --------------
     -- ITEM USE --
     --------------
@@ -149,12 +173,12 @@ function modded_item:init(Mod)
         if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
         -- Check if we have an item selected
-        local selected = BagOfHoldingGetSelectedItem(player)
+        local selected = bagOfHoldingGetSelectedItem(player)
 
         -- We don't have an item selected
         if selected == 0 then
             -- Make the last item used be our item
-            BagOfHoldingLastItemUsed(player, bag_of_holding)
+            bagOfHoldingLastItemUsed(player, BAG_OF_HOLDING)
 
             local options_voided = {}
 
@@ -167,7 +191,7 @@ function modded_item:init(Mod)
                 if pickup and pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE and pickup.SubType ~= 0 then
 
                     -- Check if we already voided an item from this option index, if so, we delete it
-                    if Helper.IsValueInTable(pickup.OptionsPickupIndex, options_voided) then
+                    if helper.table.IsValueInTable(pickup.OptionsPickupIndex, options_voided) then
                         Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, pickup.Position, Vector.Zero, nil)
                         pickup:Remove()
                         goto continue
@@ -191,9 +215,9 @@ function modded_item:init(Mod)
                         end
 
                         -- If the item we are trying to absorb is another bag of holding, have a special interaction
-                        if absorb_id == bag_of_holding then
+                        if absorb_id == BAG_OF_HOLDING then
                             pickup:Remove()
-                            player:RemoveCollectible(bag_of_holding)
+                            player:RemoveCollectible(BAG_OF_HOLDING)
                             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
 
                             return true
@@ -208,7 +232,7 @@ function modded_item:init(Mod)
                             pickup:TryRemoveCollectible()
 
                             -- Store the voided item
-                            BagOfHoldingStoredItems(player, absorb_id)
+                            bagOfHoldingStoredItems(player, absorb_id)
                         end
                     end
                 end
@@ -221,7 +245,7 @@ function modded_item:init(Mod)
         else
 
             -- Is it in the list of single use items and our active item isn't being mimicked?
-            if Helper.IsValueInTable(selected, SINGLE_USE_ITEMS) and useFlags & UseFlag.USE_MIMIC == 0 then
+            if helper.table.IsValueInTable(selected, SINGLE_USE_ITEMS) and useFlags & UseFlag.USE_MIMIC == 0 then
                 -- Is the selected item Mama Mega and do we have gold bombs?
                 if selected == CollectibleType.COLLECTIBLE_MAMA_MEGA and player:HasGoldenBomb() then
                     -- Do nothing
@@ -240,18 +264,17 @@ function modded_item:init(Mod)
             if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
                 -- Spawn a wisp
                 player:AddWisp(selected, player.Position)
-                sfx:Play(SoundEffect.SOUND_CANDLE_LIGHT)
+                SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
             end
 
             -- Store the last item used to set the new charges
-            BagOfHoldingLastItemUsed(player, selected)
+            bagOfHoldingLastItemUsed(player, selected)
 
             return false
         end
 
         return true
-    end, bag_of_holding)
-
+    end, BAG_OF_HOLDING)
 
 
     ---------------------------------
@@ -261,10 +284,10 @@ function modded_item:init(Mod)
     ---@param collectibleType CollectibleType
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_, collectibleType, player, _)
-        if collectibleType ~= bag_of_holding then return end
+        if collectibleType ~= BAG_OF_HOLDING then return end
 
         -- Get and return the last item's max charge
-        local config = ItemConfig:GetCollectible(BagOfHoldingLastItemUsed(player))
+        local config = ItemConfig:GetCollectible(bagOfHoldingLastItemUsed(player))
         return config.MaxCharges
     end)
 
@@ -272,34 +295,26 @@ function modded_item:init(Mod)
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, function (_, player, collectibleType)
         -- Don't do anything if we don't have our item equipped
-        if player:GetActiveItem() ~= bag_of_holding then return end
+        if player:GetActiveItem() ~= BAG_OF_HOLDING then return end
 
         -- If the player has the item in their inventory, don't trigger the removal from our item
         if player:HasCollectible(collectibleType) then return end
 
         -- Get all the stored items
-        local stored_items = BagOfHoldingStoredItems(player)
+        local stored_items = bagOfHoldingStoredItems(player)
 
         -- Check if the deleted item is among the stored items
-        if Helper.IsValueInTable(collectibleType, stored_items) then
+        if helper.table.IsValueInTable(collectibleType, stored_items) then
 
             -- Remove the stored item
-            BagOfHoldingStoredItems(player, collectibleType, true)
+            bagOfHoldingStoredItems(player, collectibleType, true)
         end
     end)
-
 
 
     ---------------------------
     -- RENDERING OF THE ITEM --
     ---------------------------
-
-
-    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
-        if not RENDERING_ENABLED then
-            RENDERING_ENABLED = true
-        end
-    end)
 
     ---@param player EntityPlayer
     ---@param slot ActiveSlot
@@ -307,70 +322,46 @@ function modded_item:init(Mod)
     ---@param alpha number
     ---@param scale number
     Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)-- Do not render if the game JUST started
-        -- Getting the data also sets it, so we make sure we loaded it first
-        if not RENDERING_ENABLED then return end
-
         -- Don't render if the item is not ours
         local collectible_id = player:GetActiveItem(slot)
-        if collectible_id ~= bag_of_holding then return end
+        if collectible_id ~= BAG_OF_HOLDING then return end
 
         -- Get the currently selected item
-        local selected_item = BagOfHoldingGetSelectedItem(player)
+        local selected_item = bagOfHoldingGetSelectedItem(player)
 
         -- The selected item is 0, which means we don't need to do anything
         if selected_item == 0 then return end
 
-        -- Get a reference to the data
-        local data = player:GetData()
-
-        -- Keeping track of the render and the selected item
-        -- That way we don't have to reload the sprite every render
-        local hud_boh = data[KEY_BOH_RENDER_SPRITE]
-        local last_boh_selection = data[KEY_BOH_LAST_SELECTION]
-
-        -- First time rendering so we create the sprite
-        if hud_boh == nil then
-            hud_boh = Sprite("gfx/ui/hud_bag_of_holding.anm2", true)
-
-            -- Make a reference to the sprite
-            data[KEY_BOH_RENDER_SPRITE] = hud_boh
-
-            -- Set some stuff to the defaults because for some reason the game doesn't do that
-            hud_boh:SetOverlayRenderPriority(true)
-            hud_boh:SetAnimation(hud_boh:GetDefaultAnimationName())
-            hud_boh:SetFrame(1)
-        end
-
         -- Setting some render options to be the same as what the game wants
-        hud_boh.Scale = Vector(scale, scale)
-        hud_boh.Color.A = alpha
+        BAG_OF_HOLDING_SPRITE.Scale = Vector(scale, scale)
+        BAG_OF_HOLDING_SPRITE.Color.A = alpha
 
-        -- New item was selected
-        if last_boh_selection ~= selected_item then
+        -- Get the config of the newly selected item
+        local selected_config = ItemConfig:GetCollectible(selected_item)
 
-            -- Get the config of the newly selected item
-            local selected_config = ItemConfig:GetCollectible(selected_item)
-
-            -- Replace the spritesheet and load the graphics
-            hud_boh:ReplaceSpritesheet(1, selected_config.GfxFileName)
-            hud_boh:LoadGraphics()
-
-            -- Store the selection
-            player:GetData()[KEY_BOH_LAST_SELECTION] = selected_item
-        end
+        -- Replace the spritesheet and load the graphics
+        BAG_OF_HOLDING_SPRITE:ReplaceSpritesheet(1, selected_config.GfxFileName)
+        BAG_OF_HOLDING_SPRITE:LoadGraphics()
 
         -- Render the sprite to the screen
-        hud_boh:Render(offset)
+        BAG_OF_HOLDING_SPRITE:Render(offset)
     end)
 
-    ---@class EID
+
+    ----------------------
+    -- ITEM DESCRIPTION --
+    ----------------------
+
+    ---@type EID
     if EID then
-        EID:addCollectible(bag_of_holding,
+        EID:addCollectible(BAG_OF_HOLDING,
             "#{{Collectible"..CollectibleType.COLLECTIBLE_VOID.."}} Absorbs Active Items that don't have a special charge"..
             "#{{Collectible"..CollectibleType.COLLECTIBLE_RESTOCK.."}} Isaac can cycle between absorbed items with the drop button ({{ButtonRT}})"..
             "# Using Bag of Holding while an item is selected will use that item instead"..
             "#{{Battery}} Charge time varies depending on the last item used and updates with every use"
         )
+
+        helper.eid.BookOfVirtuesSynergy("Bag Of Holding Book Of Virtues", BAG_OF_HOLDING, "Spawn a wisp as if the selected item was used")
     end
 end
 

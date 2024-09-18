@@ -1,17 +1,38 @@
----@class Helper
-local Helper = include("scripts.Helper")
+-----------------------------
+-- NO CONFIG FOR THIS ITEM --
+-----------------------------
+
+
+
+
+
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
-local vampire_cloak = Isaac.GetItemIdByName("Vampire Cloak")
 
-local bat_particle_id = Isaac.GetEntityVariantByName("Bat Particle")
+---------------
+-- CONSTANTS --
+---------------
 
-local wing_flaps = Isaac.GetSoundIdByName("wing_flaps")
+local VAMPIRE_CLOAK = Isaac.GetItemIdByName("Vampire Cloak")
+local BAT_PARTICLE_ID = Isaac.GetEntityVariantByName("Bat Particle")
+local WING_FLAPS = Isaac.GetSoundIdByName("wing_flaps")
+
+
+---------------
+-- VARIABLES --
+---------------
 
 ---@type EntityEffect[]
 local Bats = {}
+
+
+---------------
+-- FUNCTIONS --
+---------------
 
 ---@param player EntityPlayer
 ---@param amount integer
@@ -19,7 +40,7 @@ local Bats = {}
 local function addBats(player, amount, offset)
     for _ = 1, amount do
         local bat = Isaac.Spawn(
-            1000, bat_particle_id, 0,
+            1000, BAT_PARTICLE_ID, 0,
             player.Position + Vector(math.random(-offset, offset), math.random(-offset, offset)),
             Vector.Zero, player
         ):ToEffect()
@@ -36,23 +57,28 @@ local CloakInvincibility = {}
 ---@param player EntityPlayer
 ---@param set? boolean
 local function playerHasInvincibility(player, set)
-    return SaveData:Key(CloakInvincibility, Helper.GetPlayerId(player), false, set)
+    return SaveData:Key(CloakInvincibility, helper.player.GetID(player), false, set)
 end
 
 ---@param player EntityPlayer
 ---@param set? boolean
 local function playerHasVampireCloakCharge(player, set)
-    if not player:HasCollectible(vampire_cloak) then return false end
+    if not player:HasCollectible(VAMPIRE_CLOAK) then return false end
 
-    return SaveData:Data(SaveData.RUN, "Vampire Cloak Charge", {}, Helper.GetPlayerId(player), true, set)
+    return SaveData:Data(SaveData.RUN, "Vampire Cloak Charge", {}, helper.player.GetID(player), true, set)
 end
 
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
 ---@param Mod ModReference
 function modded_item:init(Mod)
-    local sfx = SFXManager()
+    local SFX = SFXManager()
+
 
     --------------------
     -- DAMAGE BLOCKER --
@@ -81,8 +107,8 @@ function modded_item:init(Mod)
         -- Otherwise:
 
         -- Play some sounds for feedback
-        sfx:Play(SoundEffect.SOUND_BLACK_POOF, 1, nil, nil, 2)
-        sfx:Play(wing_flaps, 5, 0)
+        SFX:Play(SoundEffect.SOUND_BLACK_POOF, 1, nil, nil, 2)
+        SFX:Play(WING_FLAPS, 5, 0)
 
         -- Add some bat particles
         addBats(player, 20, 20)
@@ -95,7 +121,7 @@ function modded_item:init(Mod)
         playerHasInvincibility(player, true)
 
         -- Create a timer that will later revoke the invincibility
-        SaveData:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, {Helper.GetPlayerId(player)})
+        SaveData:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, {helper.player.GetID(player)})
 
         -- This will cause the player to not take damage
         return false
@@ -104,7 +130,6 @@ function modded_item:init(Mod)
     Mod:AddCallback("Remove Vampire Cloak Invincibility", function (_, playerID)
         playerHasInvincibility(playerID, false)
     end)
-
 
 
     -----------------------
@@ -120,7 +145,7 @@ function modded_item:init(Mod)
         -- the subtype was one of the red heart types,
         -- and our item is discrarged?
         local pickup = collider:ToPickup()
-        if player:HasCollectible(vampire_cloak)
+        if player:HasCollectible(VAMPIRE_CLOAK)
         and pickup
         and pickup.Variant == PickupVariant.PICKUP_HEART
         and (pickup.SubType == HeartSubType.HEART_FULL or pickup.SubType == HeartSubType.HEART_HALF or pickup.SubType == HeartSubType.HEART_DOUBLEPACK)
@@ -138,7 +163,7 @@ function modded_item:init(Mod)
             addBats(player, 1, 0)
 
             -- Play a sound for audio feedback
-            sfx:Play(SoundEffect.SOUND_VAMP_GULP)
+            SFX:Play(SoundEffect.SOUND_VAMP_GULP)
 
             -- End the execution here, as the rest is only for enemies
             return
@@ -151,7 +176,6 @@ function modded_item:init(Mod)
             return true
         end
     end)
-
 
 
     -----------------
@@ -239,7 +263,7 @@ function modded_item:init(Mod)
         Bats = {}
 
         -- For each player with our item
-        for _, player in ipairs(Helper.GetPlayersWithCollectible(vampire_cloak)) do
+        for _, player in ipairs(helper.player.GetPlayersWithCollectible(VAMPIRE_CLOAK)) do
             -- If the player has a charge
             if playerHasVampireCloakCharge(player) then
                 -- Spawn a bat as an indicator
@@ -249,14 +273,13 @@ function modded_item:init(Mod)
     end)
 
 
-
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
 
     ---@type EID
     if EID then
-        EID:addCollectible(vampire_cloak, 
+        EID:addCollectible(VAMPIRE_CLOAK, 
             "# Negates the first hit taken once per room and will ignore enemy collision"..
             "#{{Heart}} Requires Red Heart pickups to recharge"..
             "#{{Collectible"..(CollectibleType.COLLECTIBLE_HOLY_MANTLE).."}} Holy Mantle will get used first"

@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
@@ -7,7 +7,7 @@ local SaveData = require("scripts.SaveDataManager")
 ---@param player EntityPlayer
 ---@param set? boolean
 local function CardEffect(player, set)
-    return SaveData:Data(SaveData.RUN, "CardEffectInvertedSun", {}, Helper.GetPlayerId(player), false, set)
+    return SaveData:Data(SaveData.RUN, "CardEffectInvertedSun", {}, helper.player.GetID(player), false, set)
 end
 
 local card = {}
@@ -21,10 +21,9 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        local room = game:GetRoom()
         local level = game:GetLevel()
 
-        local function NumRoomsVisited()
+        local function numRoomsVisited()
             local visits = 0
             local rooms = level:GetRooms()
             for i = 1, rooms.Size - 1 do
@@ -37,21 +36,13 @@ function card:init(Mod)
             return visits
         end
 
-        if NumRoomsVisited() ~= 1 then
+        if numRoomsVisited() ~= 1 then
             player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
             return
         end
 
-        local rng = player:GetCardRNG(card.ID)
-
-        for _, any_player in ipairs(Helper.GetPlayersWithCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE)) do
-            for _ = 1, any_player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BLACK_CANDLE) do
-                any_player:RemoveCollectible(CollectibleType.COLLECTIBLE_BLACK_CANDLE)
-                Helper.SpawnCollectiblePool(ItemPoolType.POOL_SHOP, room:FindFreePickupSpawnPosition(any_player.Position, 50), Vector.Zero, any_player, true, rng)
-            end
-        end
-
         player:AddCollectible(CollectibleType.COLLECTIBLE_DAMOCLES_PASSIVE)
+        player:AddCollectible(CollectibleType.COLLECTIBLE_SACRED_ORB)
 
         CardEffect(player, true)
 
@@ -66,6 +57,7 @@ function card:init(Mod)
         for _, player in ipairs(PlayerManager.GetPlayers()) do
             if CardEffect(player) then
                 player:RemoveCollectible(CollectibleType.COLLECTIBLE_DAMOCLES_PASSIVE)
+                player:RemoveCollectible(CollectibleType.COLLECTIBLE_SACRED_ORB)
                 CardEffect(player, false)
             end
         end
@@ -83,11 +75,9 @@ function card:init(Mod)
 
     ---@class EID
     if EID then
-        local candle = CollectibleType.COLLECTIBLE_BLACK_CANDLE
         local damocles = CollectibleType.COLLECTIBLE_DAMOCLES
         EID:addCard(card.ID,
-            "#{{Collectible"..damocles.."}} Gives you all curses and Damocles for the floor"..
-            "#{{Collectible"..candle.."}} Removes Black Candle and spawns an item from the {{Shop}} Shop item pool"..
+            "#{{Collectible"..damocles.."}} Gives Isaac all curses, Damocles and Sacred Orb for the floor"..
             "#!!! Only works at the start of a new floor, otherwise it will act like {{Card"..card.Replace.."}} The Sun?"
         )
     end

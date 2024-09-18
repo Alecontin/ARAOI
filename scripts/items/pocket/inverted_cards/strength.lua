@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Strength")
@@ -18,10 +15,10 @@ function card:init(Mod)
     end, card.ID)
 
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
-            "#{{Crown}} Transforms all enemies in the room into their champion variants"
+            "#{{Crown}} Transforms all enemies in the room into a random champion variant"
         )
     end
 end

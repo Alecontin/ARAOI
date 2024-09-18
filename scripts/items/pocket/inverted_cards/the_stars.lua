@@ -14,8 +14,8 @@ local NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects t
 
 
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 local card = {}
 
@@ -35,7 +35,7 @@ function card:init(Mod)
 
         local item = ProceduralItemManager.CreateProceduralItem(rng:GetSeed(), NUM_RANDOM_EFFECTS)
 
-        Helper.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
+        helper.item.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
     end, card.ID)
 
     ---@class EID

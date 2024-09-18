@@ -1,12 +1,12 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
 ---@param player EntityPlayer
-local function QueueRemoveDevilsCrown(player, set)
-    return SaveData:Data(SaveData.RUN, "InvertedDevilUseQueueDelete", {}, Helper.GetPlayerId(player), false, set)
+local function queueRemoveDevilsCrown(player, set)
+    return SaveData:Data(SaveData.RUN, "InvertedDevilUseQueueDelete", {}, helper.player.GetID(player), false, set)
 end
 
 local card = {}
@@ -21,7 +21,7 @@ function card:init(Mod)
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
         player:AddSmeltedTrinket(TrinketType.TRINKET_DEVILS_CROWN)
-        QueueRemoveDevilsCrown(player, true)
+        queueRemoveDevilsCrown(player, true)
 
         local level = game:GetLevel()
 
@@ -32,14 +32,14 @@ function card:init(Mod)
 
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         for _, player in ipairs(PlayerManager.GetPlayers()) do
-            if QueueRemoveDevilsCrown(player) then
+            if queueRemoveDevilsCrown(player) then
                 player:TryRemoveSmeltedTrinket(TrinketType.TRINKET_DEVILS_CROWN)
-                QueueRemoveDevilsCrown(player, false)
+                queueRemoveDevilsCrown(player, false)
             end
         end
     end)
 
-    ---@class EID
+    ---@type EID
     if EID then
         local devils_crown = TrinketType.TRINKET_DEVILS_CROWN
         EID:addCard(card.ID,

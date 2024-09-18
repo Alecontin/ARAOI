@@ -15,8 +15,8 @@ local NUM_MOM_ITEMS_TO_GIVE = 5 -- *Default: `5` — The number of Mom items to 
 
 
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
@@ -38,7 +38,7 @@ function card:init(Mod)
         ---@diagnostic disable-next-line: param-type-mismatch
         local mom_items = ItemConfig:GetTaggedItems(ItemTag.TAG_MOM)
 
-        Helper.ShuffleTable(mom_items, rng)
+        helper.table.ShuffleTable(mom_items, rng)
 
         for i = 1, NUM_MOM_ITEMS_TO_GIVE do
             player:AddCollectibleEffect(mom_items[i].ID, true)
@@ -58,10 +58,10 @@ function card:init(Mod)
         end, 30, NUM_MOM_ITEMS_TO_GIVE, false)
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
-            "#{{Mom}} Gives Isaac "..NUM_MOM_ITEMS_TO_GIVE.." random Mom items for the room"
+            "#{{Mom}} Gives Isaac "..NUM_MOM_ITEMS_TO_GIVE.." random Mom item effects for the room"
         )
     end
 end

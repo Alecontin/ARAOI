@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 local card = {}
 
@@ -23,10 +23,10 @@ function card:init(Mod)
         local config = ItemConfig:GetCard(use_card)
         player:UseCard(use_card, UseFlag.USE_NOANNOUNCER)
 
-        local name = Helper.Split(config.Name, "_")
+        local name = helper.table.SplitStr(config.Name, "_")
         name[1] = string.sub(name[1], 2)
         table.remove(name, #name)
-        name = Helper.Join(name, " ")
+        name = helper.table.Join(name, " ")
 
         HUD:ShowItemText(name)
 

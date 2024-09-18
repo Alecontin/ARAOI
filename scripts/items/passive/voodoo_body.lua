@@ -5,7 +5,7 @@
 
 
 local DAMAGE_SCALE  = 0.35 -- *Default: `0.35` — The number that the player's damage will be multiplied by when doing damage with the pin.*
-local VOODOO_HEAD_ADD = 0.15 -- *Default: `0.20` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
+local VOODOO_HEAD_ADD = 0.15 -- *Default: `0.15` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
 
 
 
@@ -18,19 +18,29 @@ local VOODOO_HEAD_ADD = 0.15 -- *Default: `0.20` — The number that will be add
 
 
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
-local voodoo_body = Isaac.GetItemIdByName("Voodoo Body")
-local curse_pin = Isaac.GetEntityVariantByName("Curse Pin")
+
+---------------
+-- CONSTANTS --
+---------------
+
+local VOODOO_BODY = Isaac.GetItemIdByName("Voodoo Body")
+local CURSE_PIN = Isaac.GetEntityVariantByName("Curse Pin")
+
+
+---------------
+-- FUNCTIONS --
+---------------
 
 ---@param attack Entity
 ---@param spawner Entity
 ---@param damage number
 ---@param spriteScale? number
 ---@param effects? TearFlags
-local function SpawnPin(attack, spawner, damage, spriteScale, effects)
-    local pin = Isaac.Spawn(EntityType.ENTITY_EFFECT, curse_pin, 0, attack.Position, Vector.Zero, spawner):ToEffect()
+local function spawnCursePin(attack, spawner, damage, spriteScale, effects)
+    local pin = Isaac.Spawn(EntityType.ENTITY_EFFECT, CURSE_PIN, 0, attack.Position, Vector.Zero, spawner):ToEffect()
 
     pin:SetTimeout(20)
     pin:FollowParent(attack)
@@ -43,7 +53,7 @@ local function SpawnPin(attack, spawner, damage, spriteScale, effects)
 end
 
 ---@param player EntityPlayer
-local function GetDamageScale(player)
+local function getDamageScale(player)
     local damage_scale = DAMAGE_SCALE
     if player:HasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD) then damage_scale = damage_scale + VOODOO_HEAD_ADD end
 
@@ -51,13 +61,22 @@ local function GetDamageScale(player)
 end
 
 
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
+
 local modded_item = {}
 
 ---@param Mod ModReference
 function modded_item:init(Mod)
     local game = Game()
-    local sfx = SFXManager()
+    local SFX = SFXManager()
     local ItemPool = game:GetItemPool()
+
+
+    ---------------------
+    -- DAMAGE DETECTOR --
+    ---------------------
 
     ---@param entity Entity
     ---@param damage number
@@ -68,8 +87,8 @@ function modded_item:init(Mod)
         if not source.Entity then return end
 
         -- Get the player from the reference, check if it exists, and check if they have our item
-        local player = Helper.EntityRefToPlayer(source)
-        if not player or not player:HasCollectible(voodoo_body) then return end
+        local player = helper.player.FromEntityRef(source)
+        if not player or not player:HasCollectible(VOODOO_BODY) then return end
 
         -- Get the tear and it's scale
         local tear = source.Entity:ToTear()
@@ -94,7 +113,7 @@ function modded_item:init(Mod)
         if flags == nil then return end
 
         -- Get the rng for later
-        local rng = player:GetCollectibleRNG(voodoo_body)
+        local rng = player:GetCollectibleRNG(VOODOO_BODY)
 
 
         -- Delcare the list of enemies in the room
@@ -114,11 +133,11 @@ function modded_item:init(Mod)
 
         -- Get a random enemy from the list
         ---@type Entity
-        local random_enemy = Helper.Choice(enemies, nil, rng)
+        local random_enemy = helper.table.Choice(enemies, nil, rng)
         if not random_enemy then return end
 
         -- Get the damage sale
-        local damage_scale = GetDamageScale(player)
+        local damage_scale = getDamageScale(player)
 
         -- Multiply the damage by the damage scale
         damage = damage * damage_scale
@@ -127,13 +146,18 @@ function modded_item:init(Mod)
         local sprite_scale = math.max(scale * damage_scale, 0.3)
 
         -- Spawn the effect
-        local pin = SpawnPin(random_enemy, player, damage, sprite_scale, flags)
+        local pin = spawnCursePin(random_enemy, player, damage, sprite_scale, flags)
 
         -- Offset the effect if the enemy is in the air
         if random_enemy:IsFlying() then
             pin.SpriteOffset = Vector(0, -17)
         end
     end)
+
+
+    ----------------------------------------
+    -- CURSE PIN UPDATE AND DAMEGE DEALER --
+    ----------------------------------------
 
     ---@param effect EntityEffect
     Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
@@ -265,7 +289,7 @@ function modded_item:init(Mod)
                 end
                 if flags & TearFlags.TEAR_PUNCH > 0 then
                     enemy:AddKnockback(eref, Vector.FromAngle(effect:GetSprite().Rotation + 90) * 30, effectDuration, true)
-                    sfx:Play(SoundEffect.SOUND_PUNCH)
+                    SFX:Play(SoundEffect.SOUND_PUNCH)
                 end
                 if flags & TearFlags.TEAR_ICE > 0 then
                     enemy:AddIce(eref, effectDuration)
@@ -292,7 +316,7 @@ function modded_item:init(Mod)
                     enemy:SetBleedingCountdown(0)
                     enemy:AddBleeding(eref, 150)
                     enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, eref, 0)
-                    sfx:Play(SoundEffect.SOUND_MEATY_DEATHS)
+                    SFX:Play(SoundEffect.SOUND_MEATY_DEATHS)
                 end
                 if flags & TearFlags.TEAR_CARD_DROP_DEATH > 0 and EnemyWouldDie() then
                     local card = ItemPool:GetCardEx(rng:GetSeed(), 0, 0, 0, false)
@@ -306,25 +330,25 @@ function modded_item:init(Mod)
                 if flags & TearFlags.TEAR_BURSTSPLIT > 0 then
                     for i = 1, rng:RandomInt(6, 11) do
                         Isaac.CreateTimer(function ()
-                            SpawnPin(enemy, player, damage * (rng:RandomInt(5000,8333) / 10000), scale, flags ~ TearFlags.TEAR_BURSTSPLIT)
+                            spawnCursePin(enemy, player, damage * (rng:RandomInt(5000,8333) / 10000), scale, flags ~ TearFlags.TEAR_BURSTSPLIT)
                         end, i, 1, false)
                     end
                 elseif flags & TearFlags.TEAR_BONE > 0 then
                     for i = 1, rng:RandomInt(1, 3) do
                         Isaac.CreateTimer(function ()
-                            SpawnPin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_BONE)
+                            spawnCursePin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_BONE)
                         end, i, 1, false)
                     end
                 elseif flags & TearFlags.TEAR_QUADSPLIT > 0 then
                     for i = 1, 4 do
                         Isaac.CreateTimer(function ()
-                            SpawnPin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_QUADSPLIT)
+                            spawnCursePin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_QUADSPLIT)
                         end, i, 1, false)
                     end
                 elseif flags & TearFlags.TEAR_SPLIT > 0 then
                     for i = 1, 2 do
                         Isaac.CreateTimer(function ()
-                            SpawnPin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_SPLIT)
+                            spawnCursePin(enemy, player, damage / 2, scale, flags ~ TearFlags.TEAR_SPLIT)
                         end, i, 1, false)
                     end
                 end
@@ -332,7 +356,7 @@ function modded_item:init(Mod)
 
             -- Play the hit sound for some feedback
             ::skip::
-            sfx:Play(SoundEffect.SOUND_POT_BREAK, 0.5, nil, nil, 2)
+            SFX:Play(SoundEffect.SOUND_POT_BREAK, 0.5, nil, nil, 2)
         end
 
         if effect.FrameCount == 1 then
@@ -398,12 +422,17 @@ function modded_item:init(Mod)
         if effect.Timeout <= 0 then
             effect:Remove()
         end
-    end, curse_pin)
+    end, CURSE_PIN)
+
+
+    ----------------------
+    -- ITEM DESCRIPTION --
+    ----------------------
 
     ---@class EID
     if EID then
         EID:addCollectible(
-            voodoo_body,
+            VOODOO_BODY,
             "#{{BlackHeart}} +1 Black Heart"..
             "# Damaging an enemy will spawn a pin on a random enemy that deals {{Damage}} "..math.floor(DAMAGE_SCALE * 100).."% of the original damage and ignores armor"..
             "#{{Tearsize}} Pins copy the majority of Isaac's tear effects"..

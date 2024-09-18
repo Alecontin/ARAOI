@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Magician")
@@ -29,7 +26,7 @@ function card:init(Mod)
     if EID then
         local the_magician = Card.CARD_MAGICIAN
         EID:addCard(card.ID,
-            "#{{ArrowUp}} Activates the effects of both {{Card"..the_magician.."}} The Magician and {{Card"..card.Replace.."}} The Magician?, also gives you flight for the room"
+            "#{{ArrowUp}} Activates the effects of both {{Card"..the_magician.."}} The Magician and {{Card"..card.Replace.."}} The Magician? and gives you flight for the room"
         )
     end
 end

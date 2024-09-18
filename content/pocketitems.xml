@@ -17,7 +17,7 @@
     <card type="tarot_reverse" name="V - Inverted Hierophant" description="Two prayers for the devil" hud="Inverted Hierophant"
     announcer="517" announcerdelay="70" mimiccharge="12" pickup="8800" achievement="759807" />
 
-	<card type="tarot_reverse" name="VI - Inverted Lovers" description="Will you sacrifice your loved ones?" hud="Inverted Lovers"
+	<card type="tarot_reverse" name="VI - Inverted Lovers" description="You're all alone again" hud="Inverted Lovers"
     announcer="518" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="VII - Inverted Chariot" description="May your enemies stand in fear" hud="Inverted Chariot"
@@ -32,13 +32,13 @@
     <card type="tarot_reverse" name="X - Inverted Wheel Of Fortune" description="Feeling lucky?" hud="Inverted Wheel of Fortune"
     announcer="522" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="XI - Inverted Strength" description="May you be stronger than your enemies" hud="Inverted Strength"
+    <card type="tarot_reverse" name="XI - Inverted Strength" description="Finally, some worthy opponents" hud="Inverted Strength"
     announcer="523" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XII - Inverted Hanged Man" description="Take from the rich and make yourself richer" hud="Inverted Hanged Man"
     announcer="524" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="XIII - Inverted Death" description="Become friends with The Death" hud="Inverted Death"
+    <card type="tarot_reverse" name="XIII - Inverted Death" description="Death is the only salvation" hud="Inverted Death"
     announcer="525" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XIV - Inverted Temperance" description="Blood = Power" hud="Inverted Temperance"

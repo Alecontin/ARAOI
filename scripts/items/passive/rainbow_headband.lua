@@ -21,22 +21,41 @@ local INSTANTLY_REMOVE_CREEP = true -- *Default: `true` — Should the creep be 
 
 
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
 
+---------------
+-- CONSTANTS --
+---------------
+
 local RAINBOW_HEADBAND = Isaac.GetItemIdByName("Rainbow Headband")
+local HEADBAND_CREEP_DATA_KEY = "IsRainbowHeadbandCreep"
+local ONE_SECOND = 60 -- Frames
 
-local oneSecond = 60 -- Frames
 
+---------------
+-- FUNCTIONS --
+---------------
 
 local function rainbowHeadbandPickedUp(player, set)
-    return SaveData:Data(SaveData.RUN, "Rainbow Headband", {}, Helper.GetPlayerId(player), 0, set)
+    return SaveData:Data(SaveData.RUN, "RainbowHeadbandPickupTimestamp", {}, helper.player.GetID(player), 0, set)
 end
 
+---@param player EntityPlayer
+local function getCreepTimeout(player)
+    local time = (Game():GetFrameCount() - rainbowHeadbandPickedUp(player) )+ (ONE_SECOND * TIME_MODIFIER)
+    local timeout = math.ceil(time / (ONE_SECOND * INCREASE_TRAIL_SIZE_EVERY)) * INCREASE_TRAIL_TIMEOUT_BY
+    return timeout
+end
+
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -44,54 +63,47 @@ local modded_item = {}
 function modded_item:init(Mod)
     local game = Game()
 
+
+    --------------------
+    -- MISC FUNCTIONS --
+    --------------------
+
     ---@param player EntityPlayer
-    local function onItemPickup(_,_,_,_,_,_,player)
+    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_,_,_,_,_,_,player)
         -- Store the time when the player picked up the item
         rainbowHeadbandPickedUp(player, game:GetFrameCount())
-    end
-    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, onItemPickup, RAINBOW_HEADBAND)
-
-    -- Helper function for getting the creep timeout
-    ---@param player EntityPlayer
-    local function getCreepTimeout(player)
-        -- Get the time elapsed since the item was picked up, then add the time modifier
-        local time = (game:GetFrameCount() - rainbowHeadbandPickedUp(player) )+ (oneSecond * TIME_MODIFIER)
-
-        -- Return the creep's timeout, which increases by INCREASE_TRAIL_TIMEOUT_BY every INCREASE_TRAIL_SIZE_EVERY seconds
-        local timeout = math.ceil(time / (oneSecond * INCREASE_TRAIL_SIZE_EVERY)) * INCREASE_TRAIL_TIMEOUT_BY
-        return timeout
-    end
+    end, RAINBOW_HEADBAND)
 
 
     --------------------
     -- CREEP RENDERER --
     --------------------
 
-    local function onUpdate()
+    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         -- Render creep for every player that is holding the item
-        for _, player in ipairs(Helper.GetPlayersWithCollectible(RAINBOW_HEADBAND)) do
+        for _, player in ipairs(helper.player.GetPlayersWithCollectible(RAINBOW_HEADBAND)) do
             -- Spawn the creep, the HOLYWATER_TRAIL is the only one that can have it's color consistently changed
             ---@type EntityEffect
             ---@diagnostic disable-next-line: undefined-field
             local creep = player:SpawnAquariusCreep():ToEffect()
 
             -- Set the creep's timeout, which increases by INCREASE_TRAIL_TIMEOUT_BY every INCREASE_TRAIL_SIZE_EVERY seconds
-            local creepTimeout = getCreepTimeout(player)
-            creep:SetTimeout(creepTimeout)
+            local creep_timeout = getCreepTimeout(player)
+            creep:SetTimeout(creep_timeout)
 
             -- Get the HUE for the current frame, then add the CREEP_COLOR_INTERVAL_MULTIPLIER to it
-            local HUE = game:GetFrameCount() % 360
-            HUE = HUE * CREEP_COLOR_INTERVAL_MULTIPLIER
+            local hue = game:GetFrameCount() % 360
+            hue = hue * CREEP_COLOR_INTERVAL_MULTIPLIER
 
             -- Turn the HUE into RGB format, we achieve that by using the Hue Saturation Lightness to RGB converter, only using the HUE parameter
-            local R,G,B = Helper.HSLtoRGB(HUE)
+            local red, green, blue = helper.misc.HSLtoRGB(hue)
 
             -- Set the creep's tint to the new RGB values
-            creep:GetColor():SetOffset(R/255,G/255,B/255)
+            creep:GetColor():SetOffset(red/255, green/255, blue/255)
 
             -- We should only affect rendering for this item's creep, so we store some data for later
             local data = creep:GetData()
-            data["Is Shooting Star Creep"] = true
+            data[HEADBAND_CREEP_DATA_KEY] = true
         end
 
         -- If any player has the collectible, that means creep is currently spawning
@@ -105,7 +117,7 @@ function modded_item:init(Mod)
                     local data = effect:GetData()
 
                     -- Is the effect our creep?
-                    if data["Is Shooting Star Creep"] then
+                    if data[HEADBAND_CREEP_DATA_KEY] then
                         -- Remove the creep if the timeout was reached
                         if effect.Timeout <= 0 and INSTANTLY_REMOVE_CREEP then
                             effect:Remove()
@@ -114,15 +126,14 @@ function modded_item:init(Mod)
                 end
             end
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, onUpdate)
+    end)
 
 
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCollectible(RAINBOW_HEADBAND,
             "# Isaac leaves a trail of rainbow creep"..

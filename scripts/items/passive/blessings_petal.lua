@@ -1,11 +1,28 @@
+-----------------------------
+-- NO CONFIG FOR THIS ITEM --
+-----------------------------
+
+
+
+
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
+
+
+---------------
+-- CONSTANTS --
+---------------
 
 local BLESSINGS_PETAL = Isaac.GetItemIdByName("Blessing's Petal")
+
+
+---------------
+-- FUNCTIONS --
+---------------
 
 ---@param set? boolean
 ---@return boolean
@@ -36,9 +53,14 @@ local function randomChest(rng)
         chests[PickupVariant.PICKUP_HAUNTEDCHEST] = 1
     end
 
-    local keys, values = Helper.KeysAndValues(chests)
-    return Helper.Choice(keys, values, rng)
+    local keys, values = helper.table.KeysAndValues(chests)
+    return helper.table.Choice(keys, values, rng)
 end
+
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -82,12 +104,17 @@ function modded_item:init(Mod)
             }
 
             -- Separate the pickups and weights
-            local keys, values = Helper.KeysAndValues(pickups)
+            local keys, values = helper.table.KeysAndValues(pickups)
 
             -- Spawn a pickup according to the weights
-            Isaac.Spawn(EntityType.ENTITY_PICKUP, Helper.Choice(keys, values, rng), 0, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, nil)
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, helper.table.Choice(keys, values, rng), 0, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, nil)
         end
     end)
+
+
+    ----------------
+    -- ITEM STATS --
+    ----------------
 
     ---@param player EntityPlayer
     ---@param cacheFlag CacheFlag
@@ -95,7 +122,7 @@ function modded_item:init(Mod)
         if not player:HasCollectible(BLESSINGS_PETAL) then return end
 
         if cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasCollectible(CollectibleType.COLLECTIBLE_EDENS_BLESSING) then
-            Helper.ModifyFireDelay(player, -0.35 * Helper.GetAproxTearRateMultiplier(player), true)
+            helper.player.ModifyFireDelay(player, -0.35 * helper.player.GetAproxTearRateMultiplier(player), true)
         end
         if cacheFlag == CacheFlag.CACHE_LUCK then
             player.Luck = player.Luck + 1
@@ -103,7 +130,11 @@ function modded_item:init(Mod)
     end)
 
 
-    ---@class EID
+    ----------------------
+    -- ITEM DESCRIPTION --
+    ----------------------
+
+    ---@type EID
     if EID then
         EID:addCollectible(BLESSINGS_PETAL,
             "#{{ArrowUp}} +0.35 Tears"..

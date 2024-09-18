@@ -7,7 +7,7 @@
 
 -- If we get these items, we roll again.
 -- This can be because the game just crashes, or the item just doesn't work.
-local RerollItems = {
+local REROLL_ITEMS = {
     CollectibleType.COLLECTIBLE_DELIRIOUS
 }
 
@@ -16,7 +16,7 @@ local RerollItems = {
 -- 2 = UP
 -- 3 = RIGHT
 -- 4 = DOWN
-local ManualSpellOverwrites = {
+local MANUAL_SPELL_OVERWRITE = {
     -- ["22441313"] = CollectibleType.COLLECTIBLE_DEATH_CERTIFICATE
 }
 
@@ -27,16 +27,18 @@ local ManualSpellOverwrites = {
 --------------------------
 
 
-
-
-
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
-local spellbook = Isaac.GetItemIdByName("Spellbook")
+
+---------------
+-- CONSTANTS --
+---------------
+
+local SPELLBOOK = Isaac.GetItemIdByName("Spellbook")
 
 ---@param frame integer
 local function CreateArrowSprite(frame)
@@ -48,6 +50,11 @@ local function CreateArrowSprite(frame)
     return arrow
 end
 
+
+---------------
+-- FUNCTIONS --
+---------------
+
 ---@return Sprite
 local function CreateBookSprite()
     local book = Sprite("gfx/ui/hud_spellbook.anm2", true)
@@ -57,7 +64,7 @@ local function CreateBookSprite()
     return book
 end
 
-local book_hud_sprite = CreateBookSprite()
+local SPELLBOOK_SPRITE = CreateBookSprite()
 
 local arrows = {
     CreateArrowSprite(0),
@@ -66,55 +73,61 @@ local arrows = {
     CreateArrowSprite(3)
 }
 
-local WritingSpellData = {}
+-- Note that I am not storing some data in the SaveDataManager, but in this script itself
+-- This means that this data will not be saved across fully closing and reopening the game
+-- I am hoping to prevent a hardlock, this way if you get stuck writing a spell, you can always just close and reopen the game
+
+local Writing_Spell_Data = {}
 
 ---@param player EntityPlayer
 ---@param is_writing? boolean
-local function IsWritingSpell(player, is_writing)
-    return SaveData:Key(WritingSpellData, Helper.GetPlayerId(player), false, is_writing)
+local function isWritingSpell(player, is_writing)
+    return SaveData:Key(Writing_Spell_Data, helper.player.GetID(player), false, is_writing)
 end
 
-local WrittenSpells = {}
+local Written_Spells = {}
 
 ---@param player EntityPlayer
 ---@param spell? string
-local function WrittenSpell(player, spell)
-    return SaveData:Key(WrittenSpells, Helper.GetPlayerId(player), "", spell)
+local function writtenSpell(player, spell)
+    return SaveData:Key(Written_Spells, helper.player.GetID(player), "", spell)
 end
 
 ---@param player EntityPlayer
 ---@param item CollectibleType
-local function AddTemporaryItem(player, item)
-    local temporaryItems = SaveData:Data(SaveData.RUN, "SpellBookTemporaryItems", {}, Helper.GetPlayerId(player), {})
+local function addTemporaryItem(player, item)
+    local temporary_items = SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {})
 
     player:AddCollectible(item)
-    table.insert(temporaryItems, item)
+    table.insert(temporary_items, item)
 
-    return SaveData:Data(SaveData.RUN, "SpellBookTemporaryItems", {}, Helper.GetPlayerId(player), {}, temporaryItems)
+    return SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {}, temporary_items)
 end
 
 ---@param player EntityPlayer
-local function WipeTemporaryItems(player)
-    local temporaryItems = SaveData:Data(SaveData.RUN, "SpellBookTemporaryItems", {}, Helper.GetPlayerId(player), {})
+local function wipeTemporaryItems(player)
+    local temporary_items = SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {})
 
-    for _, item in ipairs(temporaryItems) do
+    for _, item in ipairs(temporary_items) do
         player:RemoveCollectible(item)
     end
 
-    SaveData:Data(SaveData.RUN, "SpellBookTemporaryItems", {}, Helper.GetPlayerId(player), {})
+    SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {}, {})
 end
 
 
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
-
-local RENDERING_ENABLED = false
 
 ---@param Mod ModReference
 function modded_item:init(Mod)
     local game = Game()
-    local sfx = SFXManager()
+    local SFX = SFXManager()
     local ItemConfig = Isaac.GetItemConfig()
+
 
     -------------------
     -- INPUT BLOCKER --
@@ -132,7 +145,7 @@ function modded_item:init(Mod)
 
         -- Check if this input call is checking if the player wants to shoot
         if inputHook == InputHook.IS_ACTION_PRESSED
-        and Helper.IsValueInTable(
+        and helper.table.IsValueInTable(
             buttonAction,
             {
                 ButtonAction.ACTION_SHOOTLEFT,
@@ -144,7 +157,7 @@ function modded_item:init(Mod)
         then
 
             -- Check if the player is currently writing a spell
-            if IsWritingSpell(player) then
+            if isWritingSpell(player) then
                 -- If we are writing a spell, we block the shooting input
                 if inputHook == InputHook.GET_ACTION_VALUE then
                     return 0
@@ -155,7 +168,6 @@ function modded_item:init(Mod)
 
         end
     end)
-
 
 
     --------------------
@@ -169,7 +181,7 @@ function modded_item:init(Mod)
         local collectible = player:GetActiveItem(slot)
 
         -- If we are checking the charges for our item and we are writing a spell
-        if collectible == spellbook and IsWritingSpell(player) then
+        if collectible == SPELLBOOK and isWritingSpell(player) then
             -- Make the item's min charges be 0 which essentially means it's a free use
             -- Do note that the item still gets discharged as normal. This just allows us to mark it as "usable"
             return 0
@@ -178,10 +190,9 @@ function modded_item:init(Mod)
 
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
         for _, player in pairs(PlayerManager.GetPlayers()) do
-            WipeTemporaryItems(player)
+            wipeTemporaryItems(player)
         end
     end)
-
 
 
     ----------------------------
@@ -193,7 +204,7 @@ function modded_item:init(Mod)
     Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
         -- This prevents us from entering the writing state from items such as Void
         -- If that were to happed, it would be a soft-lock
-        if not player:HasCollectible(spellbook) then return end
+        if not player:HasCollectible(SPELLBOOK) then return end
 
         -- Prevent the item from being used twice with car battery
         -- The second use casts the spell, but there is no time to write one
@@ -201,10 +212,10 @@ function modded_item:init(Mod)
         if useFlag & UseFlag.USE_CARBATTERY > 0 then return end
 
         -- Toggle the player's writing ability, which locks and unlocks shooting
-        local writing = IsWritingSpell(player, not IsWritingSpell(player))
+        local writing = isWritingSpell(player, not isWritingSpell(player))
 
         -- Check what spell we've written, this is used on the item's second use, after something was written
-        local spell = WrittenSpell(player)
+        local spell = writtenSpell(player)
 
         -- Function that adds a free charge to the item
         -- Used when casting a spell, since otherwise it would drain the remaining charges, making
@@ -227,20 +238,20 @@ function modded_item:init(Mod)
 
             -- While we don't have an item selected, the item selected is in the RerollItems list or the config doesn't exist
             while spell_item == nil
-            or Helper.IsValueInTable(spell_item, RerollItems)
+            or helper.table.IsValueInTable(spell_item, REROLL_ITEMS)
             or config == nil
             do
                 -- Get a random item and it's configuration, then check again
                 -- The line below is here because my code editor screams at me otherwise
                 ---@diagnostic disable-next-line: undefined-field
-                spell_item = ManualSpellOverwrites[spell] or rng:RandomInt(ItemConfig:GetCollectibles().Size - 1)
+                spell_item = MANUAL_SPELL_OVERWRITE[spell] or rng:RandomInt(ItemConfig:GetCollectibles().Size - 1)
                 config = ItemConfig:GetCollectible(spell_item)
             end
 
             -- If the item is a passive item or a familiar
             if config.Type == ItemType.ITEM_PASSIVE or config.Type == ItemType.ITEM_FAMILIAR then
                 -- We add the item to the list of temporary items for them to get deleted later
-                AddTemporaryItem(player, spell_item)
+                addTemporaryItem(player, spell_item)
 
             else -- If the item is not a passive item
                 -- Use it as normal
@@ -250,17 +261,17 @@ function modded_item:init(Mod)
                 if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
                     -- Spawn a wisp
                     player:AddWisp(spell_item, player.Position)
-                    sfx:Play(SoundEffect.SOUND_CANDLE_LIGHT)
+                    SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
                 end
             end
 
             -- Show the player what item was used by the spell and play a sound
             game:GetHUD():ShowItemText(player, config)
             player:AnimateCollectible(spell_item)
-            sfx:Play(SoundEffect.SOUND_POWERUP1, 0.3, nil, nil, 2)
+            SFX:Play(SoundEffect.SOUND_POWERUP1, 0.3, nil, nil, 2)
 
             -- Clear the spell
-            WrittenSpell(player, "")
+            writtenSpell(player, "")
 
 
         -- We just stopped writing but there was no spell written
@@ -272,23 +283,16 @@ function modded_item:init(Mod)
 
         -- We used the item to start writing a spell, show the item's use animation and play a sound
         else
-            sfx:Play(SoundEffect.SOUND_MENU_RIP, 3)
+            SFX:Play(SoundEffect.SOUND_MENU_RIP, 3)
             return true
 
         end
-    end, spellbook)
-
+    end, SPELLBOOK)
 
 
     ------------------------------
     -- BOOK AND ARROWS RENDERER --
     ------------------------------
-
-    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
-        if not RENDERING_ENABLED then
-            RENDERING_ENABLED = true
-        end
-    end)
 
     Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
         -- Getting the data also sets it, so we make sure we loaded it first
@@ -298,32 +302,32 @@ function modded_item:init(Mod)
         for _, player in ipairs(PlayerManager.GetPlayers()) do
 
             -- Get the written spell
-            local spell = WrittenSpell(player)
+            local spell = writtenSpell(player)
 
             -- Check if the player is writing
-            if IsWritingSpell(player) then
+            if isWritingSpell(player) then
 
                 -- If we are writing and we don't have the book, that means
                 -- it's either a soft-lock or we put the book down while writing
                 -- So, we set everything to the default values
-                if not player:HasCollectible(spellbook) then
-                    IsWritingSpell(player, false)
-                    WrittenSpell(player, "")
+                if not player:HasCollectible(SPELLBOOK) then
+                    isWritingSpell(player, false)
+                    writtenSpell(player, "")
                 end
 
                 -- Get the player's position relative to the screen
-                local pos = Isaac.WorldToScreen(player.Position)
+                local position = Isaac.WorldToScreen(player.Position)
 
                 -- Offset the position so the book get's rendered on top of the player
-                pos.Y = pos.Y - 50
-                pos.X = pos.X + 0.5
+                position.Y = position.Y - 50
+                position.X = position.X + 0.5
 
                 -- Render the book at the offset position
-                book_hud_sprite:Render(pos)
+                SPELLBOOK_SPRITE:Render(position)
 
                 -- Defining a function to not have to copy-paste this 4 times
                 local function playInputSoundEffect()
-                    sfx:Play(SoundEffect.SOUND_POT_BREAK_2, 0.3, nil, nil, 3)
+                    SFX:Play(SoundEffect.SOUND_POT_BREAK_2, 0.3, nil, nil, 3)
                 end
 
                 -- If the spell is less than 10 characters long, we can write to it
@@ -331,19 +335,19 @@ function modded_item:init(Mod)
                 -- in the game while not going over the integer limit
                 if #spell < 10 then
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) then
-                        WrittenSpell(player, WrittenSpell(player).."1")
+                        writtenSpell(player, writtenSpell(player).."1")
                         playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex) then
-                        WrittenSpell(player, WrittenSpell(player).."2")
+                        writtenSpell(player, writtenSpell(player).."2")
                         playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then
-                        WrittenSpell(player, WrittenSpell(player).."3")
+                        writtenSpell(player, writtenSpell(player).."3")
                         playInputSoundEffect()
                     end
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) then
-                        WrittenSpell(player, WrittenSpell(player).."4")
+                        writtenSpell(player, writtenSpell(player).."4")
                         playInputSoundEffect()
                     end
                 end
@@ -352,18 +356,18 @@ function modded_item:init(Mod)
             -- For every character in the written spell
             for i = 1, #spell do
                 -- Get the character
-                local char = spell:sub(i,i)
+                local character = spell:sub(i,i)
 
                 -- Get the player's position relative to the screen
-                local pos = Isaac.WorldToScreen(player.Position)
+                local position = Isaac.WorldToScreen(player.Position)
 
                 -- Offset the arrows so they end up centered
                 -- I honestly have no idea how I ended up with this formula, it was a lot of trial and error
-                pos.X = pos.X - 5.5 - (string.len(spell)/2-i) * 12
-                pos.Y = pos.Y - 51
+                position.X = position.X - 5.5 - (string.len(spell)/2-i) * 12
+                position.Y = position.Y - 51
 
                 -- Get the arrow for that character and render it to the offset position
-                arrows[tonumber(char)]:Render(pos)
+                arrows[tonumber(character)]:Render(position)
             end
 
             -- This is some left-over debug code which shows what the actual spell is
@@ -372,15 +376,22 @@ function modded_item:init(Mod)
         end
     end)
 
-    ---@class EID
+
+    ----------------------
+    -- ITEM DESCRIPTION --
+    ----------------------
+
+    ---@type EID
     if EID then
-        EID:addCollectible(spellbook,
-            "#{{Collectible"..spellbook.."}} On use, spawns an open Spellbook above Isaac "..
+        EID:addCollectible(SPELLBOOK,
+            "#{{Collectible"..SPELLBOOK.."}} On use, spawns an open Spellbook above Isaac"..
             "#{{Tearsize}} Shooting in any direction will write to the Spellbook"..
             "#{{Collectible}} Casting the spell will mimic the use of a random item"..
             "#{{Collectible"..(CollectibleType.COLLECTIBLE_RESTOCK).."}} Writing the same spell will use the same item"..
             "#{{TreasureRoom}} If the used item was a passive item, it will instead give it to Isaac for the rest of the floor"
         )
+
+        helper.eid.BookOfVirtuesSynergy("Spellbook Book Of Virtues", SPELLBOOK, "Casting an active item spell will also spawn its wisp")
     end
 end
 

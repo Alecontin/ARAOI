@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Emperor")
@@ -13,7 +10,7 @@ function card:init(Mod)
         player:UseActiveItem(CollectibleType.COLLECTIBLE_DELIRIOUS)
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         local delirious = CollectibleType.COLLECTIBLE_DELIRIOUS
         EID:addCard(card.ID,

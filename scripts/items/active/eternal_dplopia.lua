@@ -19,11 +19,17 @@ local WISP_DELETE_CHANCE = 35 -- *Default: `35` — The chance of a wisp being d
 -- END OF CONFIGURATION --
 --------------------------
 
----@class SaveDataManager
+
+---@type SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@type helper
+local helper = include("scripts.helper")
+
+
+---------------
+-- CONSTANTS --
+---------------
 
 local ETERNAL_DPLOPIA = Isaac.GetItemIdByName("Eternal Dplopia")
 
@@ -37,20 +43,20 @@ local CURSE_PEDESTALS_CALLBACK = "Eternal Dplopia Curse All Pedestals"
 ---@param collectible CollectibleType
 ---@param set? boolean
 local function cursed(collectible, set)
-    local value = SaveData:Data(SaveData.RUN, "CursedObjects", {}, collectible, false, set)
+    local value = SaveData:Data(SaveData.RUN, "EternalDplopiaCursedObjects", {}, collectible, false, set)
     return value
 end
 
 ---@param set? integer
 local function pickupCount(set)
-    local PickupCount = SaveData:Key(SaveData.LEVEL, "CursedPickupCount", 0, set)
-    return PickupCount
+    local pickup_count = SaveData:Key(SaveData.LEVEL, "EternalDplopiaCursedPickupCount", 0, set)
+    return pickup_count
 end
 
 ---@param player EntityPlayer
 ---@return number
 local function getDeleteChance(player)
-    local chance = math.max(MIN_ITEM_DELETE_CHANCE, ITEM_DELETE_CHANCE + pickupCount() * ITEM_DELETE_CHANCE_STEP - player.Luck * LUCK_DECREASE_DELETION_CHANCE)
+    local chance = math.max(MIN_ITEM_DELETE_CHANCE, (ITEM_DELETE_CHANCE + pickupCount() * ITEM_DELETE_CHANCE_STEP) - player.Luck * LUCK_DECREASE_DELETION_CHANCE)
     chance = math.min(chance, 100)
     chance = chance / 100
 
@@ -66,10 +72,7 @@ local modded_item = {}
 
 ---@param Mod ModReference
 function modded_item:init(Mod)
-    ---@class EID -- This is used in 2 different places so I put it here
-
     local game = Game()
-    -- local ItemPool = game:GetItemPool()
 
 
     -----------------
@@ -79,10 +82,10 @@ function modded_item:init(Mod)
     ---@param rng RNG
     ---@param player EntityPlayer
     ---@param useFlags UseFlag
-    local function onItemUsed(_, _, rng, player, useFlags)
+    Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags)
         if useFlags & UseFlag.USE_CARBATTERY > 0 then return false end
 
-        local carBattery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
+        local car_battery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
 
         local room = game:GetRoom()
 
@@ -104,10 +107,10 @@ function modded_item:init(Mod)
             cursed(collectible.SubType, true)
 
             -- Spawn a new item, or multiple with car battery
-            local itemsToSpawn = 1
-            if carBattery then itemsToSpawn = itemsToSpawn + 1 end
+            local items_to_spawn = 1
+            if car_battery then items_to_spawn = items_to_spawn + 1 end
 
-            for _ = 1, itemsToSpawn do
+            for _ = 1, items_to_spawn do
                 local new_collectible = Isaac.Spawn(
                     EntityType.ENTITY_PICKUP,
                     PickupVariant.PICKUP_COLLECTIBLE,
@@ -150,24 +153,23 @@ function modded_item:init(Mod)
         ---------------------
 
         -- Spawn an extra wisp due to car battery
-        if carBattery and player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+        if car_battery and player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
             player:AddWisp(ETERNAL_DPLOPIA, player.Position)
         end
 
         -- Getting all the player's wisps
-        local wisps = Helper.GetPlayerWisps(player, ETERNAL_DPLOPIA)
+        local wisps = helper.player.GetWisps(player, ETERNAL_DPLOPIA)
         local max = MAX_WISPS
-        if carBattery then max = max - 1 end
+        if car_battery then max = max - 1 end
 
         -- Remove the excess wisps since we are only supposed to have 2
-        for excessWisps = max, #wisps, 1 do
-            wisps[excessWisps]:Remove()
+        for excess_wisps = max, #wisps, 1 do
+            wisps[excess_wisps]:Remove()
         end
 
         -- We need to return true for the item to have an animation
         return true
-    end
-    Mod:AddCallback(ModCallbacks.MC_USE_ITEM, onItemUsed, ETERNAL_DPLOPIA)
+    end, ETERNAL_DPLOPIA)
 
 
     -----------------
@@ -176,14 +178,14 @@ function modded_item:init(Mod)
 
     ---@param collectibleType CollectibleType
     ---@param player EntityPlayer
-    local function onItemPickup(_, collectibleType, _, _, _, _, player)
+    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, collectibleType, _, _, _, _, player)
 
         -- Don't do anything if the item is not cursed
         if not cursed(collectibleType) then return end
 
         -- Get the player's item list EXCLUDING quest items
         -- We shouldn't remove them since that's how it works in the vanilla game
-        local player_items = Helper.GetCollectibleListCurated(player, nil, ItemTag.TAG_QUEST)
+        local player_items = helper.player.GetCollectibleListCurated(player, nil, ItemTag.TAG_QUEST)
 
         -- Get the rng for random numbers
         local rng = player:GetCollectibleRNG(ETERNAL_DPLOPIA)
@@ -194,7 +196,7 @@ function modded_item:init(Mod)
         -- Check if we should delete an item
         if rng:RandomFloat() <= chance then
             -- Get the player's wisps
-            local wisps = Helper.GetPlayerWisps(player, ETERNAL_DPLOPIA)
+            local wisps = helper.player.GetWisps(player, ETERNAL_DPLOPIA)
 
             -- If we roll to remove a wisp instead of an item, and the player has wisps
             if rng:RandomFloat() <= (WISP_DELETE_CHANCE / 100) and #wisps > 0 then
@@ -203,7 +205,7 @@ function modded_item:init(Mod)
 
             else
                 -- Convert the player_items into a list
-                local player_items_list = Helper.Keys(player_items)
+                local player_items_list = helper.table.Keys(player_items)
 
                 -- Removing an item from an empty list gives an error
                 if #player_items_list > 0 then 
@@ -227,15 +229,14 @@ function modded_item:init(Mod)
 
         -- Lastly, increase delete chance
         pickupCount(pickupCount() + 1)
-    end
-    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, onItemPickup)
+    end)
 
 
     --------------------------
     -- CURSED ITEM RENDERER --
     --------------------------
 
-    local function renderCursedItems(_)
+    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         for _, entity in ipairs(Isaac.GetRoomEntities()) do
             local pickup = entity:ToPickup()
             if not pickup then goto continue end
@@ -258,10 +259,9 @@ function modded_item:init(Mod)
 
             ::continue::
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, renderCursedItems)
+    end)
 
-    local function cursePedestals()
+    Mod:AddCallback(CURSE_PEDESTALS_CALLBACK, function ()
         for _, entity in ipairs(Isaac.GetRoomEntities()) do
             local pickup = entity:ToPickup()
             if not pickup then goto continue end
@@ -274,49 +274,36 @@ function modded_item:init(Mod)
 
             ::continue::
         end
-    end
-    Mod:AddCallback(CURSE_PEDESTALS_CALLBACK, cursePedestals)
+    end)
 
 
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
 
+    ---@type EID
     if EID then
-        local description = "Duplicates items and rerolls the duplicated ones"..
-                            "#{{ArrowDown}} Adds a curse on the items"..
-                            "#{{BrimstoneCurse}} Picking up a cursed item has a "..ITEM_DELETE_CHANCE.."%"..
-                                "chance of deleting one of your items and increases deletion chance by "..ITEM_DELETE_CHANCE_STEP.."%"..
-                            "#{{ArrowUp}} Delete chance resets each floor"..
-                            "#{{Luck}} "..LUCK_DECREASE_DELETION_CHANCE.."% less chance per 1 luck, 20% minimum"..
-                            "#!!! Items will remain cursed for the duration of the run"
+        EID:addCollectible(ETERNAL_DPLOPIA,
+            "Duplicates items into random ones from the current pool"..
+            "#{{BrimstoneCurse}} Items will become cursed, having a "..ITEM_DELETE_CHANCE.."% "..
+                "chance of deleting one of your items and increasing it by "..ITEM_DELETE_CHANCE_STEP.."% "..
+                "for each item picked up"..
+            "#{{ArrowUp}} Chance resets each floor"..
+            "#{{Luck}} "..LUCK_DECREASE_DELETION_CHANCE.."% less chance per 1 luck"
+        )
 
-        EID:addCollectible(ETERNAL_DPLOPIA, description)
-
-        local VIRTUES = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
-        local VIRTUES_ICON =  "#{{Collectible"..VIRTUES.."}} "
-
-        ---@param descObject EIDDescriptionObject
-        local function anyPlayerHasBookOfVirtues(descObject)
-            if descObject.ObjType == EntityType.ENTITY_PICKUP
-            and descObject.ObjVariant == PickupVariant.PICKUP_COLLECTIBLE
-            and descObject.ObjSubType == ETERNAL_DPLOPIA
-            then return PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) end
-        end
-
-        ---@param descObject EIDDescriptionObject
-        local function showWisps(descObject)
-            EID:appendToDescription(descObject, VIRTUES_ICON.." Wisp has a "..WISP_DELETE_CHANCE.."% chance of getting deleted instead of an item. 2 wisps max")
-            return descObject
-        end
-        EID:addDescriptionModifier(ETERNAL_DPLOPIA.." Virtues", anyPlayerHasBookOfVirtues, showWisps)
+        helper.eid.BookOfVirtuesSynergy(
+            "Eternal Dplopia Book Of Virtues Synergy",
+            ETERNAL_DPLOPIA,
+            WISP_DELETE_CHANCE.."% chance of a wisp getting deleted instead of an item"
+        )
 
         local function condition(descObject)
             if descObject.ObjType == EntityType.ENTITY_PICKUP
             and descObject.ObjVariant == PickupVariant.PICKUP_COLLECTIBLE
             and descObject.Entity
             then return cursed(descObject.ObjSubType) end
-        end 
+        end
         local function modifier(descObject)
             local player = game:GetNearestPlayer(descObject.Entity.Position)
             local deleteChance = getDeleteChance(player) * 100

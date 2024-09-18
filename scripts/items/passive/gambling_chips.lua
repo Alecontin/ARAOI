@@ -10,7 +10,6 @@ local BASE_CHANCE = 15 -- *Default: `15` — The base chance for a slot to spawn
 local LUCK_MODIFIER = 0.75 -- *Default: `0.75` — Player's luck will be multiplied by this and added to the `BASE_CHANCE`.*
 
 local COIN_CHANCE        = 10 -- *Default: `10` — Chance to spawn a coin on enemy kill.*
-local COIN_CHANCE_KEEPER = 5  -- *Default: `5` — Chance to spawn a coin on enemy kill for Keeper.*
 
 
 
@@ -20,10 +19,20 @@ local COIN_CHANCE_KEEPER = 5  -- *Default: `5` — Chance to spawn a coin on ene
 
 
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
-local GAMBLING_CHIP = Isaac.GetItemIdByName("Gambling Chips")
+
+---------------
+-- CONSTANTS --
+---------------
+
+local GAMBLING_CHIPS = Isaac.GetItemIdByName("Gambling Chips")
+
+
+---------------
+-- FUNCTIONS --
+---------------
 
 -- Some slots should not be available because it's not really a gamble if they reward you every time.
 -- Blood Donation Machines always reward you with coins, and the fortune from Fortune Teller Machines
@@ -31,7 +40,7 @@ local GAMBLING_CHIP = Isaac.GetItemIdByName("Gambling Chips")
 ---@param player EntityPlayer?
 ---@return SlotVariant[]
 local function getAvailableSlots(player)
-    local PGD = Isaac.GetPersistentGameData()
+    local PersistentGameData = Isaac.GetPersistentGameData()
 
     local AVAILABLE_SLOTS = {
         SlotVariant.BEGGAR,
@@ -42,19 +51,19 @@ local function getAvailableSlots(player)
         SlotVariant.SLOT_MACHINE,
     }
 
-    if player == nil or not Helper.IsLost(player) then
+    if player == nil or not helper.player.IsLost(player) then
         table.insert(AVAILABLE_SLOTS, SlotVariant.DEVIL_BEGGAR)
 
-        if PGD:Unlocked(Achievement.HELL_GAME) then
+        if PersistentGameData:Unlocked(Achievement.HELL_GAME) then
             table.insert(AVAILABLE_SLOTS, SlotVariant.HELL_GAME)
         end
     end
 
-    if PGD:Unlocked(Achievement.CRANE_GAME) then
+    if PersistentGameData:Unlocked(Achievement.CRANE_GAME) then
         table.insert(AVAILABLE_SLOTS, SlotVariant.CRANE_GAME)
     end
 
-    if PGD:Unlocked(Achievement.ROTTEN_BEGGAR) then
+    if PersistentGameData:Unlocked(Achievement.ROTTEN_BEGGAR) then
         table.insert(AVAILABLE_SLOTS, SlotVariant.ROTTEN_BEGGAR)
     end
 
@@ -63,14 +72,18 @@ end
 
 ---@return boolean
 local function anyPlayerHasGamblingChip()
-    return PlayerManager.AnyoneHasCollectible(GAMBLING_CHIP)
+    return PlayerManager.AnyoneHasCollectible(GAMBLING_CHIPS)
 end
 
 ---@param slot EntitySlot
 local function isSlotAvailable(slot)
-    return Helper.IsValueInTable(slot.Variant, getAvailableSlots())
+    return helper.table.IsValueInTable(slot.Variant, getAvailableSlots())
 end
 
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -78,12 +91,12 @@ local modded_item = {}
 function modded_item:init(Mod)
 
     local game = Game()
-    local sfx = SFXManager()
+    local SFX = SFXManager()
 
 
-    ----------------------------
-    -- MAIN MOD FUNCTIONALITY --
-    ----------------------------
+    -----------------------------
+    -- MAIN ITEM FUNCTIONALITY --
+    -----------------------------
 
     -- This needs to be called from 2 separate callbacks and the
     -- 2 callbacks have some separate checks before calling this function
@@ -91,10 +104,10 @@ function modded_item:init(Mod)
     local function spawnGambling(room)
         -- We should run this function for every player that has the item
         -- This also makes it unnecessary to check if anyPlayerHasCollectible
-        local players_with_collectible = Helper.GetPlayersWithCollectible(GAMBLING_CHIP)
+        local players_with_collectible = helper.player.GetPlayersWithCollectible(GAMBLING_CHIPS)
         for _, player in pairs(players_with_collectible) do
             -- Get rng for this to happen the same way if we use the same seed
-            local rng = player:GetCollectibleRNG(GAMBLING_CHIP)
+            local rng = player:GetCollectibleRNG(GAMBLING_CHIPS)
 
             -- Get the chance of spawning a slot
             local chance = math.min(BASE_CHANCE + (player.Luck * LUCK_MODIFIER), MAX_CHANCE)
@@ -113,15 +126,15 @@ function modded_item:init(Mod)
             local slot_list = getAvailableSlots(player)
 
             -- Get the slot to be spawned
-            local slot = Helper.Choice(slot_list, nil, rng) -- RandomInt starts at 0, arrays are 1-indexed
+            local slot = helper.table.Choice(slot_list, nil, rng) -- RandomInt starts at 0, arrays are 1-indexed
 
             -- Spawn the slot
             game:Spawn(EntityType.ENTITY_SLOT, slot, free_position,
                 Vector.Zero, nil, 0, rng:GetSeed())
 
             -- Show the player that the item got triggered
-            player:AnimateCollectible(GAMBLING_CHIP)
-            sfx:Play(SoundEffect.SOUND_SLOTSPAWN)
+            player:AnimateCollectible(GAMBLING_CHIPS)
+            SFX:Play(SoundEffect.SOUND_SLOTSPAWN)
 
             ::next_player::
         end
@@ -151,7 +164,7 @@ function modded_item:init(Mod)
     -------------------------------
 
     ---@param pickup EntityPickup
-    local function onPickupSpawned(_, pickup)
+    Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, function (_, pickup)
         -- This should only run when any player has the gambling chip
         if not anyPlayerHasGamblingChip() then return end
 
@@ -163,7 +176,7 @@ function modded_item:init(Mod)
             -- Convert the entity to a slot, if it's not a slot then skip this entity
             local slot = entity:ToSlot()
             if not slot then goto continue end
-            
+
             -- Check if the slot is in the available slots
             if not isSlotAvailable(slot) then goto continue end
 
@@ -183,15 +196,14 @@ function modded_item:init(Mod)
             -- This should mean that the pickup was spawned from this slot
             if distance == 0 then
                 -- We need an offset so it doesn't get treated as spawned from the slot
-                local spawnOffset = pickup.Position + Vector.One
+                local spawn_offset = pickup.Position + Vector.One
                 Isaac.Spawn(pickup.Type, pickup.Variant, pickup.SubType,
-                    spawnOffset, pickup.Velocity, nil)
+                    spawn_offset, pickup.Velocity, nil)
             end
 
             ::continue::
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, onPickupSpawned)
+    end)
 
 
 
@@ -204,7 +216,7 @@ function modded_item:init(Mod)
     ---@param amount number
     ---@param flags DamageFlag
     ---@param source EntityRef
-    local function onEntityKill(_, entity, amount, flags, source)
+    Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, amount, flags, source)
         -- Checking for unlethal damage, this means the enemy didn't die
         if entity.HitPoints - amount > 0
         or flags == DamageFlag.DAMAGE_NOKILL
@@ -221,14 +233,13 @@ function modded_item:init(Mod)
         if not player then return end
 
         -- Checking for collectible
-        if not player:HasCollectible(GAMBLING_CHIP) then return end
+        if not player:HasCollectible(GAMBLING_CHIPS) then return end
 
         -- Get rng so it behaves the same per seed
-        local rng = player:GetCollectibleRNG(GAMBLING_CHIP)
+        local rng = player:GetCollectibleRNG(GAMBLING_CHIPS)
 
-        -- Setting the chance according to player type
+        -- Setting the chance
         local chance = COIN_CHANCE
-        if Helper.IsKeeper(player) then chance = COIN_CHANCE_KEEPER end
         chance = chance / 100 -- Converting to %
 
         -- Check if the spawn should happen
@@ -237,54 +248,38 @@ function modded_item:init(Mod)
         -- Which position should the pickup spawn in
         local spawn_position = entity.Position
 
-        -- Spwaning the entity
+        -- Spawning the entity
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, spawn_position,
             EntityPickup.GetRandomPickupVelocity(spawn_position)/3, player)
-    end
-    Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, onEntityKill)
+    end)
 
 
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
 
-    ---@class EID
+    ---@type EID
     if EID then
+        local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{MiniBoss}}"
 
-        ---@param pickup EntityPickup
-        local function addDescription(_, pickup)
-            if pickup.SubType ~= GAMBLING_CHIP then return end
+        local max_luck = math.ceil((MAX_CHANCE - BASE_CHANCE) / LUCK_MODIFIER)
 
-            local data = pickup:GetData()
+        EID:addCollectible(GAMBLING_CHIPS,
+            "#{{Coin}} +10 Coins"..
+            "# "..BASE_CHANCE.."% chance to spawn on every room one of: "..slots..
+            "#{{Luck}} "..MAX_CHANCE.."% at "..max_luck.." luck"..
+            "# Duplicates rewards from "..slots..
+            "#{{DeathMark}} "..COIN_CHANCE.."% chance for enemies to spawn a coin on death"..
+            "#{{MiniBoss}} {{ColorGray}}This icon refers to shell games as there is no icon for them"
+        )
 
-            local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{MiniBoss}}"
-
-            local max_luck = math.ceil((MAX_CHANCE - BASE_CHANCE) / LUCK_MODIFIER)
-
-            local areKeepers = #Helper.GetPlayersOfType(PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_KEEPER_B) > 0
-            local areLosts = #Helper.GetPlayersOfType(PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THELOST_B) > 0
-            local areEdens = #Helper.GetPlayersOfType(PlayerType.PLAYER_EDEN, PlayerType.PLAYER_EDEN_B) > 0
-
-            local keeper_desc = "("..COIN_CHANCE_KEEPER.."% {{Player14}}) "
-            if not areKeepers then keeper_desc = '' end
-
-            local lost_desc = "#{{Player10}} The lost will not spawn devil slot variants"
-            if not areLosts then lost_desc = '' end
-
-            local eden_desc = "(pickup {{Player9}}) "
-            if not areEdens then eden_desc = '' end
-
-            local description = "#{{Coin}} +10 Coins"..
-                                "# "..BASE_CHANCE.."% chance to spawn on every room one of: "..slots..
-                                "#{{Luck}} "..MAX_CHANCE.."% at "..max_luck.." luck"..
-                                "# Duplicates rewards from "..slots..
-                                "#{{DeathMark}} "..COIN_CHANCE.."% "..keeper_desc.."chance for enemies to spawn a coin "..eden_desc.."on death"..
-                                lost_desc..
-                                "#{{MiniBoss}} {{ColorGray}}This icon refers to shell games as there is no icon for them"
-
-            data["EID_Description"] = description
-        end
-        Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, addDescription, PickupVariant.PICKUP_COLLECTIBLE)
+        helper.eid.PlayerBasedModifier(
+            "Gambling Chips Lost",
+            GAMBLING_CHIPS,
+            {PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THELOST_B},
+            PlayerType.PLAYER_THELOST,
+            "The Lost will not spawn slots that require health"
+        )
 
     end
 end

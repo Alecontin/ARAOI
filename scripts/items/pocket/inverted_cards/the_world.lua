@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class SaveDataManager
+local SaveData = require("scripts.SaveDataManager")
 
 local card = {}
 
@@ -8,9 +8,6 @@ card.Replace = Card.CARD_REVERSE_WORLD
 
 ---@param Mod ModReference
 function card:init(Mod)
-    local game = Game()
-    local sfx = SFXManager()
-
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
         local rng = player:GetCardRNG(card.ID)
@@ -20,10 +17,13 @@ function card:init(Mod)
 
         Isaac.ExecuteCommand("goto s.blackmarket."..room.Variant)
 
-        Isaac.CreateTimer(function ()
-            Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TALL_LADDER, 0, player.Position, Vector.Zero, player)
-        end, 1, 1, true)
+        SaveData:CreateTimerInFrames("Schedule Spawn Inverted World Ladder", 1)
     end, card.ID)
+
+    Mod:AddCallback("Schedule Spawn Inverted World Ladder", function ()
+        local player = Isaac.GetPlayer()
+        Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TALL_LADDER, 0, player.Position, Vector.Zero, player)
+    end)
 
     ---@class EID
     if EID then

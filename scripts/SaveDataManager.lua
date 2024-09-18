@@ -51,9 +51,6 @@
 
 local json = require("json")
 
----@class Helper
-local Helper = include("scripts.Helper")
-
 ---@class SaveDataManager
 local save = {}
 
@@ -68,6 +65,9 @@ Timer.FRAMES = 0
 
 ---@type table?
 Timer.PARAMS = {}
+
+---@type function
+local ShallowCopy = include("scripts.utils.table").ShallowCopy
 
 
 
@@ -182,10 +182,10 @@ function save:init(Mod)
     local function onRewind(_, COMMAND)
         -- if COMMAND == "rewind" or COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
         if save.LAST_ROOM_RUN or save.LAST_ROOM_LEVEL or save.LAST_ROOM_ROOM or save.LAST_ROOM_TIMERS then
-            save.RUN    = Helper.ShallowCopy(save.LAST_ROOM_RUN)
-            save.LEVEL  = Helper.ShallowCopy(save.LAST_ROOM_LEVEL)
-            save.ROOM   = Helper.ShallowCopy(save.LAST_ROOM_ROOM)
-            save.TIMERS = Helper.ShallowCopy(save.LAST_ROOM_TIMERS)
+            save.RUN    = ShallowCopy(save.LAST_ROOM_RUN)
+            save.LEVEL  = ShallowCopy(save.LAST_ROOM_LEVEL)
+            save.ROOM   = ShallowCopy(save.LAST_ROOM_ROOM)
+            save.TIMERS = ShallowCopy(save.LAST_ROOM_TIMERS)
         end
             -- if COMMAND == "rewind" then return "" end
             -- if COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then return true end
@@ -197,10 +197,10 @@ function save:init(Mod)
     local function roomChangedStore(_)
         if game:GetFrameCount() <= 1 then return end
 
-        save.LAST_ROOM_RUN    = Helper.ShallowCopy(save.RUN)
-        save.LAST_ROOM_LEVEL  = Helper.ShallowCopy(save.LEVEL)
-        save.LAST_ROOM_ROOM   = Helper.ShallowCopy(save.ROOM)
-        save.LAST_ROOM_TIMERS = Helper.ShallowCopy(save.TIMERS)
+        save.LAST_ROOM_RUN    = ShallowCopy(save.RUN)
+        save.LAST_ROOM_LEVEL  = ShallowCopy(save.LEVEL)
+        save.LAST_ROOM_ROOM   = ShallowCopy(save.ROOM)
+        save.LAST_ROOM_TIMERS = ShallowCopy(save.TIMERS)
     end
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, roomChangedStore)
 

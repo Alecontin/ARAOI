@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.Replace = Card.CARD_REVERSE_DEATH
@@ -17,7 +14,7 @@ function card:init(Mod)
         entity:AddCharmed(EntityRef(player), -1)
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
             "#{{DeathMark}} Spawns a friendly Death Horseman"

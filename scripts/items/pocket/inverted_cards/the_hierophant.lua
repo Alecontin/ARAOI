@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Hierophant")
@@ -19,7 +16,7 @@ function card:init(Mod)
         end
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
             "#{{BlackHeart}} Spawns 2 Black Hearts"

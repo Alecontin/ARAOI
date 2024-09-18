@@ -12,13 +12,22 @@ local BROKEN_HEARTS = 2 -- *Default: `2` — The ammount of broken hearts the pl
 -- END OF CONFIGURATION --
 --------------------------
 
-local SACRIFICIAL_HEART = Isaac.GetItemIdByName("Sacrificial Heart")
 
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
+
+---------------
+-- CONSTANTS --
+---------------
+
+local SACRIFICIAL_HEART = Isaac.GetItemIdByName("Sacrificial Heart")
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -32,26 +41,25 @@ function modded_item:init(Mod)
     ---------------------
 
     ---@param player EntityPlayer
-    local function giveBrokenHearts(_, _, _, firstTime, _, _, player)
+    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, _, _, firstTime, _, _, player)
         -- Check if the health was already applied, we shouldn't re-apply the broken hearts if T. Isaac juggles the item around
         if firstTime then
 
-            -- T. Magdalene nerf since she's the character that will benefit from this item the most
+            -- T. Magdalene nerf since it's the character that will benefit from this item the most
             if player:GetPlayerType() == PlayerType.PLAYER_MAGDALENE_B then
                 player:AddBrokenHearts(BROKEN_HEARTS * 2)
             else
                 player:AddBrokenHearts(BROKEN_HEARTS)
             end
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, giveBrokenHearts, SACRIFICIAL_HEART)
+    end, SACRIFICIAL_HEART)
 
 
     -----------------------------
     -- MAIN ITEM FUNCTIONALITY --
     -----------------------------
 
-    local function changeCurseIntoSacrifice(_)
+    Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
         -- Shouldn't change curse rooms if we don't have the item
         if not PlayerManager.AnyoneHasCollectible(SACRIFICIAL_HEART) then return end
 
@@ -103,7 +111,7 @@ function modded_item:init(Mod)
                 door:SetRoomTypes(spawn_room:GetType(), RoomType.ROOM_SACRIFICE)
             end
         end
-        
+
         -- Lastly update the map visibility, otherwise sacrifice rooms would appear
         -- as curse rooms on the map if you used The World or had The Mind
         ---@class MinimapAPI
@@ -117,8 +125,7 @@ function modded_item:init(Mod)
         else
             level:UpdateVisibility()
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, changeCurseIntoSacrifice)
+    end)
 
 
 
@@ -126,7 +133,7 @@ function modded_item:init(Mod)
     -- VOODOO HEAD INTERACTION --
     -----------------------------
 
-    local function onSacrificeRoomEnter(_)
+    Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         -- Check if we have the synergy
         if not (PlayerManager.AnyoneHasCollectible(SACRIFICIAL_HEART) and
                 PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD))
@@ -170,30 +177,27 @@ function modded_item:init(Mod)
             Vector.Zero,
             nil
         )
-    end
-    Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, onSacrificeRoomEnter)
+    end)
 
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
 
-    ---@class EID
+    ---@type EID
     if EID then
-        EID:addCollectible(
-            SACRIFICIAL_HEART, 
+        EID:addCollectible(SACRIFICIAL_HEART,
             "#{{BrokenHeart}} +"..BROKEN_HEARTS.." Broken Hearts"..
             "# Changes all curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
             "# Change triggers on new floor"
         )
 
-        local function condition(descObj)
-            return descObj.ObjSubType == SACRIFICIAL_HEART and Helper.AnyPlayerIs(PlayerType.PLAYER_MAGDALENE_B)
-        end
-        local function modifier(descObj)
-            EID:appendToDescription(descObj, "#{{Player22}} {{BrokenHeart}} +"..(BROKEN_HEARTS*2).." broken hearts instead of "..BROKEN_HEARTS)
-            return descObj
-        end
-        EID:addDescriptionModifier("Sac Heart T. Magdalene", condition, modifier)
+        helper.eid.PlayerBasedModifier(
+            "Sacrificial Heart Tainted Magdalene",
+            SACRIFICIAL_HEART,
+            {PlayerType.PLAYER_MAGDALENE_B},
+            PlayerType.PLAYER_MAGDALENE_B,
+            "{{BrokenHeart}} +"..(BROKEN_HEARTS*2).." broken hearts instead of "..BROKEN_HEARTS
+        )
 
 
         local function condition(descObj)
@@ -207,11 +211,11 @@ function modded_item:init(Mod)
             else
                 id = SACRIFICIAL_HEART
             end
-            EID:appendToDescription(descObj, "#{{Collectible"..id.."}} Will turn both cursed rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
-                                             "#2 red chests {{RedChest}} and a coin {{Coin}} will now spawn inside sacrifice rooms {{SacrificeRoom}}")
+            EID:appendToDescription(descObj, "#{{Collectible"..id.."}} Will turn both curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
+                                             "# 2 red chests {{RedChest}} and a coin {{Coin}} will now spawn inside sacrifice rooms {{SacrificeRoom}}")
             return descObj
         end
-        EID:addDescriptionModifier("Sac Heart Voodoo Head Synergy", condition, modifier)
+        EID:addDescriptionModifier("Sacrificial Heart Voodoo Head Synergy", condition, modifier)
     end
 end
 

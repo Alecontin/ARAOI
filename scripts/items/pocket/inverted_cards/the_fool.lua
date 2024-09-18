@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 local card = {}
 
@@ -16,15 +16,15 @@ function card:init(Mod)
         local room = game:GetRoom()
 
         local items = {}
-        for item, amount in pairs(Helper.GetCollectibleListCurated(player, {ItemType.ITEM_ACTIVE}, ItemTag.TAG_QUEST)) do
+        for item, amount in pairs(helper.player.GetCollectibleListCurated(player, {ItemType.ITEM_ACTIVE}, ItemTag.TAG_QUEST)) do
             for _ = 1, amount do
                 table.insert(items, item)
             end
         end
 
-        Helper.ShuffleTable(items, rng)
+        helper.table.ShuffleTable(items, rng)
 
-        local pedestals = Helper.SplitTable(items, 10)
+        local pedestals = helper.table.SplitTable(items, 10)
 
         for _, pedestal in ipairs(pedestals) do
             ---@type EntityPickup
@@ -32,7 +32,7 @@ function card:init(Mod)
             for _, item in ipairs(pedestal) do
                 player:RemoveCollectible(item)
                 if collectible_pedestal == nil then
-                    collectible_pedestal = Helper.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
+                    collectible_pedestal = helper.item.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
                 else
                     collectible_pedestal:AddCollectibleCycle(item)
                 end
@@ -40,7 +40,7 @@ function card:init(Mod)
         end
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
         EID:addCard(card.ID,

@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 local card = {}
 
@@ -18,7 +18,7 @@ function card:init(Mod)
         rng:RandomFloat()
 
         local function NewItem()
-            return Helper.SpawnCollectible(room:GetSeededCollectible(rng:GetSeed()), room:FindFreePickupSpawnPosition(player.Position,50), Vector.Zero, player, false)
+            return helper.item.SpawnCollectible(room:GetSeededCollectible(rng:GetSeed()), room:FindFreePickupSpawnPosition(player.Position,50), Vector.Zero, player, false)
         end
 
         local item = NewItem()
@@ -29,7 +29,7 @@ function card:init(Mod)
         end
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
             "#{{Collectible}} Spawns 2-4 items to choose from"

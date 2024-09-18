@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Moon")

@@ -1,5 +1,5 @@
----@class Helper
-local Helper = include("scripts.Helper")
+---@class helper
+local helper = include("scripts.helper")
 
 local card = {}
 
@@ -26,11 +26,11 @@ function card:init(Mod)
         player:AnimateCollectible(collectibleID)
 
         if collectible:GetItemPoolType() == ItemPoolType.POOL_DEVIL
-        and not Helper.IsKeeper(player) then
+        and not helper.player.IsKeeper(player) then
             player:AddMaxHearts(config.DevilPrice * 2, true)
         else
             local coins = config.ShopPrice
-            if Helper.IsKeeper(player) then
+            if helper.player.IsKeeper(player) then
                 coins = coins * config.DevilPrice
             end
             if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE) then
@@ -67,7 +67,7 @@ function card:init(Mod)
         end
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
         EID:addCard(card.ID,

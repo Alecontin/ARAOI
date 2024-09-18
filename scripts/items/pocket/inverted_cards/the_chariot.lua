@@ -1,6 +1,3 @@
----@class Helper
-local Helper = include("scripts.Helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Chariot")
@@ -16,18 +13,18 @@ function card:init(Mod)
                     entity:AddFreeze(EntityRef(player), 150)
                     Isaac.CreateTimer(function ()
                         entity:AddFreeze(EntityRef(player), 150)
-                    end, 30, 10, false)
+                    end, 15, 10, false)
                 else
                     entity:AddFreeze(EntityRef(player), 150)
                     Isaac.CreateTimer(function ()
                         entity:AddFreeze(EntityRef(player), 150)
-                    end, 30, 999999, false)
+                    end, 15, 999999, false)
                 end
             end
         end
     end, card.ID)
 
-    ---@class EID
+    ---@type EID
     if EID then
         EID:addCard(card.ID,
             "#{{Freezing}} Petrifies all enemies in the room"

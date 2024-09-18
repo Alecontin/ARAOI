@@ -1,9 +1,22 @@
+-----------------------------
+-- NO CONFIG FOR THIS ITEM --
+-----------------------------
 
----@class Helper
-local Helper = include("scripts.Helper")
 
--- Getting the trinket in question
+
+
+
+
+---------------
+-- CONSTANTS --
+---------------
+
 local SPARE_BATTERY = Isaac.GetTrinketIdByName("Spare Battery")
+
+
+-------------------------
+-- ITEM INITIALIZATION --
+-------------------------
 
 local modded_item = {}
 
@@ -17,7 +30,7 @@ function modded_item:init(Mod)
     ---@param entity Entity
     ---@param inputHook any
     ---@param buttonAction any
-    local function onSpacebarPressed(_, entity, inputHook, buttonAction)
+    Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
         -- Noone pressed anything
         if not entity then return end
 
@@ -95,8 +108,7 @@ function modded_item:init(Mod)
             spawnBatteries()
         end
 
-    end
-    Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, onSpacebarPressed)
+    end)
 
 
     ----------------------
