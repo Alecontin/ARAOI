@@ -120,10 +120,14 @@ function save:init(Mod)
         else
             -- The run is continued, try to load data
 
-            local data = json.decode(Mod:LoadData())
+            -- Get the mod's data
+            local mod_data = Mod:LoadData()
 
-            -- Only set data if it exists
-            if data then
+            -- If the mod's data is not an empty string
+            if mod_data ~= "" then
+                -- Decode the data
+                local data = json.decode(mod_data)
+
                 save.PERSISTANT = data[1] or {}
                 save.RUN        = data[2] or {}
                 save.LEVEL      = data[3] or {}
