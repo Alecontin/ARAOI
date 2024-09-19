@@ -1,33 +1,31 @@
-<!-- LAST ID USED: 8 -->
-
-<items gfxroot="gfx/items/" version="1">
+<items gfxroot="gfx/items/" deathanm2="gfx/death_icons.anm2" version="1">
   <!-- Complete The Corpse with Blue Baby -->
-  <active name="Eternal Dplopia" achievement="448" id="2" quality="4" maxcharges="6" devilprice="2" gfx="eternal_dplopia.png" description="Rerolls duplicates, at a cost." tags="offensive nocantrip" />
-  <!-- Defeat Ultra Greed as Blue Baby -->
-  <active name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive" />
+  <active id="1" name="Eternal Dplopia" achievement="448" quality="4" maxcharges="6" devilprice="2" gfx="eternal_dplopia.png" description="Rerolls duplicates, at a cost." tags="offensive nocantrip" />
   <!-- Complete challenge Seeing Double -->
-  <active name="3D Glasses" achievement="521" id="3" quality="2" maxcharges="30" chargetype="timed" gfx="3d_glasses.png" description="Seeing in 2 colors!" addcostumeonpickup="true" tags="offensive nocantrip" />
+  <active id="2" name="3D Glasses" achievement="521" quality="2" maxcharges="30" chargetype="timed" gfx="3d_glasses.png" description="Seeing in 2 colors!" addcostumeonpickup="true" tags="offensive nocantrip" />
   <!-- Defeat Delirium as Tainted Cain -->
-  <active name="Bag of Holding" achievement="586" id="5" quality="4" maxcharges="2" devilprice="2" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
+  <active id="4" name="Bag of Holding" achievement="586" quality="4" maxcharges="2" devilprice="2" gfx="bag_of_holding.png" description="Can hold anything!" tags="offensive nocantrip" />
   <!-- Defeat Isaac, ???, Satan, and The Lamb as Tainted Lost -->
-  <active name="Glass Die" achievement="568" id="6" quality="4" maxcharges="4" devilprice="2" gfx="glass_die.png" description="You can see through it, don't break it!" tags="offensive nocantrip" />
+  <active id="5" name="Glass Die" achievement="568" quality="4" maxcharges="4" devilprice="2" gfx="glass_die.png" description="You can see through it, don't break it!" tags="offensive nocantrip" />
   <!-- Earn all Hard mode Completion Marks for all characters, including tainted ones -->
-  <active name="Spellbook" achievement="636" id="7" quality="4" maxcharges="3" devilprice="2" gfx="spellbook.png" description="It's like magic!" tags="offensive nocantrip book" />
+  <active id="6" name="Spellbook" achievement="636" quality="4" maxcharges="3" devilprice="2" gfx="spellbook.png" description="It's like magic!" tags="offensive nocantrip book" />
+  <!-- Defeat Ultra Greed as Blue Baby -->
+  <active id="8" name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive" />
 
-  <!-- Defeat Mega Satan as Tainted Samson -->
-  <passive name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
-  <!-- Beat Mega Satan with Maggie -->
-  <passive name="Sacrificial Heart" achievement="206" quality="3" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr summonable" />
   <!-- Beat Greedier Mode with Lilith -->
-  <passive name="Duality Halo" achievement="306" id="1" quality="3" devilprice="2" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable" />
+  <passive id="0" name="Duality Halo" achievement="306" quality="3" devilprice="2" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable" />
   <!-- Destroy 5 rainbow poops -->
-  <passive name="Rainbow Headband" achievement="353" id="4" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive summonable" />
-  <!-- Defeat Hush as Eden -->
-  <passive name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
-  <!-- Beat the "Cursed!" challenge -->
-  <passive name="Voodoo Body" achievement="98" quality="3" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
+  <passive id="3" name="Rainbow Headband" achievement="353" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive summonable" />
   <!-- Donate 879 Coins to the Greed Donation Machine -->
-  <passive name="Vampire Cloak" achievement="250" id="8" quality="4" gfx="vampire_cloak.png" devilprice="2" description="And then he turned himself into a bat!" tags="offensive summonable devil"/>
+  <passive id="7" name="Vampire Cloak" achievement="250" quality="4" gfx="vampire_cloak.png" devilprice="2" description="And then he turned himself into a bat!" tags="offensive summonable devil"/>
+  <!-- Defeat Mega Satan as Tainted Samson -->
+  <passive id="9" name="Gambling Chips" achievement="294" quality="4" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
+  <!-- Beat Mega Satan with Maggie -->
+  <passive id="10" name="Sacrificial Heart" achievement="206" quality="3" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr summonable" />
+  <!-- Defeat Hush as Eden -->
+  <passive id="11" name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
+  <!-- Beat the "Cursed!" challenge -->
+  <passive id="12" name="Voodoo Body" achievement="98" quality="3" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />

@@ -1,5 +1,5 @@
 <costumes anm2root="gfx/characters/">
-    <costume id="1" anm2path="duality_halo.anm2" type="passive" />
-    <costume id="3" anm2path="3d_glasses.anm2" type="active" priority="5"/>
-    <costume id="4" anm2path="rainbow_headband.anm2" type="passive" />
+    <costume id="0" anm2path="duality_halo.anm2" type="passive" />
+    <costume id="2" anm2path="3d_glasses.anm2" type="active" priority="5"/>
+    <costume id="3" anm2path="rainbow_headband.anm2" type="passive" />
 </costumes>

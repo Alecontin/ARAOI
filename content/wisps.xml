@@ -108,9 +108,10 @@
 	<color name="core_white" r="510" g="510" b="510"/>
 	<color name="tear_white" r="383" g="510" b="510" or="40" og="50" ob="50"/>
 
-	<wisp id="2" hp="1" flameColor="flame_white" canShoot="false" coreColor="core_white" coreGfx="eternal_dplopia.png" count="1" />
-	<wisp id="3" count="0" />
+	<wisp id="1" hp="1" flameColor="flame_white" canShoot="false" coreColor="core_white" coreGfx="eternal_dplopia.png" count="1" />
+	<wisp id="2" count="0" />
+	<wisp id="4" count="0" />
 	<wisp id="5" count="0" />
 	<wisp id="6" count="0" />
-	<wisp id="7" count="0" />
+	<!-- id 8 is being handled through code -->
 </wisps>
