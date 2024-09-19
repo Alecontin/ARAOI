@@ -260,7 +260,11 @@ function modded_item:init(Mod)
 
     ---@type EID
     if EID then
-        local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{MiniBoss}}"
+        local shell_game_icons = Sprite("gfx/ui/eid_shell_game_icons.anm2", true)
+        EID:addIcon("ShellGame", "idle", 0, 12, 12, -1, -1.5, shell_game_icons)
+        EID:addIcon("HellGame", "idle", 1, 12, 12, 1, -1.5, shell_game_icons)
+
+        local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{ShellGame}}{{HellGame}}"
 
         local max_luck = math.ceil((MAX_CHANCE - BASE_CHANCE) / LUCK_MODIFIER)
 
@@ -269,8 +273,7 @@ function modded_item:init(Mod)
             "# "..BASE_CHANCE.."% chance to spawn on every room one of: "..slots..
             "#{{Luck}} "..MAX_CHANCE.."% at "..max_luck.." luck"..
             "# Duplicates rewards from "..slots..
-            "#{{DeathMark}} "..COIN_CHANCE.."% chance for enemies to spawn a coin on death"..
-            "#{{MiniBoss}} {{ColorGray}}This icon refers to shell games as there is no icon for them"
+            "#{{DeathMark}} "..COIN_CHANCE.."% chance for enemies to spawn a coin on death"
         )
 
         helper.eid.PlayerBasedModifier(
