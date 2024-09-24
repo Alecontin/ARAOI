@@ -136,6 +136,7 @@ function TableUtils.SplitTable(t, num_sublists)
     return sublists
 end
 
+-- Shuffles the table in place
 ---@param rng? RNG
 function TableUtils.ShuffleTable(t, rng)
     local n = #t
