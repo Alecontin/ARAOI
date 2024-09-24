@@ -4,4 +4,10 @@
         <sample weight="1" path="wing_flaps/wing_flaps_2.wav" />
         <sample weight="1" path="wing_flaps/wing_flaps_3.wav" />
     </sound>
+    <sound name="wire_cut">
+		  <sample weight="1" path="minecraft/shear.wav" />
+    </sound>
+    <sound name="tool_break">
+		  <sample weight="1" path="minecraft/tool_break.wav" />
+    </sound>
 </sounds>
