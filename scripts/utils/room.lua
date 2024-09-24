@@ -40,4 +40,19 @@ function RoomUtils.GetGridEntities()
     return entities
 end
 
+-- Returns a list of all Pickups in the current room
+---@return EntityPickup[]
+function RoomUtils.GetPickups()
+    local pickups = {}
+
+    for _, v in ipairs(Isaac.GetRoomEntities()) do
+        local pickup = v:ToPickup()
+        if pickup then
+            table.insert(pickups, pickup)
+        end
+    end
+
+    return pickups
+end
+
 return RoomUtils
