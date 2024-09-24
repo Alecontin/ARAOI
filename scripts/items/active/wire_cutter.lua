@@ -92,8 +92,12 @@ function modded_item:init(Mod)
 
         -- Go through every pickup
         for _, pickup in ipairs(pickups) do
-            -- If the player that used the item is The Lost and we are in a devil deal / black market
-            if helper.player.IsLost(player) and helper.table.IsValueInTable(room:GetType(), {RoomType.ROOM_DEVIL, RoomType.ROOM_BLACK_MARKET}) then
+            -- If the player that used the item is The Lost
+            -- and we are in a Devil Deal, Black Market or in the dark room
+            -- and there are pickups that cost hearts
+            if helper.player.IsLost(player)
+            and (helper.table.IsValueInTable(room:GetType(), {RoomType.ROOM_DEVIL, RoomType.ROOM_BLACK_MARKET}) or game:GetLevel():GetStage() == LevelStage.STAGE6)
+            and pickup.Price < 0 then
                 -- Return this function, which handles this situation
                 return makeEverythingFreeAndBreak()
             end
