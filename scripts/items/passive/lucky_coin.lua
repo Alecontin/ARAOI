@@ -26,12 +26,19 @@ local LUCKY_COIN_ENTITY = Isaac.GetEntityVariantByName("Lucky Coin")
 -- VARIABLES --
 ---------------
 
-local double_tap_data = {}
+local double_tap_countdowns = {}
+local double_tap_keys = {}
 
 ---@param player EntityPlayer
 ---@param set? integer
-local function doubleTap(player, set)
-    return SaveData:Key(double_tap_data, helper.player.GetID(player), 0, set)
+local function doubleTapCountdown(player, set)
+    return SaveData:Key(double_tap_countdowns, helper.player.GetID(player), 0, set)
+end
+
+---@param player EntityPlayer
+---@param set? integer
+local function doubleTapKey(player, set)
+    return SaveData:Key(double_tap_keys, helper.player.GetID(player), 0, set)
 end
 
 
@@ -87,27 +94,34 @@ function modded_item:init(Mod)
     Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
         -- Check every player that has the item
         for _, player in ipairs(helper.player.GetPlayersWithCollectible(LUCKY_COIN)) do
-            -- If the player just press the shoot button
-            if helper.player.TriggeredShooting(player) then
+            local fire_direction = helper.player.TriggeredShooting(player)
+            -- If the player just pressed the shoot button
+            if fire_direction then
                 -- Check if the double tap countdown is at 0
-                if doubleTap(player) == 0 then
-                    -- If so, increase it
-                    doubleTap(player, 15)
+                if doubleTapCountdown(player) == 0 or doubleTapKey(player) == helper.player.FireDirection.NONE then
+                    -- If so, increase it and set the key
+                    doubleTapCountdown(player, 15)
+                    doubleTapKey(player, fire_direction)
 
                 -- The double tap wasn't at 0
                 else
-                    -- Set it to 0
-                    doubleTap(player, 0)
+                    if fire_direction == doubleTapKey(player) then
+                        -- Spawn a coin
+                        spawnCoin(player)
+                    end
 
-                    -- Spawn a coin
-                    spawnCoin(player)
+                    doubleTapKey(player, helper.player.FireDirection.NONE)
+                    -- Set it to 0
+                    doubleTapCountdown(player, 0)
                 end
             end
 
             -- Check if the double tap countdown is higher than 0
-            if doubleTap(player) > 0 then
+            if doubleTapCountdown(player) > 0 then
                 -- If it is, set it to the existing countdown - 1
-                doubleTap(player, doubleTap(player) - 1)
+                doubleTapCountdown(player, doubleTapCountdown(player) - 1)
+            elseif doubleTapKey(player) ~= helper.player.FireDirection.NONE then
+                doubleTapKey(player, helper.player.FireDirection.NONE)
             end
         end
     end)
