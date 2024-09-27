@@ -179,8 +179,18 @@ end
 
 ---@param player EntityPlayer
 function PlayerUtils.IsShooting(player)
-    local triggers = player:GetLastActionTriggers()
-    return triggers & ActionTriggers.ACTIONTRIGGER_SHOOTING > 0
+    return Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
+    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
+    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex)
+    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
+end
+
+---@param player EntityPlayer
+function PlayerUtils.TriggeredShooting(player)
+    return Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
+    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
+    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex)
+    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
 end
 
 -- Checks if any player is at least one of the provided player types
