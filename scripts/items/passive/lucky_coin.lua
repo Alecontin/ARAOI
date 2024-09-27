@@ -105,13 +105,14 @@ function modded_item:init(Mod)
 
                 -- The double tap wasn't at 0
                 else
+                    -- Did we press the same key as before?
                     if fire_direction == doubleTapKey(player) then
                         -- Spawn a coin
                         spawnCoin(player)
                     end
 
+                    -- Reset everything
                     doubleTapKey(player, helper.player.FireDirection.NONE)
-                    -- Set it to 0
                     doubleTapCountdown(player, 0)
                 end
             end
