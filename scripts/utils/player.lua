@@ -5,6 +5,15 @@ local PlayerUtils = {}
 ---@type TableUtils
 local TableUtils = include("scripts.utils.table")
 
+---@class FireDirection
+PlayerUtils.FireDirection = {
+    DOWN  = 7,
+    LEFT  = 4,
+    RIGHT = 5,
+    UP    = 6,
+    NONE  = nil
+}
+
 ---@param player EntityPlayer
 ---@param delay number
 ---@param respectTearCap? boolean
@@ -179,18 +188,18 @@ end
 
 ---@param player EntityPlayer
 function PlayerUtils.IsShooting(player)
-    return Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
-    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
-    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex)
-    or Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
+    if Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)  then return PlayerUtils.FireDirection.DOWN  end
+    if Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)  then return PlayerUtils.FireDirection.LEFT  end
+    if Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then return PlayerUtils.FireDirection.RIGHT end
+    if Input.IsActionPressed(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)    then return PlayerUtils.FireDirection.UP    end
 end
 
 ---@param player EntityPlayer
 function PlayerUtils.TriggeredShooting(player)
-    return Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)
-    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)
-    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex)
-    or Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)
+    if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)  then return PlayerUtils.FireDirection.DOWN  end
+    if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)  then return PlayerUtils.FireDirection.LEFT  end
+    if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then return PlayerUtils.FireDirection.RIGHT end
+    if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex)    then return PlayerUtils.FireDirection.UP    end
 end
 
 -- Checks if any player is at least one of the provided player types
