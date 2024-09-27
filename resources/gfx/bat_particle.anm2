@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="15/9/2024 5:05:52 PM" Version="2" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="27/9/2024 7:59:03 AM" Version="3" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="bat_particle.png" Id="0"/>
+			<Spritesheet Path="effects\bat_particle.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="main" Id="0" SpritesheetId="0"/>

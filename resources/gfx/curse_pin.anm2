@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="Alecontin" CreatedOn="23/7/2024 12:22:03 PM" Version="4" Fps="30"/>
+	<Info CreatedBy="Alecontin" CreatedOn="27/9/2024 7:58:43 AM" Version="5" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="curse_pin.png" Id="0"/>
+			<Spritesheet Path="effects\curse_pin.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Main" Id="0" SpritesheetId="0"/>
