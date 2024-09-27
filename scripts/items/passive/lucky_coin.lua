@@ -1,6 +1,14 @@
------------------------------
--- NO CONFIG FOR THIS ITEM --
------------------------------
+----------------------------
+-- START OF CONFIGURATION --
+----------------------------
+
+
+local COIN_TIMEOUT = 120 -- *Default: `120` — The amout of time the coin will stay in the air.*
+
+
+--------------------------
+-- END OF CONFIGURATION --
+--------------------------
 
 
 
@@ -52,7 +60,7 @@ local function spawnCoin(player)
     local shootingInput = player:GetShootingInput()
     local velocity = (shootingInput * 6) + (player.Velocity / 2)
     local particle = Isaac.Spawn(EntityType.ENTITY_EFFECT, LUCKY_COIN_ENTITY, 0, player.Position, velocity, player):ToEffect()
-    particle:SetTimeout(90)
+    particle:SetTimeout(COIN_TIMEOUT)
     particle.SpriteOffset = particle.SpriteOffset + Vector(0, 14)
     if shootingInput.Y ~= 0 then
         particle:GetSprite():Play("IdleY")
