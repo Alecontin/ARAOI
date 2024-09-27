@@ -28,6 +28,8 @@
   <passive id="11" name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
   <!-- Beat the "Cursed!" challenge -->
   <passive id="12" name="Voodoo Body" achievement="98" quality="3" gfx="voodoo_body.png" devilprice="2" blackhearts="2" description="Curse your enemies" tags="offensive summonable"/>
+  <!-- Defeat Mother as Tainted Cain -->
+  <passive id="14" name="Lucky Coin" achievement="553" quality="3" gfx="lucky_coin.png" description="50/50, take your chance" tags="offensive summonable"/>
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />

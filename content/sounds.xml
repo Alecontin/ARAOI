@@ -10,4 +10,9 @@
     <sound name="tool_break">
 		  <sample weight="1" path="minecraft/tool_break.wav" />
     </sound>
+    <sound name="lucky_coin">
+        <sample weight="1" path="ultrakill/coin_10.wav" />
+        <sample weight="1" path="ultrakill/coin.wav" />
+        <sample weight="1" path="ultrakill/coin_-10.wav" />
+    </sound>
 </sounds>

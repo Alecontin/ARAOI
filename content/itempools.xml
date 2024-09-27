@@ -5,6 +5,7 @@
     <Item Name="3D Glasses" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Blessing's Petal" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedTreasure">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -12,6 +13,7 @@
     <Item Name="3D Glasses" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Blessing's Petal" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="shop">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -52,12 +54,14 @@
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
   </Pool>
   <Pool Name="goldenChest">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
   </Pool>
   <Pool Name="redChest">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
@@ -70,10 +74,12 @@
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Wire Cutter" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
   </Pool>
   <Pool Name="beggar">
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
   </Pool>
   <Pool Name="demonBeggar">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
@@ -96,6 +102,7 @@
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
+    <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="ultraSecret">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
