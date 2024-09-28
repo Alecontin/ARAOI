@@ -57,7 +57,7 @@ end
 ---@param player EntityPlayer
 local function spawnCoin(player)
     SFXManager():Play(LUCKY_COIN_SOUND)
-    local shootingInput = player:GetShootingInput()
+    local shootingInput = player:GetShootingInput():Normalized()
     local velocity = (shootingInput * 6) + (player.Velocity / 2)
     local particle = Isaac.Spawn(EntityType.ENTITY_EFFECT, LUCKY_COIN_ENTITY, 0, player.Position, velocity, player):ToEffect()
     particle:SetTimeout(COIN_TIMEOUT)
@@ -108,7 +108,7 @@ function modded_item:init(Mod)
                 -- Check if the double tap countdown is at 0
                 if doubleTapCountdown(player) == 0 or doubleTapKey(player) == helper.player.FireDirection.NONE then
                     -- If so, increase it and set the key
-                    doubleTapCountdown(player, 15)
+                    doubleTapCountdown(player, 20)
                     doubleTapKey(player, fire_direction)
 
                 -- The double tap wasn't at 0
@@ -227,6 +227,32 @@ function modded_item:init(Mod)
             end
         end
     end, LUCKY_COIN_ENTITY)
+
+
+    ------------------
+    -- LUDOVICO FIX --
+    ------------------
+
+    ---@param tear EntityTear
+    Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function (_, tear)
+        -- Check if the spawner exists
+        local spawner = tear.SpawnerEntity
+        if not spawner then return end
+
+        -- Check if the spawner is a player
+        local player = spawner:ToPlayer()
+        if not player then return end
+
+        -- Check if the tear has the ludovico flag
+        if not tear:HasTearFlags(TearFlags.TEAR_LUDOVICO) then return end
+
+        -- Check if the tear was affected by our item
+        local data = tear:GetData()
+        if data["LuckyCoin"] == nil then return end
+
+        -- Set the collision damage to the base damage
+        tear.CollisionDamage = tear.BaseDamage
+    end)
 
 
     ----------------------
