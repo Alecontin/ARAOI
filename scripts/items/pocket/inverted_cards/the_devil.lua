@@ -20,30 +20,26 @@ function card:init(Mod)
 
     ---@param player EntityPlayer
     Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
-        player:AddSmeltedTrinket(TrinketType.TRINKET_DEVILS_CROWN)
-        queueRemoveDevilsCrown(player, true)
-
         local level = game:GetLevel()
 
-        local treasure_idx = level:QueryRoomTypeIndex(RoomType.ROOM_TREASURE, false, player:GetCardRNG(card.ID))
+        local rng = player:GetCardRNG(card.ID)
 
-        game:StartRoomTransition(treasure_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
+        local treasure_room_idx = level:QueryRoomTypeIndex(RoomType.ROOM_TREASURE, false, rng)
+        local treasure_room = level:GetRoomByIdx(treasure_room_idx)
+
+        if treasure_room.Data.Type == RoomType.ROOM_TREASURE and treasure_room.VisitedCount == 0 then
+            treasure_room.Flags = treasure_room.Flags | RoomDescriptor.FLAG_DEVIL_TREASURE
+        end
+
+        game:StartRoomTransition(treasure_room_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
     end, card.ID)
 
-    Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
-        for _, player in ipairs(PlayerManager.GetPlayers()) do
-            if queueRemoveDevilsCrown(player) then
-                player:TryRemoveSmeltedTrinket(TrinketType.TRINKET_DEVILS_CROWN)
-                queueRemoveDevilsCrown(player, false)
-            end
-        end
-    end)
-
-    ---@type EID
+    ---@class EID
     if EID then
         local devils_crown = TrinketType.TRINKET_DEVILS_CROWN
+
         EID:addCard(card.ID,
-            "#{{TreasureRoom}} Teleports Isaac to the {{Trinket"..devils_crown.."}} Devil's Crown Treasure Room"
+            "#{{RedTreasureRoom}} Teleports Isaac to the Treasure Room, turning it into a {{Trinket"..devils_crown.."}} Devil Treasure Room if it hasn't been visited yet"
         )
     end
 end
