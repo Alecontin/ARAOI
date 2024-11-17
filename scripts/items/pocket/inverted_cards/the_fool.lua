@@ -45,7 +45,7 @@ function card:init(Mod)
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
         EID:addCard(card.ID,
             "#{{Collectible}} Drops all of Isaac's collectibles into 10 pedestals"..
-            "#{{Collectible"..restock.."}} Excess items will be added to the pedestal's item cycle"
+            "#{{Collectible"..restock.."}} Excess items will be added to the pedestals item cycle"
         )
     end
 end
