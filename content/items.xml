@@ -15,7 +15,7 @@
   <active id="13" name="Wire Cutter" achievement="441" quality="2" maxcharges="8" chargetype="special" gfx="wire_cutter.png" description="Cut away your destiny" tags="offensive nocantrip" />
 
   <!-- Beat Greedier Mode with Lilith -->
-  <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable" />
+  <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed" />
   <!-- Destroy 5 rainbow poops -->
   <passive id="3" name="Rainbow Headband" achievement="353" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive summonable" />
   <!-- Donate 879 Coins to the Greed Donation Machine -->
