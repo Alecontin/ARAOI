@@ -9,10 +9,6 @@ local card = {}
 card.ID = Isaac.GetCardIdByName("Inverted Hanged Man")
 card.Replace = Card.CARD_REVERSE_HANGED_MAN
 
-local function greedSpawns(set)
-    return SaveData:Key(SaveData.RUN, "InvertedHangedManGreedSpawns", 0, set)
-end
-
 ---@param Mod ModReference
 function card:init(Mod)
     local game = Game()
@@ -23,7 +19,7 @@ function card:init(Mod)
         local rng = player:GetCardRNG(Card.CARD_HANGED_MAN)
         local room = game:GetRoom()
 
-        local function CloseDoors()
+        local function BarricadeDoors()
             for _, entity in ipairs(helper.room.GetGridEntities()) do
                 local door = entity:ToDoor()
                 if door then
@@ -33,21 +29,18 @@ function card:init(Mod)
             end
         end
 
-        local can_spawn_keeper = greedSpawns() == 0
-        local can_spawn_keeper_super_keeper = greedSpawns() == 1
-
-        if can_spawn_keeper then
+        if game:GetStateFlag(GameStateFlag.STATE_GREED_SPAWNED) == false then
             Isaac.Spawn(EntityType.ENTITY_GREED, 0, 0, room:GetRandomPosition(0), Vector.Zero, player)
-            greedSpawns(1)
-            CloseDoors()
+            game:SetStateFlag(GameStateFlag.STATE_GREED_SPAWNED, true)
+            BarricadeDoors()
             sfx:Play(SoundEffect.SOUND_SUMMONSOUND)
-        elseif can_spawn_keeper_super_keeper then
+        elseif game:GetStateFlag(GameStateFlag.STATE_SUPERGREED_SPAWNED) == false then
             Isaac.Spawn(EntityType.ENTITY_GREED, 1, 0, room:GetRandomPosition(0), Vector.Zero, player)
-            greedSpawns(2)
-            CloseDoors()
+            game:SetStateFlag(GameStateFlag.STATE_SUPERGREED_SPAWNED, true)
+            BarricadeDoors()
             sfx:Play(SoundEffect.SOUND_SUMMONSOUND)
         else
-            for _ = 2, rng:RandomInt(2, 10) do
+            for _ = 1, rng:RandomInt(2, 10) do
                 Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 1, 0, room:GetRandomPosition(0), Vector.Zero, player)
             end
         end
