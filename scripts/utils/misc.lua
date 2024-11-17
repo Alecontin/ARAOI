@@ -4,6 +4,42 @@ local MiscUtils = {}
 
 local game = Game()
 
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isAngelItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_ANGEL or item_pool == ItemPoolType.POOL_GREED_ANGEL
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isBossItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_BOSS or item_pool == ItemPoolType.POOL_GREED_BOSS
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isCurseItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_CURSE or item_pool == ItemPoolType.POOL_GREED_CURSE
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isSecretItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_SECRET or item_pool == ItemPoolType.POOL_GREED_SECRET
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isShopItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_SHOP or item_pool == ItemPoolType.POOL_GREED_SHOP
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isTreasureItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_TREASURE or item_pool == ItemPoolType.POOL_GREED_TREASURE
+end
+-- This function returns true when cheching for the normal item pool and its greed counterpart
+---@param item_pool ItemPoolType | ItemPool
+function MiscUtils.isDevilItemPool(item_pool)
+    return item_pool == ItemPoolType.POOL_DEVIL or item_pool == ItemPoolType.POOL_GREED_DEVIL
+end
+
 ---@param H any -- *Number between 0 and 360*
 ---@param S? any -- *Default: `1` — Number between 0 and 1*
 ---@param L? any -- *Default: `0.5` — Number between 0 and 1*

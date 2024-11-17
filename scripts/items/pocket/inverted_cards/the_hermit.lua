@@ -22,16 +22,25 @@ function card:init(Mod)
 
         local config = Isaac.GetItemConfig():GetCollectible(collectibleID)
 
-        player:RemoveCollectible(collectibleID)
-        player:AnimateCollectible(collectibleID)
+        if collectible:IsTrinket() then
+            player:TryRemoveSmeltedTrinket(collectibleID)
+            player:AnimateTrinket(collectibleID)
+        else
+            player:RemoveCollectible(collectibleID)
+            player:AnimateCollectible(collectibleID)
+        end
 
-        if collectible:GetItemPoolType() == ItemPoolType.POOL_DEVIL
+        if helper.misc.isDevilItemPool(collectible:GetItemPoolType())
         and not helper.player.IsKeeper(player) then
             player:AddMaxHearts(config.DevilPrice * 2, true)
         else
             local coins = config.ShopPrice
             if helper.player.IsKeeper(player) then
-                coins = coins * config.DevilPrice
+                if helper.misc.isDevilItemPool(collectible:GetItemPoolType()) then
+                    coins = coins * config.DevilPrice
+                elseif player:GetPlayerType() == PlayerType.PLAYER_KEEPER_B and helper.misc.isAngelItemPool(collectible:GetItemPoolType()) then
+                    coins = coins * config.DevilPrice
+                end
             end
             if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_STEAM_SALE) then
                 coins = math.floor(coins / 2)
@@ -71,8 +80,8 @@ function card:init(Mod)
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
         EID:addCard(card.ID,
-            "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the room it was picked up"..
-            "#{{Card"..card.Replace.."}} If used without having any collectibles, it will act like {{Card"..card.Replace.."}} The Hermit?"
+            "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the pool it was picked up"..
+            "#{{Card"..card.Replace.."}} If used when not having any collectibles, it will act like {{Card"..card.Replace.."}} The Hermit?"
         )
     end
 end
