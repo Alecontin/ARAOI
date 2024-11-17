@@ -8,7 +8,7 @@
     <card type="tarot_reverse" name="II - Inverted High Priestess" description="You sure about this?" hud="Inverted High Priestess"
     announcer="514" announcerdelay="120" mimiccharge="4" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="III - Inverted Empress" description="You are just like your mother" hud="Inverted Empress"
+    <card type="tarot_reverse" name="III - Inverted Empress" description="What a wonderful parent" hud="Inverted Empress"
     announcer="515" announcerdelay="70" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="IV - Inverted Emperor" description="Yesterday's enemies are today's friends" hud="Inverted Emperor"
