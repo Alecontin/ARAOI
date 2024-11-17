@@ -32,7 +32,7 @@ local files = {
     cards.."the_emperor",
     cards.."the_hermit",
     cards.."the_hierophant",
-    cards.."the_lovers", --
+    cards.."the_lovers",
     cards.."the_chariot",
     cards.."justice",
     cards.."wheel_of_fortune",

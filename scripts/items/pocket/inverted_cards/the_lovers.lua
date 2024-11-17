@@ -5,7 +5,6 @@ local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Lovers")
 card.Replace = Card.CARD_REVERSE_LOVERS
-card.REPLACE_CHANCE = 0.7
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -17,7 +16,7 @@ function card:init(Mod)
         local rng = player:GetCardRNG(card.ID)
 
         local familiars = helper.player.GetCollectibleListCurated(player, nil, ItemTag.TAG_QUEST, {ItemType.ITEM_FAMILIAR})
-        if #helper.table.Keys(familiars) == 0 then
+        if #helper.table.Keys(familiars) < 3 then
             player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
             return
         end
@@ -30,7 +29,7 @@ function card:init(Mod)
                 removed_familiars = removed_familiars + 1
             end
         end
-        for _ = 1, removed_familiars do
+        for _ = 1, math.floor(removed_familiars / 3) do
             helper.item.SpawnCollectible(room:GetSeededCollectible(rng:GetSeed()), room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
         end
     end, card.ID)
@@ -39,8 +38,8 @@ function card:init(Mod)
     if EID then
         local altar = CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR
         EID:addCard(card.ID,
-            "#{{Collectible"..altar.."}} Removes all familiars and spawns an item from the current room's item pool for each familiar removed"..
-            "#{{Card"..card.Replace.."}} If used without having any familiars, it will act like {{Card"..card.Replace.."}} The Lovers?"
+            "#{{Collectible"..altar.."}} Removes all familiars and spawns an item from the current room's item pool for every 3 familiars removed"..
+            "#{{Card"..card.Replace.."}} If used when having less than 3 familiars, it will act like {{Card"..card.Replace.."}} The Lovers?"
         )
     end
 end
