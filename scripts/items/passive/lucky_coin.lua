@@ -262,7 +262,7 @@ function modded_item:init(Mod)
     ---@type EID
     if EID then
         EID:addCollectible(LUCKY_COIN,
-            "# Double tapping a shooting key throws a coin in that direction"..
+            "# Double-tapping a fire button throws a coin in that direction"..
             "#{{Tearsize}} Shooting at a coin:"..
             "#{{Blank}} {{Shotspeed}} Redirects the tear towards the closest enemy"..
             "#{{Blank}} {{Damage}} Has a 50/50 chance of doubling/halving the tear's damage"..
