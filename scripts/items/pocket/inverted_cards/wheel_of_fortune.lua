@@ -18,7 +18,7 @@ function card:init(Mod)
 
         local rng = player:GetCardRNG(card.ID)
 
-        local use_card = ItemPool:GetCard(rng:RandomInt(1, 99999999), false, false, false)
+        local use_card = ItemPool:GetCard(rng:Next(), false, false, false)
 
         local config = ItemConfig:GetCard(use_card)
         player:UseCard(use_card, UseFlag.USE_NOANNOUNCER)

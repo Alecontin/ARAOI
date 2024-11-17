@@ -4,16 +4,16 @@ local helper = include("scripts.helper")
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
+local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Sun")
+card.Replace = Card.CARD_REVERSE_SUN
+
 ---@param player EntityPlayer
 ---@param set? boolean
 local function CardEffect(player, set)
     return SaveData:Data(SaveData.RUN, "CardEffectInvertedSun", {}, helper.player.GetID(player), false, set)
 end
-
-local card = {}
-
-card.ID = Isaac.GetCardIdByName("Inverted Sun")
-card.Replace = Card.CARD_REVERSE_SUN
 
 ---@param Mod ModReference
 function card:init(Mod)
