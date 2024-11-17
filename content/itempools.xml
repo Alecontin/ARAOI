@@ -50,7 +50,7 @@
   </Pool>
   <Pool Name="shellGame">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Eternal Dplopia" Weight="0.3" DecreaseBy="0.15" RemoveOn="0.1" />
+    <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
