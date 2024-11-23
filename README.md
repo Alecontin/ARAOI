@@ -3,7 +3,7 @@ This is a [The Binding Of Isaac: Repentance](https://store.steampowered.com/app/
 
 You can download the mod from this github page by [clicking here](https://github.com/Alecontin/ARAOI/archive/refs/heads/main.zip), or by subscribing to it in the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3265264784).
 
-Everyhing this mod adds has [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions) support.
+Everything this mod adds has [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions) support.
 
 
 
