@@ -14,7 +14,7 @@ chargebar.__index = chargebar
 ---@param distance? number -- *Default: `57.245086669922` — The distance from the player's position, towards the provided angle.*
 function chargebar:Render(angle, distance)
     angle = angle or 19
-    distance = 57.245086669922
+    distance = distance or 57.245086669922
 
     local player = self.ActivePlayer or Isaac.GetPlayer()
     self.Sprite:Render(Isaac.WorldToScreen(player.Position - (Vector(0,1):Normalized():Rotated(angle) * distance) ))
@@ -48,7 +48,6 @@ end
 ---@param charge? integer
 function chargebar:Advance(charge)
     if self.Sprite:GetAnimation() == "Disappear" then
-        self.Sprite:SetAnimation("Charging")
         self:SetCharge(0)
     end
 
