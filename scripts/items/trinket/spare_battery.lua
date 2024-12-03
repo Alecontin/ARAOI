@@ -119,9 +119,9 @@ function modded_item:init(Mod)
     if EID then
         EID:addTrinket(SPARE_BATTERY,
             "#!!! SINGLE USE !!!"..
-            "#Spawns 1 battery when you try to use an active item without enough charges"
+            "#{{Battery}} Spawns a battery when trying to use an active item without enough charges"
         )
-        EID:addGoldenTrinketMetadata(SPARE_BATTERY, {"Spawns 1 extra battery", "Spawns 2 extra batteries"})
+        EID:addGoldenTrinketMetadata(SPARE_BATTERY, {"{{Battery}} Spawns an extra battery", "{{Battery}} Spawns 2 extra batteries"})
     end
 end
 
