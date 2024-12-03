@@ -33,6 +33,9 @@
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
-  <!-- An achievement number this high will prevent this trinket from naturally spawning -->
+  <!-- Available after unlocking any Reverse card -->
+  <trinket name="Inverted Spades" gfx="inverted_spades.png" description="The other side reveals itself" tags="offensive" />
+
+  <!-- Trinkets with a random achievement number to prevent them from being spawned -->
   <trinket name="Solved Rubik's Cube" achievement="759807" gfx="rubiks_cube_solved.png" description="Blood, sweat and tears." cache="speed firedelay damage range shotspeed luck" tags="offensive" />
 </items>

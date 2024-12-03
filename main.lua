@@ -42,7 +42,7 @@ local files = {
     passive.."lucky_coin",
 
     --[[ POCKET ITEMS ]]--
-    pocket.."inverted_cards",
+    pocket.."inverted_cards", -- + Trinket
 
     --[[ TRINKETS ]]--
     trinket.."spare_battery",
