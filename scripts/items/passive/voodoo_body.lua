@@ -436,7 +436,7 @@ function modded_item:init(Mod)
             "#{{BlackHeart}} +1 Black Heart"..
             "# Damaging an enemy will spawn a pin on a random enemy that deals {{Damage}} "..math.floor(DAMAGE_SCALE * 100).."% of the original damage and ignores armor"..
             "#{{Tearsize}} Pins copy the majority of Isaac's tear effects"..
-            "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pin will deal {{Damage}} "..math.floor((DAMAGE_SCALE+VOODOO_HEAD_ADD) * 100).."% damage instead"
+            "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pins will deal {{Damage}} "..math.floor((DAMAGE_SCALE+VOODOO_HEAD_ADD) * 100).."% damage instead"
         )
     end
 end

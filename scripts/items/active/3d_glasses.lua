@@ -203,8 +203,8 @@ function modded_item:init(Mod)
     ---@type EID
     if EID then
         EID:addCollectible(THREED_GLASSES,
-            "#{{Timer}} On use, toggles the Isaac's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
-            "#{{Tearsize}} Enemy tears will now be {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
+            "#{{Timer}} On use, toggles Isaac's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
+            "#{{Tearsize}} While holding the item, enemy projectiles will now be {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
             "#{{HolyMantle}} Isaac will not take damage from tears of the same color as him"
         )
 

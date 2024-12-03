@@ -49,7 +49,7 @@ function card:init(Mod)
     ---@type EID
     if EID then
         EID:addCard(card.ID,
-            "#{{Player14}} Spawns the Greed boss"..
+            "#{{Player14}} Spawns the Greed mini-boss"..
             "#{{Player33}} Spawns Super Greed if Greed was already spawned"..
             "#{{SecretRoom}} Spawns 2-10 secret room shopkeepers if Super Greed was already spawned"
         )

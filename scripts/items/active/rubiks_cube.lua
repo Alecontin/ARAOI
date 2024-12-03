@@ -213,8 +213,7 @@ function modded_item:init(Mod)
     ---@type EID
     if EID then
         EID:addCollectible(RUBIKS_CUBE,
-            "#{{Luck}} "..SOLVE_CHANCE.."% chance of solving the cube and destroying itself"..
-            "#{{Trinket"..SOLVED_RUBIKS_CUBE.."}} When solved, drops a Solved Rubik's Cube trinket"
+            "#{{Luck}} "..SOLVE_CHANCE.."% chance of dropping a {{Trinket"..SOLVED_RUBIKS_CUBE.."}} Solved Rubik's Cube and destroying itself"
         )
 
         helper.eid.BookOfVirtuesSynergy("Rubik's Cube Book Of Virtues", RUBIKS_CUBE, "Each wisp will enhance the Solved Rubik's Cube stats by 10%")

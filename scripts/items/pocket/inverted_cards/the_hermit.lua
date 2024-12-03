@@ -80,7 +80,7 @@ function card:init(Mod)
     if EID then
         local restock = CollectibleType.COLLECTIBLE_RESTOCK
         EID:addCard(card.ID,
-            "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the pool it was picked up"..
+            "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the pool it was picked up from"..
             "#{{Card"..card.Replace.."}} If used when not having any collectibles, it will act like {{Card"..card.Replace.."}} The Hermit?"
         )
     end

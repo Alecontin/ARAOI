@@ -9,7 +9,7 @@ local BASE_CHANCE = 15 -- *Default: `15` — The base chance for a slot to spawn
 
 local LUCK_MODIFIER = 0.75 -- *Default: `0.75` — Player's luck will be multiplied by this and added to the `BASE_CHANCE`.*
 
-local COIN_CHANCE        = 10 -- *Default: `10` — Chance to spawn a coin on enemy kill.*
+local COIN_CHANCE   = 10 -- *Default: `10` — Chance to spawn a coin on enemy kill.*
 
 
 

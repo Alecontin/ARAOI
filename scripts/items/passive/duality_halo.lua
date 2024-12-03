@@ -121,7 +121,7 @@ function modded_item:init(Mod)
     -- FUNCTION TRIGGER --
     ----------------------
 
-    local function bossDefeated()
+    Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, function ()
         -- No point in triggering the functionality when we don't even have the item
         if not PlayerManager.AnyoneHasCollectible(DUALITY_HALO) then return end
 
@@ -137,8 +137,7 @@ function modded_item:init(Mod)
             -- Create a timer to trigger the item's functionality
             Isaac.CreateTimer(spawnConsolation, 3, 1, false)
         end
-    end
-    Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, bossDefeated)
+    end)
 
 
     ----------------------
