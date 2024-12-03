@@ -68,6 +68,9 @@ local extension = {}
 
 ---@param Mod ModReference
 function extension:init(Mod)
+    local ItemConfig = Isaac.GetItemConfig()
+    local inverted_cards_inline_sprite = Sprite("gfx/ui/eid_inline_cardfronts.anm2", true)
+
     for _, path in ipairs(files) do
         local card = include(path)
         card:init(Mod)
@@ -88,6 +91,12 @@ function extension:init(Mod)
                 end
             end
         end)
+
+        ---@type EID
+        if EID then
+            local card_name = ItemConfig:GetCard(card.ID).HudAnim
+            EID:addIcon("Card"..card.ID, card_name, -1, 9, 9, 4, 7, inverted_cards_inline_sprite)
+        end
     end
 
     ---@param trinketType TrinketType
