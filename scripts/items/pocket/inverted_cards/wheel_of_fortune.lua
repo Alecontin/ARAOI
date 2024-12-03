@@ -18,17 +18,12 @@ function card:init(Mod)
 
         local rng = player:GetCardRNG(card.ID)
 
-        local use_card = ItemPool:GetCard(rng:Next(), false, false, false)
+        local use_card = ItemPool:GetCardEx(rng:Next(), 0, 0, 0, false)
 
         local config = ItemConfig:GetCard(use_card)
+        HUD:ShowItemText(Isaac.GetString("pocketitems", config.Name), Isaac.GetString("pocketitems", config.Description))
+
         player:UseCard(use_card, UseFlag.USE_NOANNOUNCER)
-
-        local name = helper.table.SplitStr(config.Name, "_")
-        name[1] = string.sub(name[1], 2)
-        table.remove(name, #name)
-        name = helper.table.Join(name, " ")
-
-        HUD:ShowItemText(name)
 
         if rng:RandomFloat() > 0.1 then
             player:AddCard(card.ID)
