@@ -99,7 +99,8 @@ local function addTemporaryItem(player, item)
     local temporary_items = SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {})
 
     player:AddCollectible(item)
-    table.insert(temporary_items, item)
+    local history = player:GetHistory():GetCollectiblesHistory()
+    table.insert(temporary_items, history[#history]:GetTime())
 
     return SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {}, temporary_items)
 end
@@ -108,8 +109,10 @@ end
 local function wipeTemporaryItems(player)
     local temporary_items = SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {})
 
-    for _, item in ipairs(temporary_items) do
-        player:RemoveCollectible(item)
+    for _, item in ipairs(player:GetHistory():GetCollectiblesHistory()) do
+        if helper.table.IsValueInTable(item:GetTime(), temporary_items) then
+            player:RemoveCollectible(item:GetItemID())
+        end
     end
 
     SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {}, {})
@@ -255,7 +258,7 @@ function modded_item:init(Mod)
 
             else -- If the item is not a passive item
                 -- Use it as normal
-                player:UseActiveItem(spell_item, UseFlag.USE_CUSTOMVARDATA, nil, 1)
+                player:UseActiveItem(spell_item)
 
                 -- If we have book of virtues, we artificially spawn wisps
                 if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
