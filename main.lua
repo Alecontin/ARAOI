@@ -5,6 +5,23 @@ if not REPENTOGON then
     error("REPENTAGON IS MISSING, ARAOI WILL NOT WORK. PLEASE INSTALL REPENTAGON OR UNINSTALL THIS MOD!")
 end
 
+-- There's no EID:addGoldenTrinketMetadata() for cards? That's weird... Or maybe I'm the weird one...
+if EID then
+    -- @_param_ `changes`
+    --
+    -- _type_ `string` — Text will be appended to the description
+    --
+    -- _type_ `string[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{" a ", " a lot ", " an ", " two "}` will replace `" a "` with `" a lot "` and `" an "` with `" two "`
+    --
+    -- _type_ `number[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{1, 2, 0.6, 0.8}` will replace `1` with `2` and `0.6` with `0.8`
+    ---@param id Card
+    ---@param changes string | string[] | number[]
+    ---@param language any?
+    function EID:addTarotClothMetadata(id, changes, language)
+        include("scripts.utils.eidutils").TarotClothMetadata(id, changes, language)
+    end
+end
+
 --[[
 
     This main file is only used for initializing all the different scripts

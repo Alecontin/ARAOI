@@ -44,6 +44,7 @@ local function addBats(player, amount, offset)
             player.Position + Vector(math.random(-offset, offset), math.random(-offset, offset)),
             Vector.Zero, player
         ):ToEffect()
+        assert(bat)
         bat:SetTimeout(35)
         bat.Color.R = 1
         bat.RenderZOffset = 10000000
@@ -121,7 +122,7 @@ function modded_item:init(Mod)
         playerHasInvincibility(player, true)
 
         -- Create a timer that will later revoke the invincibility
-        SaveData:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, {helper.player.GetID(player)})
+        SaveData:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, helper.player.GetID(player))
 
         -- This will cause the player to not take damage
         return false

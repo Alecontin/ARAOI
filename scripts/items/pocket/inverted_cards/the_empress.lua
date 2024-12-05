@@ -15,16 +15,16 @@ local NUM_MINIISAAC = 10 -- *Default: `10` — The number of MiniIsaacs to spawn
 
 
 
+local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Empress")
+card.Replace = Card.CARD_REVERSE_EMPRESS
+
 ---@class helper
 local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
-
-local card = {}
-
-card.ID = Isaac.GetCardIdByName("Inverted Empress")
-card.Replace = Card.CARD_REVERSE_EMPRESS
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -40,6 +40,7 @@ function card:init(Mod)
         EID:addCard(card.ID,
             "#{{Player0}} Spawns "..NUM_MINIISAAC.." MiniIsaacs"
         )
+        EID:addTarotClothMetadata(card.ID, {NUM_MINIISAAC, NUM_MINIISAAC*2})
     end
 end
 

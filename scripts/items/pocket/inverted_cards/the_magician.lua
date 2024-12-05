@@ -6,7 +6,9 @@ card.Replace = Card.CARD_REVERSE_MAGICIAN
 ---@param Mod ModReference
 function card:init(Mod)
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
         player:UseCard(Card.CARD_MAGICIAN, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         player:UseCard(Card.CARD_REVERSE_MAGICIAN, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         player:AddCollectibleEffect(CollectibleType.COLLECTIBLE_FATE, true)

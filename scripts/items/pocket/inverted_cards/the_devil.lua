@@ -1,25 +1,23 @@
+local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Devil")
+card.Replace = Card.CARD_REVERSE_DEVIL
+
 ---@class helper
 local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@param player EntityPlayer
-local function queueRemoveDevilsCrown(player, set)
-    return SaveData:Data(SaveData.RUN, "InvertedDevilUseQueueDelete", {}, helper.player.GetID(player), false, set)
-end
-
-local card = {}
-
-card.ID = Isaac.GetCardIdByName("Inverted Devil")
-card.Replace = Card.CARD_REVERSE_DEVIL
-
 ---@param Mod ModReference
 function card:init(Mod)
     local game = Game()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
+
         local level = game:GetLevel()
 
         local rng = player:GetCardRNG(card.ID)

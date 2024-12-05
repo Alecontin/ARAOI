@@ -20,10 +20,10 @@ local WISP_DELETE_CHANCE = 35 -- *Default: `35` — The chance of a wisp being d
 --------------------------
 
 
----@type SaveDataManager
+---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@type helper
+---@class helper
 local helper = include("scripts.helper")
 
 
@@ -119,6 +119,7 @@ function modded_item:init(Mod)
                     Vector.Zero,
                     nil
                 ):ToPickup()
+                assert(new_collectible)
 
                 -- Set the new item's ID as cursed
                 cursed(new_collectible.SubType, true)

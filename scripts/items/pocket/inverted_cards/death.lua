@@ -19,6 +19,7 @@ function card:init(Mod)
         EID:addCard(card.ID,
             "#{{DeathMark}} Spawns a friendly Death Horseman"
         )
+        EID:addTarotClothMetadata(card.ID, {" a ", " two "})
     end
 end
 

@@ -6,7 +6,7 @@
 
 
 
----@type helper
+---@class helper
 local helper = include("scripts.helper")
 
 

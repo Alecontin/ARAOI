@@ -1,13 +1,13 @@
+local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Sun")
+card.Replace = Card.CARD_REVERSE_SUN
+
 ---@class helper
 local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
-
-local card = {}
-
-card.ID = Isaac.GetCardIdByName("Inverted Sun")
-card.Replace = Card.CARD_REVERSE_SUN
 
 ---@param player EntityPlayer
 ---@param set? boolean
@@ -20,7 +20,10 @@ function card:init(Mod)
     local game = Game()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
+
         local level = game:GetLevel()
 
         local function numRoomsVisited()

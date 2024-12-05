@@ -16,6 +16,7 @@ function card:init(Mod)
         EID:addCard(card.ID,
             "#{{Collectible"..delirious.."}} Uses the Delirious active item"
         )
+        EID:addTarotClothMetadata(card.ID, "Twice!")
     end
 end
 

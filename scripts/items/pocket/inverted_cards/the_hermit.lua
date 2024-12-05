@@ -1,15 +1,17 @@
----@class helper
-local helper = include("scripts.helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Hermit")
 card.Replace = Card.CARD_REVERSE_HERMIT
 
+---@class helper
+local helper = include("scripts.helper")
+
 ---@param Mod ModReference
 function card:init(Mod)
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
         local collectibles = player:GetHistory():GetCollectiblesHistory()
 
         local collectible = collectibles[#collectibles]

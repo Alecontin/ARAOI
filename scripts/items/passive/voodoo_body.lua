@@ -41,6 +41,7 @@ local CURSE_PIN = Isaac.GetEntityVariantByName("Curse Pin")
 ---@param effects? TearFlags
 local function spawnCursePin(attack, spawner, damage, spriteScale, effects)
     local pin = Isaac.Spawn(EntityType.ENTITY_EFFECT, CURSE_PIN, 0, attack.Position, Vector.Zero, spawner):ToEffect()
+    assert(pin)
 
     pin:SetTimeout(20)
     pin:FollowParent(attack)
@@ -308,6 +309,7 @@ function modded_item:init(Mod)
                 end
                 if flags & TearFlags.TEAR_RIFT > 0 then
                     local rift = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RIFT, 0, enemy.Position, Vector.Zero, player):ToEffect()
+                    assert(rift)
                     rift.SpriteScale = effect.SpriteScale
                     rift.CollisionDamage = damage
                     rift:SetTimeout(90)

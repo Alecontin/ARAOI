@@ -1,10 +1,10 @@
----@class helper
-local helper = include("scripts.helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Wheel of Fortune")
 card.Replace = Card.CARD_REVERSE_WHEEL_OF_FORTUNE
+
+---@class helper
+local helper = include("scripts.helper")
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -13,7 +13,10 @@ function card:init(Mod)
     local HUD = game:GetHUD()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
+        local tarotClothModifier = player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) and 0.03 or 0
         local ItemPool = game:GetItemPool()
 
         local rng = player:GetCardRNG(card.ID)
@@ -25,7 +28,7 @@ function card:init(Mod)
 
         player:UseCard(use_card, UseFlag.USE_NOANNOUNCER)
 
-        if rng:RandomFloat() > 0.1 then
+        if rng:RandomFloat() > 0.1 - tarotClothModifier then
             player:AddCard(card.ID)
         end
     end, card.ID)
@@ -36,6 +39,7 @@ function card:init(Mod)
             "#{{Card}} Mimics a random card on use"..
             "# Has a 10% chance to destroy itself with each use"
         )
+        EID:addTarotClothMetadata(card.ID, {10, 7})
     end
 end
 

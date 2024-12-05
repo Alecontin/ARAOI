@@ -1,17 +1,19 @@
----@class SaveDataManager
-local SaveData = require("scripts.SaveDataManager")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted World")
 card.Replace = Card.CARD_REVERSE_WORLD
+
+---@class SaveDataManager
+local SaveData = require("scripts.SaveDataManager")
 
 ---@param Mod ModReference
 function card:init(Mod)
     local game = Game()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
         local level = game:GetLevel()
         local crawlspace = level:GetRoomByIdx(-4)
 

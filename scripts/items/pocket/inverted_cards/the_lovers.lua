@@ -1,17 +1,19 @@
----@class helper
-local helper = include("scripts.helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Lovers")
 card.Replace = Card.CARD_REVERSE_LOVERS
+
+---@class helper
+local helper = include("scripts.helper")
 
 ---@param Mod ModReference
 function card:init(Mod)
     local game = Game()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
         local room = game:GetRoom()
         local rng = player:GetCardRNG(card.ID)
 
@@ -41,6 +43,7 @@ function card:init(Mod)
             "#{{Collectible"..altar.."}} Removes all familiars and spawns an item from the current room's item pool for every 3 familiars removed"..
             "#{{Card"..card.Replace.."}} If used when having less than 3 familiars, it will act like {{Card"..card.Replace.."}} The Lovers?"
         )
+        EID:addTarotClothMetadata(card.ID, "I had to rebalance this items 3 times already, so this is not gonna happen any time soon.")
     end
 end
 

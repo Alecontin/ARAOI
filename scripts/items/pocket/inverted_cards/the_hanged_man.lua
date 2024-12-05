@@ -1,13 +1,13 @@
+local card = {}
+
+card.ID = Isaac.GetCardIdByName("Inverted Hanged Man")
+card.Replace = Card.CARD_REVERSE_HANGED_MAN
+
 ---@class helper
 local helper = include("scripts.helper")
 
 ---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
-
-local card = {}
-
-card.ID = Isaac.GetCardIdByName("Inverted Hanged Man")
-card.Replace = Card.CARD_REVERSE_HANGED_MAN
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -15,7 +15,9 @@ function card:init(Mod)
     local sfx = SFXManager()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
         local rng = player:GetCardRNG(Card.CARD_HANGED_MAN)
         local room = game:GetRoom()
 

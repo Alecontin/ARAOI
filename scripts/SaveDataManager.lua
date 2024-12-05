@@ -56,15 +56,23 @@ local save = {}
 
 ---@class Timer
 local Timer = {}
+Timer.__index = Timer
 
----@type string
-Timer.CALLBACK = ""
+function Timer:New()
+    ---@class Timer
+    local instance = setmetatable({}, Timer)
 
----@type integer
-Timer.FRAMES = 0
+    ---@type string
+    instance.CALLBACK = ""
 
----@type table?
-Timer.PARAMS = {}
+    ---@type integer
+    instance.FRAMES = 0
+
+    ---@type table?
+    instance.PARAMS = {}
+
+    return instance
+end
 
 ---@type function
 local ShallowCopy = include("scripts.utils.table").ShallowCopy
@@ -235,9 +243,9 @@ function save:init(Mod)
     -- Well, yes, but this persists across saving and loading.
     ---@param callbackID string -- The ID of the callback to be ran
     ---@param time number -- Time, in seconds, after which the callback will run
-    ---@param args? table -- List of parameters to pass to the callback
-    function save:CreateTimer(callbackID, time, args)
-        self:CreateTimerInFrames(callbackID, time * 30, args)
+    ---@param ... any -- Parameters to pass to the callback
+    function save:CreateTimer(callbackID, time, ...)
+        self:CreateTimerInFrames(callbackID, time * 30, ...)
     end
 
     -- Creates a timer that will run the callback in the amount of defined update frames
@@ -246,15 +254,13 @@ function save:init(Mod)
     -- Well, yes, but this persists across saving and loading.
     ---@param callbackID string -- The ID of the callback to be ran
     ---@param time number -- Time, in seconds, after which the callback will run
-    ---@param args? table -- List of parameters to pass to the callback
-    function save:CreateTimerInFrames(callbackID, time, args)
-        local timer = Timer
+    ---@param ... any -- Parameters to pass to the callback
+    function save:CreateTimerInFrames(callbackID, time, ...)
+        local timer = Timer:New()
 
         timer.CALLBACK = callbackID
-
         timer.FRAMES = time
-
-        timer.PARAMS = args
+        timer.PARAMS = {...}
 
         table.insert(save.TIMERS, timer)
     end

@@ -2,22 +2,22 @@
 ---@class helper
 local helper = {}
 
----@type EIDUtils
-helper.eid = include("scripts.utils.eid")
+---@class EIDUtils
+helper.eid = include("scripts.utils.eidutils")
 
----@type ItemUtils
+---@class ItemUtils
 helper.item = include("scripts.utils.item")
 
----@type MiscUtils
+---@class MiscUtils
 helper.misc = include("scripts.utils.misc")
 
----@type PlayerUtils
+---@class PlayerUtils
 helper.player = include("scripts.utils.player")
 
----@type RoomUtils
+---@class RoomUtils
 helper.room = include("scripts.utils.room")
 
----@type TableUtils
+---@class TableUtils
 helper.table = include("scripts.utils.table")
 
 return helper

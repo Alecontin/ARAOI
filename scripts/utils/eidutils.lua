@@ -2,7 +2,7 @@
 ---@class EIDUtils
 local EIDUtils = {}
 
----@type PlayerUtils
+---@class PlayerUtils
 local PlayerUtils = include("scripts.utils.player")
 
 ---@class EIDDescriptionObject
@@ -122,6 +122,24 @@ function EIDUtils.PlayerBasedModifier(modifier_id, to_this_item, if_player_is, p
         return descObject
     end
     EID:addDescriptionModifier(modifier_id, condition, modifier)
+end
+
+
+-- @_param_ `changes`
+--
+-- _type_ `string` — Text will be appended to the description
+--
+-- _type_ `string[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{" a ", " a lot ", " an ", " two "}` will replace `" a "` with `" a lot "` and `" an "` with `" two "`
+--
+-- _type_ `number[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{1, 2, 0.6, 0.8}` will replace `1` with `2` and `0.6` with `0.8`
+---@param id Card
+---@param changes string | string[] | number[]
+---@param language any?
+function EIDUtils.TarotClothMetadata(id, changes, language)
+	language = language or "en_us"
+
+    EID:CreateDescriptionTableIfMissing("tarotClothBuffs", language)
+    EID.descriptions[language].tarotClothBuffs[id] = type(changes) ~= "string" and changes or "{{ColorShinyPurple}}"..changes.."{{CR}}"
 end
 
 return EIDUtils

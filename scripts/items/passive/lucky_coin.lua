@@ -3,7 +3,7 @@
 ----------------------------
 
 
-local COIN_TIMEOUT = 120 -- *Default: `120` — The amout of time the coin will stay in the air.*
+local COIN_TIMEOUT = 120 -- *Default: `120` — The amount of time the coin will stay in the air.*
 
 
 --------------------------
@@ -14,10 +14,10 @@ local COIN_TIMEOUT = 120 -- *Default: `120` — The amout of time the coin will 
 
 
 
----@type SaveDataManager
+---@class SaveDataManager
 local SaveData = require("scripts.SaveDataManager")
 
----@type helper
+---@class helper
 local helper = include("scripts.helper")
 
 
@@ -60,6 +60,7 @@ local function spawnCoin(player)
     local shootingInput = player:GetShootingInput():Normalized()
     local velocity = (shootingInput * 6) + (player.Velocity / 2)
     local particle = Isaac.Spawn(EntityType.ENTITY_EFFECT, LUCKY_COIN_ENTITY, 0, player.Position, velocity, player):ToEffect()
+    assert(particle)
     particle:SetTimeout(COIN_TIMEOUT)
     particle.SpriteOffset = particle.SpriteOffset + Vector(0, 14)
     if shootingInput.Y ~= 0 then

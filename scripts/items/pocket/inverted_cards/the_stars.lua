@@ -14,13 +14,13 @@ local NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects t
 
 
 
----@class helper
-local helper = include("scripts.helper")
-
 local card = {}
 
 card.ID = Isaac.GetCardIdByName("Inverted Stars")
 card.Replace = Card.CARD_REVERSE_STARS
+
+---@class helper
+local helper = include("scripts.helper")
 
 ---@param Mod ModReference
 function card:init(Mod)
@@ -44,6 +44,7 @@ function card:init(Mod)
         EID:addCard(card.ID,
             "#{{Collectible"..tmt.."}} Spawns a glitched item with "..NUM_RANDOM_EFFECTS.." random effects"
         )
+        EID:addTarotClothMetadata(card.ID, {" a glitched item ", " two glitched items "})
     end
 end
 

@@ -20,8 +20,9 @@ function card:init(Mod)
     ---@type EID
     if EID then
         EID:addCard(card.ID,
-            "#{{Confessional}} Spawns a Confessional"
+            "#{{Confessional}} Spawns a Confessional{{Blank}}"
         )
+        EID:addTarotClothMetadata(card.ID, {" a ", " two ", "{{Blank}}", "s{{Blank}}"})
     end
 end
 

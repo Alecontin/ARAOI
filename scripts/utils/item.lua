@@ -87,6 +87,7 @@ function ItemUtils.SpawnCollectible(SubType, Position, Velocity, Spawner, Ignore
         Velocity or Vector.Zero,
         Spawner or nil
     ):ToPickup()
+    assert(entity)
 
     -- The sprite can be flipped so we are preventing that
     entity:GetSprite().FlipX = false
@@ -101,10 +102,7 @@ function ItemUtils.SpawnCollectible(SubType, Position, Velocity, Spawner, Ignore
     )
 
     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, nil)
-
-    -- We ALWAYS return a pickup, but the code editor yells at me to check
-    -- the entity because IT COULD BE NIL! (it can't)
-    ---@diagnostic disable-next-line: return-type-mismatch
+    
     return entity
 end
 

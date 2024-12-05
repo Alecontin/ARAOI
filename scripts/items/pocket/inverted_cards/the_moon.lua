@@ -3,7 +3,7 @@ local card = {}
 card.ID = Isaac.GetCardIdByName("Inverted Moon")
 card.Replace = Card.CARD_REVERSE_MOON
 
----@type helper
+---@class helper
 local helper = include("scripts.helper")
 
 ---@param Mod ModReference
@@ -11,7 +11,10 @@ function card:init(Mod)
     local game = Game()
 
     ---@param player EntityPlayer
-    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+    ---@param useFlags UseFlag
+    Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+        if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
+
         local rng = player:GetCardRNG(card.ID)
         local level = game:GetLevel()
 
