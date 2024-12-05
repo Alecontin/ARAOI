@@ -220,21 +220,13 @@ function modded_item:init(Mod)
         -- Check what spell we've written, this is used on the item's second use, after something was written
         local spell = writtenSpell(player)
 
-        -- Function that adds a free charge to the item
-        -- Used when casting a spell, since otherwise it would drain the remaining charges, making
-        -- items such as The Battery completely useless
-        local function recharge()
-            local charges = player:GetActiveCharge(slot) + player:GetActiveMaxCharge(slot)
-            player:SetActiveCharge(charges)
-        end
-
         -- We just stopped writing and there's something written
         if writing == false and spell ~= "" then
             -- Get the RNG based on what's written and the current seed
             local rng = RNG(tonumber(spell) + game:GetSeeds():GetStartSeed())
 
             -- Setting some default values so we can keep rerolling the items until an item
-            -- which can be used is selected, basically skiping over the items defined
+            -- which can be used is selected, basically skipping over the items defined
             -- on the RerollItems list
             local spell_item = nil
             local config = nil
@@ -276,12 +268,16 @@ function modded_item:init(Mod)
             -- Clear the spell
             writtenSpell(player, "")
 
+            -- We already used a charge to open the book, so we negate this one
+            helper.player.FreezeActiveCharge(player, slot)
 
         -- We just stopped writing but there was no spell written
         elseif writing == false and spell == "" then
-            -- Play an error sound and recharge the item
+            -- Play an error sound
             SFXManager():Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
-            recharge()
+
+            -- We already used a charge to open the book, so we negate this one
+            helper.player.FreezeActiveCharge(player, slot)
 
 
         -- We used the item to start writing a spell, show the item's use animation and play a sound

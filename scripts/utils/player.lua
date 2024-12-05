@@ -389,4 +389,49 @@ function PlayerUtils.GetPlayersWithCollectible(collectibleType)
     return players
 end
 
+-- Function that adds a charge to the active item
+--
+-- I don't like the default ones
+---@param player EntityPlayer -- The player who's item will get charged
+---@param charge integer -- The amount of charge to add
+---@param slot ActiveSlot -- The slot of the active item to charge
+---@param force boolean? -- Default: `false` — Should the item be overcharged even if the player doesn't have The Battery?
+---@param ignore_limit boolean? -- Default: `false` — Should the item be overcharged even past its limit?
+---@param flashHUD boolean? -- Default: `false` — Should the player be notified of this recharge?
+function PlayerUtils.AddActiveCharge(player, slot, charge, force, ignore_limit, flashHUD)
+    local ItemConfig = Isaac.GetItemConfig()
+
+    local collectible = player:GetActiveItem(slot)
+
+    local item_desc = player:GetActiveItemDesc(slot)
+
+    local max_charge = ItemConfig:GetCollectible(collectible).MaxCharges
+    item_desc.Charge = item_desc.Charge + charge
+
+    local overcharge = item_desc.Charge - max_charge
+    if overcharge > 0 and (force == true or player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY)) then
+        item_desc.Charge = item_desc.Charge - overcharge
+        item_desc.BatteryCharge = ignore_limit and (item_desc.BatteryCharge + overcharge) or math.min(item_desc.BatteryCharge + overcharge, max_charge)
+    end
+
+    if flashHUD == true then
+        Game():GetHUD():FlashChargeBar(player, slot)
+        local battery_effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BATTERY, 1, player.Position+Vector(0,1), Vector.Zero, player):ToEffect()
+        battery_effect.SpriteOffset = Vector(0, -30)
+        SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE)
+    end
+end
+
+-- Function that keeps the active item's charge unchanged after item use
+--
+-- To be called on ModCallbacks.MC_USE_ITEM
+---@param player EntityPlayer -- The player who's item will get freezed
+---@param slot ActiveSlot? -- The slot of the active item to freeze
+function PlayerUtils.FreezeActiveCharge(player, slot)
+    if slot == nil then slot = ActiveSlot.SLOT_PRIMARY end
+
+    local max_charges = player:GetActiveMaxCharge(slot)
+    PlayerUtils.AddActiveCharge(player, slot, max_charges)
+end
+
 return PlayerUtils
