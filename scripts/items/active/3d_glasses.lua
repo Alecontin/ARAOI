@@ -196,6 +196,26 @@ function modded_item:init(Mod)
     end)
 
 
+    -------------
+    -- LOCUSTS --
+    -------------
+
+    ---@param locust EntityFamiliar
+    Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
+        if locust.SubType == THREED_GLASSES then
+            local locusts = helper.player.GetLocusts(locust.SpawnerEntity:ToPlayer(), THREED_GLASSES)
+            if locusts then
+                if #locusts%2 == 1 then
+                    locust:GetSprite().Color:SetTint(1, 0, 0, 1)
+                end
+                if #locusts%2 == 0 then
+                    locust:GetSprite().Color:SetTint(0, 0, 1, 1)
+                end
+            end
+        end
+    end, FamiliarVariant.ABYSS_LOCUST)
+
+
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
@@ -219,6 +239,11 @@ function modded_item:init(Mod)
             "3D Glasses Book Of Virtues Synergy",
             THREED_GLASSES,
             "Does nothing"
+        )
+        helper.eid.AbyssSynergy(
+            "3D Glasses Abyss Synergy",
+            THREED_GLASSES,
+            "Red and Blue locusts that deal 0.5x Isaac's damage"
         )
     end
 end

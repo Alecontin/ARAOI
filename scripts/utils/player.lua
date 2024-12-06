@@ -305,6 +305,36 @@ function PlayerUtils.GetWisps(player, fromCollectible)
     return wisps
 end
 
+-- Gets all the locusts spawned by players, index ordered from oldest to newest.
+---@param player? EntityPlayer -- The player to get the locusts from
+---@param fromCollectible? CollectibleType -- Only get locusts spawned from using this collectible
+---@return EntityFamiliar[]
+function PlayerUtils.GetLocusts(player, fromCollectible)
+    ---@type EntityFamiliar[]
+    local locusts = {}
+
+    for _, entity in ipairs(Isaac.GetRoomEntities()) do
+        local locust = entity:ToFamiliar()
+        if not locust then goto continue end
+
+        if locust.Variant ~= FamiliarVariant.ABYSS_LOCUST then goto continue end
+
+        if player and locust.Player.ControllerIndex ~= player.ControllerIndex then goto continue end
+
+        if fromCollectible and locust.SubType ~= fromCollectible then goto continue end
+
+        table.insert(locusts, locust)
+
+        ::continue::
+    end
+
+    table.sort(locusts, function (a, b)
+        return a.Index > b.Index
+    end)
+
+    return locusts
+end
+
 -- Returns a table with the amount of each collectible the player has without counting innate items.
 ---- This function has extra parameters for blacklisting certain items and tags.
 ---- Unlike `Isaac.GetPlayer():GetCollectiblesList()`, this table contains items the player ACTUALLY HAS.

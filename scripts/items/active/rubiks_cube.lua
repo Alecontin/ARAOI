@@ -114,13 +114,14 @@ function modded_item:init(Mod)
     end, RUBIKS_CUBE)
 
 
-    -----------------------
-    -- ON PICKUP SPAWNED --
-    -----------------------
+    -------------------
+    -- UPDATE METHOD --
+    -------------------
 
     Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         for _, player in ipairs(PlayerManager.GetPlayers()) do
             -- If the player has the item wisps, reevaluate the cache every update in case a wisp dies
+            local locusts = helper.player.GetLocusts(player, RUBIKS_CUBE)
             local wisps = helper.player.GetWisps(player, RUBIKS_CUBE)
             if #wisps >= 1 then
                 player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
@@ -139,7 +140,8 @@ function modded_item:init(Mod)
             end
 
             -- This is the code that makes the wisps change color!
-            for _,v in ipairs(wisps) do
+            ---@param familiar EntityFamiliar
+            local function changeColor(familiar)
                 local interval = 30
 
                 local possible_colors = {
@@ -151,10 +153,10 @@ function modded_item:init(Mod)
                     {1,1,1}, -- White
                 }
 
-                local data = v:GetData()
+                local data = familiar:GetData()
                 local target_color = data["TargetColor"]
                 local current_color = data["CurrentColor"] or {1.5, 1.5, 1.5}
-                if v.FrameCount % interval == 1 then
+                if familiar.FrameCount % interval == 1 then
                     data["TargetColor"] = possible_colors[math.random(#possible_colors)]
                 end
                 if target_color then
@@ -162,9 +164,15 @@ function modded_item:init(Mod)
                     local red = helper.misc.Lerp(current_color[1], target_color[1], amount)
                     local green = helper.misc.Lerp(current_color[2], target_color[2], amount)
                     local blue = helper.misc.Lerp(current_color[3], target_color[3], amount)
-                    v:GetColor():SetColorize(red, green, blue, 1)
+                    familiar:GetColor():SetColorize(red, green, blue, 1)
                     data["CurrentColor"] = {red, green, blue}
                 end
+            end
+            for _,v in ipairs(wisps) do
+                changeColor(v)
+            end
+            for _,v in ipairs(locusts) do
+                changeColor(v)
             end
         end
     end)
@@ -222,6 +230,12 @@ function modded_item:init(Mod)
             "#{{ArrowUp}} All stats up"
         )
         EID:addGoldenTrinketMetadata(SOLVED_RUBIKS_CUBE, {"Effect doubled", "Effect tripled"})
+
+        helper.eid.AbyssSynergy(
+            "Rubik's Cube Abyss Synergy",
+            RUBIKS_CUBE,
+            "Locust changing between 6 colors that deals 1.2x Isaac's damage"
+        )
     end
 end
 

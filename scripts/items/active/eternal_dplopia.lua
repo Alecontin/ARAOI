@@ -298,6 +298,11 @@ function modded_item:init(Mod)
             ETERNAL_DPLOPIA,
             WISP_DELETE_CHANCE.."% chance of a wisp getting deleted instead of an item"
         )
+        helper.eid.AbyssSynergy(
+            "Eternal Dplopia Abyss Synergy",
+            ETERNAL_DPLOPIA,
+            "2 white locusts that deal normal damage"
+        )
 
         local function condition(descObject)
             if descObject.ObjType == EntityType.ENTITY_PICKUP

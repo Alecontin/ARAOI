@@ -142,6 +142,11 @@ function modded_item:init(Mod)
             "# Spawns a random pickup at the start of the next run"..
             "# Pickups can be any variant of: #{{Blank}} {{Coin}} {{Key}} {{Bomb}} {{Heart}} {{Battery}} {{Chest}}"
         )
+        helper.eid.AbyssSynergy(
+            "Blessing's Petal Abyss Synergy",
+            BLESSINGS_PETAL,
+            "Small white locust that deals 0.5x Isaac's damage"
+        )
     end
 end
 

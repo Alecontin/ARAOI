@@ -140,6 +140,26 @@ function modded_item:init(Mod)
     end)
 
 
+    -------------
+    -- LOCUSTS --
+    -------------
+
+    ---@param locust EntityFamiliar
+    Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
+        if locust.SubType == DUALITY_HALO then
+            local locusts = helper.player.GetLocusts(locust.SpawnerEntity:ToPlayer(), DUALITY_HALO)
+            if locusts then
+                if #locusts%2 == 1 then
+                    locust:GetSprite().Color:SetTint(1, 1, 1, 1)
+                end
+                if #locusts%2 == 0 then
+                    locust:GetSprite().Color:SetTint(0, 0, 0, 1)
+                end
+            end
+        end
+    end, FamiliarVariant.ABYSS_LOCUST)
+
+
     ----------------------
     -- ITEM DESCRIPTION --
     ----------------------
@@ -149,6 +169,11 @@ function modded_item:init(Mod)
         EID:addCollectible(DUALITY_HALO,
             "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a deal item in the boss room using the deal spawn chance"..
             "#{{Collectible}} Taking an item spawned this way will not affect deal chance"
+        )
+        helper.eid.AbyssSynergy(
+            "Duality Halo Abyss Synergy",
+            DUALITY_HALO,
+            "Black and white locusts that deal 0.5x Isaac's damage"
         )
     end
 end

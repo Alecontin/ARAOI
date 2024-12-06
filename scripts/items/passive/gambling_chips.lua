@@ -283,6 +283,11 @@ function modded_item:init(Mod)
             PlayerType.PLAYER_THELOST,
             "The Lost will not spawn slots that require health"
         )
+        helper.eid.AbyssSynergy(
+            "Gambling Chips Abyss Synergy",
+            GAMBLING_CHIPS,
+            "Yellow locust with a 5% chance per hit of spawning a coin"
+        )
 
     end
 end

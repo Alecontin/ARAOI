@@ -269,6 +269,11 @@ function modded_item:init(Mod)
             "#{{Blank}} {{Damage}} Has a 50/50 chance of doubling/halving the tear's damage"..
             "#!!! Only works for tears !!!"
         )
+        helper.eid.AbyssSynergy(
+            "Lucky Coin Abyss Synergy",
+            LUCKY_COIN,
+            "Yellow locust with a 1.5% chance per hit of spawning a coin"
+        )
     end
 end
 

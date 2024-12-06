@@ -361,7 +361,16 @@ function modded_item:init(Mod)
             "#{{Battery}} Charge time varies depending on the last item used and updates with every use"
         )
 
-        helper.eid.BookOfVirtuesSynergy("Bag Of Holding Book Of Virtues", BAG_OF_HOLDING, "Spawn a wisp as if the selected item was used")
+        helper.eid.BookOfVirtuesSynergy(
+            "Bag Of Holding Book Of Virtues", 
+            BAG_OF_HOLDING, 
+            "Spawn a wisp as if the selected item was used"
+        )
+        helper.eid.AbyssSynergy(
+            "Bag of Holding Abyss Synergy",
+            BAG_OF_HOLDING,
+            "Gray locust that deals normal damage"
+        )
     end
 end
 

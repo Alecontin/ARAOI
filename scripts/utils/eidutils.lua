@@ -87,6 +87,26 @@ function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, append_to_desc
     EID:addDescriptionModifier(modifier_id, condition, modifier)
 end
 
+-- Function that makes it easier to append Book Of Virtues synergies to items
+--
+-- The `Book Of Virtues` icon will be automatically appended to the description string
+---@param modifier_id string
+---@param to_this_item CollectibleType
+---@param append_to_description string
+function EIDUtils.AbyssSynergy(modifier_id, to_this_item, append_to_description)
+    local Abyss = CollectibleType.COLLECTIBLE_ABYSS
+    local function condition(descObject)
+        if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
+        and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_ABYSS)
+        then return true end
+    end
+    local function modifier(descObject)
+        EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..append_to_description.."{{CR}}")
+        return descObject
+    end
+    EID:addDescriptionModifier(modifier_id, condition, modifier)
+end
+
 -- Function that makes it easier to append a synergy description to items
 ---@param modifier_id string
 ---@param to_this_item CollectibleType

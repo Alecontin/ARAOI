@@ -155,6 +155,11 @@ function modded_item:init(Mod)
             PlayerType.PLAYER_THELOST,
             "When used within a {{DevilRoom}} Devil Deal or Black Market, consumes all charges and makes all items free"
         )
+        helper.eid.AbyssSynergy(
+            "Wire Cutter Abyss Synergy",
+            WIRE_CUTTER,
+            "2 red locusts that deal 0.5x Isaac's damage"
+        )
     end
 end
 

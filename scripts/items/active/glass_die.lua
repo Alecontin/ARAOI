@@ -175,6 +175,11 @@ function modded_item:init(Mod)
             "#{{Mirror}} Copies the current room's item pool on use"..
             "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
         )
+        helper.eid.AbyssSynergy(
+            "Glass Die Abyss Synergy",
+            GLASS_DIE,
+            "Glass locust that deals normal damage"
+        )
     end
 end
 

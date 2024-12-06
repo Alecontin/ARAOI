@@ -87,18 +87,31 @@ function modded_item:init(Mod)
         if not (entity:IsActiveEnemy() and entity:IsVulnerableEnemy()) then return end
         if not source.Entity then return end
 
-        -- Get the player from the reference, check if it exists, and check if they have our item
-        local player = helper.player.FromEntityRef(source)
-        if not player or not player:HasCollectible(VOODOO_BODY) then return end
+        -- Initialize player and tear variables for later
+        local player = nil
+        local tear = nil
 
-        -- Get the tear and it's scale
-        local tear = source.Entity:ToTear()
+        -- Check if the entity that caused the damage was an abyss locust made from our item
+        if source.Entity.Type == EntityType.ENTITY_FAMILIAR
+        and source.Entity.Variant == FamiliarVariant.ABYSS_LOCUST
+        and source.Entity.SubType == VOODOO_BODY then
+            -- Get the player that way, making sure it exists
+            player = source.Entity.SpawnerEntity:ToPlayer()
+            if not player then return end
+        else
+            -- Get the player from the reference, check if it exists, and check if they have our item
+            player = helper.player.FromEntityRef(source)
+            if not player or not player:HasCollectible(VOODOO_BODY) then return end
+
+            -- Get the tear
+            tear = source.Entity:ToTear()
+        end
+
+        -- Initialize scale and flags variables for later
         local scale
-
-        -- Get the tear flags for tear effects
         local flags
 
-        -- If the source entity was a tear then
+        -- Check if we have a tear
         if tear then
             -- Set the parameters to the tear ones
             scale = tear.Scale
@@ -117,7 +130,7 @@ function modded_item:init(Mod)
         local rng = player:GetCollectibleRNG(VOODOO_BODY)
 
 
-        -- Delcare the list of enemies in the room
+        -- Initialize the list of enemies in the room
         ---@type Entity[]
         local enemies = {}
 
@@ -157,7 +170,7 @@ function modded_item:init(Mod)
 
 
     ----------------------------------------
-    -- CURSE PIN UPDATE AND DAMEGE DEALER --
+    -- CURSE PIN UPDATE AND DAMAGE DEALER --
     ----------------------------------------
 
     ---@param effect EntityEffect
@@ -439,6 +452,11 @@ function modded_item:init(Mod)
             "# Damaging an enemy will spawn a pin on a random enemy that deals {{Damage}} "..math.floor(DAMAGE_SCALE * 100).."% of the original damage and ignores armor"..
             "#{{Tearsize}} Pins copy the majority of Isaac's tear effects"..
             "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pins will deal {{Damage}} "..math.floor((DAMAGE_SCALE+VOODOO_HEAD_ADD) * 100).."% damage instead"
+        )
+        helper.eid.AbyssSynergy(
+            "Voodoo Body Abyss Synergy",
+            VOODOO_BODY,
+            "Gray locust that spawns pins on random enemies on hit"
         )
     end
 end

@@ -390,7 +390,16 @@ function modded_item:init(Mod)
             "#{{TreasureRoom}} If the used item was a passive item, it will instead give it to Isaac for the rest of the floor"
         )
 
-        helper.eid.BookOfVirtuesSynergy("Spellbook Book Of Virtues", SPELLBOOK, "Casting an active item spell will also spawn its wisp")
+        helper.eid.BookOfVirtuesSynergy(
+            "Spellbook Book Of Virtues",
+            SPELLBOOK,
+            "Casting an active item spell will also spawn its wisp"
+        )
+        helper.eid.AbyssSynergy(
+            "Spellbook Abyss Synergy",
+            SPELLBOOK,
+            "Purple locust that deals normal damage"
+        )
     end
 end
 
