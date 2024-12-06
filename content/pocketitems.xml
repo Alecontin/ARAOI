@@ -9,7 +9,7 @@
     announcer="514" announcerdelay="120" mimiccharge="4" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="III - Inverted Empress" description="What a wonderful parent" hud="Inverted Empress"
-    announcer="515" announcerdelay="70" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="515" announcerdelay="70" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="IV - Inverted Emperor" description="Yesterday's enemies are today's friends" hud="Inverted Emperor"
     announcer="516" announcerdelay="30" mimiccharge="12" pickup="8800" achievement="759807" />
@@ -27,22 +27,22 @@
     announcer="520" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
 
 	<card type="tarot_reverse" name="IX - Inverted Hermit" description="One man's trash is another man's treasure" hud="Inverted Hermit"
-    announcer="521" announcerdelay="60" mimiccharge="4" pickup="8800" achievement="759807" />
+    announcer="521" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="X - Inverted Wheel Of Fortune" description="Feeling lucky?" hud="Inverted Wheel of Fortune"
-    announcer="522" announcerdelay="60" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="522" announcerdelay="60" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XI - Inverted Strength" description="Finally, some worthy opponents" hud="Inverted Strength"
     announcer="523" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XII - Inverted Hanged Man" description="Take from the rich and make yourself richer" hud="Inverted Hanged Man"
-    announcer="524" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="524" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XIII - Inverted Death" description="Death is the only salvation" hud="Inverted Death"
-    announcer="525" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
+    announcer="525" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XIV - Inverted Temperance" description="Blood = Power" hud="Inverted Temperance"
-    announcer="526" announcerdelay="120" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="526" announcerdelay="120" mimiccharge="12" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XV - Inverted Devil" description="Treasure tainted in blood" hud="Inverted Devil"
     announcer="527" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
@@ -57,7 +57,7 @@
     announcer="530" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XIX - Inverted Sun" description="May the curse become a blessing" hud="Inverted Sun"
-    announcer="531" announcerdelay="0" mimiccharge="6" pickup="8800" achievement="759807" />
+    announcer="531" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XX - Inverted Judgement" description="Let God judge your sins" hud="Inverted Judgement"
     announcer="532" announcerdelay="30" mimiccharge="6" pickup="8800" achievement="759807" />
