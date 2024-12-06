@@ -3,8 +3,9 @@
 ----------------------------
 
 
-local COIN_TIMEOUT = 120 -- *Default: `120` — The amount of time the coin will stay in the air.*
+local COIN_TIMEOUT = 120 -- *Default: `120` — The amount of time the coin will stay in the air, in update frames.*
 
+local CHANCE_PER_LUCK = 1
 
 --------------------------
 -- END OF CONFIGURATION --
@@ -212,16 +213,21 @@ function modded_item:init(Mod)
                         -- Set the tear's velocity towards the enemy, normalize it, then make it as fast as the original velocity
                         tear.Velocity = (nearest_enemy.Position - tear.Position):Normalized():Resized(tear.Velocity:Length())
 
+                        -- Get the probability of the damage being doubled
+                        local doublingChance = 0.5 + (CHANCE_PER_LUCK/100) * player.Luck
+
                         -- We don't need the item's RNG since there's no point in tracking the effect in a run
                         -- so we just use the math.random() function
-                        if math.random() < 0.5 then
-                            -- Modify the tear damage and scale, lowering them
-                            tear.CollisionDamage = tear.BaseDamage * 0.5
-                            tear.Scale = tear.BaseScale * 0.75
-                        else
+                        local tearIsBeingDoubled = math.random() < doublingChance
+
+                        if tearIsBeingDoubled then
                             -- Modify the tear damage and scale, raising them
                             tear.CollisionDamage = tear.BaseDamage * 2
                             tear.Scale = tear.BaseScale * 1.35
+                        else
+                            -- Modify the tear damage and scale, lowering them
+                            tear.CollisionDamage = tear.BaseDamage * 0.5
+                            tear.Scale = tear.BaseScale * 0.75
                         end
                     end
                 end
@@ -267,6 +273,7 @@ function modded_item:init(Mod)
             "#{{Tearsize}} Shooting at a coin:"..
             "#{{Blank}} {{Shotspeed}} Redirects the tear towards the closest enemy"..
             "#{{Blank}} {{Damage}} Has a 50/50 chance of doubling/halving the tear's damage"..
+            "#{{Luck}} Every 1 Luck adds "..CHANCE_PER_LUCK.."% chance towards doubling the damage"..
             "#!!! Only works for tears !!!"
         )
         helper.eid.AbyssSynergy(
