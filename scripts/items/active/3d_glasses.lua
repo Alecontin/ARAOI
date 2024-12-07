@@ -243,7 +243,7 @@ function modded_item:init(Mod)
         helper.eid.AbyssSynergy(
             "3D Glasses Abyss Synergy",
             THREED_GLASSES,
-            "Small red and Blue locusts that deal 0.5x Isaac's damage"
+            "Small red and blue locusts that deal 0.5x Isaac's damage"
         )
     end
 end
