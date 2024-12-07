@@ -7,4 +7,4 @@ Everything this mod adds has [External Item Descriptions](https://github.com/wof
 
 
 
-If you feel like an item is unbalanced, feel free to [open an issue](https://github.com/Alecontin/ARAOI/issues) or modify the items yourself.
+Have a question? Found an issue? Item is unbalanced? Something's missing? Feel free to [open an issue](https://github.com/Alecontin/ARAOI/issues)!
