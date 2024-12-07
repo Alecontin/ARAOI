@@ -173,7 +173,7 @@ function modded_item:init(Mod)
         helper.eid.AbyssSynergy(
             "Duality Halo Abyss Synergy",
             DUALITY_HALO,
-            "Black and white locusts that deal 0.5x Isaac's damage"
+            "Small black and white locusts that deal 0.5x Isaac's damage"
         )
     end
 end
