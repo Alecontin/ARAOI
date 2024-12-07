@@ -158,7 +158,7 @@ function modded_item:init(Mod)
         helper.eid.AbyssSynergy(
             "Wire Cutter Abyss Synergy",
             WIRE_CUTTER,
-            "2 red locusts that deal 0.5x Isaac's damage"
+            "2 small red locusts that deal 0.5x Isaac's damage"
         )
     end
 end

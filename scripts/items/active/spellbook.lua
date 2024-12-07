@@ -475,11 +475,6 @@ function modded_item:init(Mod)
             SPELLBOOK,
             "Casting an active item spell will also spawn its wisp"
         )
-        helper.eid.AbyssSynergy(
-            "Spellbook Abyss Synergy",
-            SPELLBOOK,
-            "Purple locust that deals normal damage"
-        )
     end
 end
 

@@ -234,7 +234,7 @@ function modded_item:init(Mod)
         helper.eid.AbyssSynergy(
             "Rubik's Cube Abyss Synergy",
             RUBIKS_CUBE,
-            "Locust changing between 6 colors that deals 1.2x Isaac's damage"
+            "Color-changing locust that deals 1.2x Isaac's damage"
         )
     end
 end

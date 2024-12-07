@@ -366,11 +366,6 @@ function modded_item:init(Mod)
             BAG_OF_HOLDING, 
             "Spawn a wisp as if the selected item was used"
         )
-        helper.eid.AbyssSynergy(
-            "Bag of Holding Abyss Synergy",
-            BAG_OF_HOLDING,
-            "Gray locust that deals normal damage"
-        )
     end
 end
 

@@ -168,7 +168,7 @@ function modded_item:init(Mod)
         helper.eid.AbyssSynergy(
             "Rainbow Headband Abyss Synergy",
             RAINBOW_HEADBAND,
-            "Rainbow locust that leaves behind a rainbow trail"
+            "Rainbow locust that leaves behind rainbow creep"
         )
     end
 end
