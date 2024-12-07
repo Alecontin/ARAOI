@@ -269,8 +269,8 @@ function save:init(Mod)
     ---@param access any -- Can be anywhere, as long as it's a table, like `save.RUN`
     ---@param point any -- What point to access from the table, for example: `"CursedObjects"`
     ---@param default any -- What should the default value of the access point (`save.RUN["CursedObjects"]`) be, for example: `{}`
-    ---@param default_value any -- What should the default returned value be?
     ---@param key any -- Should be a string, it will be automatically converted to one
+    ---@param default_value any -- What should the default returned value be?
     ---@param value? any -- The value to set the key to, leave blank to not set the value
     ---@return any
     function save:Data(access, point, default, key, default_value, value)
@@ -289,8 +289,8 @@ function save:init(Mod)
 
     -- Get/Set data from/to an access point
     ---@param access any -- Can be anywhere, as long as it's a table, like `save.RUN`
-    ---@param default any -- What should the default value of the access point (`save.RUN["CursedObjects"]`) be, for example: `{}`
     ---@param key any -- Should be a string, it will be automatically converted to one
+    ---@param default any -- What should the default value of the access point (`save.RUN["CursedObjects"]`) be, for example: `{}`
     ---@param value? any -- The value to set the key to, leave blank to not set the value
     ---@return any
     function save:Key(access, key, default, value)

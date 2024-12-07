@@ -5,6 +5,8 @@
 
 
 
+local ENABLE_EID_HISTORY = true -- *Default: `true` — Enables the External Item Descriptions history.*
+
 -- If we get these items, we roll again.
 -- This can be because the game just crashes, or the item just doesn't work.
 local REROLL_ITEMS = {
@@ -116,6 +118,40 @@ local function wipeTemporaryItems(player)
     end
 
     SaveData:Data(SaveData.RUN, "SpellbookTemporaryItems", {}, helper.player.GetID(player), {}, {})
+end
+
+---@param spell string?
+---@param item CollectibleType?
+local function registeredSpells(spell, item)
+    local data = SaveData:Key(SaveData.RUN, "SpellbookRegisteredSpells", {})
+    if spell and item then
+        for i, v in ipairs(data) do
+            local stored_spell = v[1]
+            if spell == stored_spell then
+                table.remove(data, i)
+            end
+        end
+
+        table.insert(data, {spell, item})
+
+        if #data > 10 then
+            table.remove(data, 1)
+        end
+    end
+
+    SaveData:Key(SaveData.RUN, "SpellbookRegisteredSpells", {}, data)
+
+    return helper.table.ReverseList(data)
+end
+
+---@param spell string
+local function spellToEIDInlineArrows(spell)
+    local result = ""
+    for i = 1, #spell do
+        local char = string.sub(spell, i, i)
+        result = result.."{{SBArrow"..char.."}}"
+    end
+    return result
 end
 
 
@@ -265,6 +301,9 @@ function modded_item:init(Mod)
             player:AnimateCollectible(spell_item)
             SFX:Play(SoundEffect.SOUND_POWERUP1, 0.3, nil, nil, 2)
 
+            -- Register this spell
+            registeredSpells(spell, spell_item)
+
             -- Clear the spell
             writtenSpell(player, "")
 
@@ -297,6 +336,9 @@ function modded_item:init(Mod)
         -- Getting the data also sets it, so we make sure we loaded it first
         if not RENDERING_ENABLED then return end
 
+        -- If anyone is writing a spell, keep track of it
+        local anyone_is_writing_spell = false
+
         -- Do a render pass for each player
         for _, player in ipairs(PlayerManager.GetPlayers()) do
 
@@ -305,6 +347,8 @@ function modded_item:init(Mod)
 
             -- Check if the player is writing
             if isWritingSpell(player) then
+                -- We are writing a spell!
+                anyone_is_writing_spell = true
 
                 -- If we are writing and we don't have the book, that means
                 -- it's either a soft-lock or we put the book down while writing
@@ -329,10 +373,10 @@ function modded_item:init(Mod)
                     SFX:Play(SoundEffect.SOUND_POT_BREAK_2, 0.3, nil, nil, 3)
                 end
 
-                -- If the spell is less than 10 characters long, we can write to it
+                -- If the spell is less than 8 characters long, we can write to it
                 -- This is an arbitrary value good enough to generate a spell for every item
                 -- in the game while not going over the integer limit
-                if #spell < 10 then
+                if #spell < 8 then
                     if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) then
                         writtenSpell(player, writtenSpell(player).."1")
                         playInputSoundEffect()
@@ -349,6 +393,13 @@ function modded_item:init(Mod)
                         writtenSpell(player, writtenSpell(player).."4")
                         playInputSoundEffect()
                     end
+
+                -- If we wrote past the spell cap then we erase the spell and play a sound
+                else
+                    if helper.player.TriggeredShooting(player) then
+                        writtenSpell(player, "")
+                        SFX:Play(SoundEffect.SOUND_PLOP, 0.6)
+                    end
                 end
             end
 
@@ -362,7 +413,7 @@ function modded_item:init(Mod)
 
                 -- Offset the arrows so they end up centered
                 -- I honestly have no idea how I ended up with this formula, it was a lot of trial and error
-                position.X = position.X - 5.5 - (string.len(spell)/2-i) * 12
+                position.X = position.X - 6.3 - (string.len(spell)/2-i) * 14
                 position.Y = position.Y - 51
 
                 -- Get the arrow for that character and render it to the offset position
@@ -373,6 +424,29 @@ function modded_item:init(Mod)
             -- local pos = Isaac.WorldToScreen(player.Position)
             -- Isaac.RenderText(spell, pos.X - string.len(spell) * 3, pos.Y - 50, 1, 1, 1, 1)
         end
+
+        if anyone_is_writing_spell and ENABLE_EID_HISTORY and EID and not EID.isHidden then
+            local alpha = EID.Config["Transparency"]
+            EID:renderString(
+                "{{Collectible"..SPELLBOOK.."}} Spellbook History",
+                Vector(300, 35), Vector(1,1), KColor(175/255, 77/255, 168/255, alpha), false
+            )
+            local known_spells = registeredSpells()
+            if #known_spells > 0 then
+                for i = 1,#known_spells do
+                    local spell, item = known_spells[i][1], known_spells[i][2]
+                    EID:renderString(
+                        "{{Collectible"..item.."}} "..spellToEIDInlineArrows(spell),
+                        Vector(300, 35 + 15 * i), Vector(1,1), KColor(1, 1, 1, alpha), false
+                    )
+                end
+            else
+                EID:renderString(
+                    "Write something!",
+                    Vector(300, 35 + 15), Vector(1,1), KColor(1, 1, 1, alpha), false
+                )
+            end
+        end
     end)
 
 
@@ -380,8 +454,14 @@ function modded_item:init(Mod)
     -- ITEM DESCRIPTION --
     ----------------------
 
-    ---@type EID
+    ---@class EID
     if EID then
+        local arrow_sprite = Sprite("gfx/ui/eid_inline_arrow.anm2")
+        EID:addIcon("SBArrow1", "idle", 0, 14, 11, 7, 6, arrow_sprite)
+        EID:addIcon("SBArrow2", "idle", 1, 11, 14, 6, 5, arrow_sprite)
+        EID:addIcon("SBArrow3", "idle", 2, 14, 11, 7, 6, arrow_sprite)
+        EID:addIcon("SBArrow4", "idle", 3, 11, 14, 6, 5, arrow_sprite)
+
         EID:addCollectible(SPELLBOOK,
             "#{{Collectible"..SPELLBOOK.."}} On use, spawns an open Spellbook above Isaac"..
             "#{{Tearsize}} Shooting in any direction will write to the Spellbook"..

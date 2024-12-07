@@ -177,4 +177,12 @@ function TableUtils.Join(t, sep)
     return str
 end
 
+function TableUtils.ReverseList(list)
+    local result = {}
+    for i = #list, 1, -1 do
+        table.insert(result, list[i])
+    end
+    return result
+end
+
 return TableUtils
