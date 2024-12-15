@@ -108,11 +108,10 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addTrinket(ARAOI.TrinketType.SPARE_BATTERY,
         "#!!! SINGLE USE !!!"..
         "#{{Battery}} Spawns a battery when trying to use an active item without enough charges"
     )
     EID:addGoldenTrinketMetadata(ARAOI.TrinketType.SPARE_BATTERY, {"{{Battery}} Spawns an extra battery", "{{Battery}} Spawns 2 extra batteries"})
-end
+end)

@@ -22,12 +22,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     Isaac.GridSpawn(GridEntityType.GRID_STAIRS, 0, player.Position)
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{BlackSack}} Spawns a crawlspace leading to a Black Market"..
         "#{{LadderRoom}} If the floor's crawlspace has already been visited, it will lead there instead"
     )
-end
+end)
 
 return card

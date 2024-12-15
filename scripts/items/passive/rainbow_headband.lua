@@ -165,8 +165,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.RAINBOW_HEADBAND,
         "# Isaac leaves a trail of rainbow creep"..
         "#{{Damage}} The creep deals 66% of Isaac's damage per tick and inherits his tear effects"..
@@ -177,4 +176,4 @@ if EID then
         ARAOI.CollectibleType.RAINBOW_HEADBAND,
         "Rainbow locust that leaves behind rainbow creep"
     )
-end
+end)

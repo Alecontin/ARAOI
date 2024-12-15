@@ -206,8 +206,7 @@ end, FamiliarVariant.ABYSS_LOCUST)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.THREED_GLASSES,
         "#{{Timer}} On use, toggles Isaac's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
         "#{{Tearsize}} While holding the item, enemy projectiles will now be {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
@@ -231,4 +230,4 @@ if EID then
         ARAOI.CollectibleType.THREED_GLASSES,
         "Small red and blue locusts that deal 0.5x Isaac's damage"
     )
-end
+end)

@@ -5,8 +5,7 @@ local Config = {}
 
 
 
--- The % chance that a card will be overwritten
-Config.REPLACE_CHANCE = 15
+Config.REPLACE_CHANCE = 15 -- *Default: `15` — The % chance that a card will be overwritten*
 
 
 
@@ -59,7 +58,7 @@ local ItemConfig = Isaac.GetItemConfig()
 local inverted_cards_inline_sprite = Sprite("gfx/ui/eid_inline_cardfronts.anm2", true)
 
 -- Gets a random inverted card
----@param rng RNG
+---@param rng? RNG
 ---@return integer
 function ARAOI.Inverted_Cards.GetRandomCard(rng)
     if rng == nil then rng = RNG(math.random(9999999999)) end
@@ -81,7 +80,7 @@ for _, path in ipairs(files) do
 
             local chance = card.REPLACE_CHANCE ~= nil and card.REPLACE_CHANCE or Config.REPLACE_CHANCE
             chance = chance + (ARAOI.Inverted_Spades.Config.REPLACE_CHANCE_ADDED * multiplier)
-            if rng:RandomFloat() <= chance then
+            if rng:RandomFloat() <= (chance/100) then
                 return card.ID
             end
         end

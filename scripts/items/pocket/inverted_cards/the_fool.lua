@@ -40,14 +40,13 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local restock = CollectibleType.COLLECTIBLE_RESTOCK
     EID:addCard(card.ID,
         "#{{Collectible}} Drops all of Isaac's collectibles into 10 pedestals"..
         "#{{Collectible"..restock.."}} Excess items will be added to the pedestals item cycle"
     )
     EID:addTarotClothMetadata(card.ID, {10, 15})
-end
+end)
 
 return card

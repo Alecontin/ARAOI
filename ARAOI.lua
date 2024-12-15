@@ -157,3 +157,15 @@ ARAOI.RoomUtils = include("scripts.utils.room")
 
 ---@class TableUtils
 ARAOI.TableUtils = include("scripts.utils.table")
+
+function ARAOI.ReloadableDescription(func)
+    if EID then
+        ARAOI.Mod:AddCallback("Reload ARAOI EID Descriptions", func)
+    end
+end
+
+function ARAOI.ReloadDescriptions()
+    if EID then
+        Isaac.RunCallback("Reload ARAOI EID Descriptions")
+    end
+end

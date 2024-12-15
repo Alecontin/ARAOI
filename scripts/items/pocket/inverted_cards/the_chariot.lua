@@ -26,11 +26,10 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Freezing}} Petrifies all enemies in the room"
     )
-end
+end)
 
 return card

@@ -24,12 +24,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
     end
 end)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local the_magician = Card.CARD_MAGICIAN
     EID:addCard(card.ID,
         "#{{ArrowUp}} Activates the effects of both {{Card"..the_magician.."}} The Magician and {{Card"..card.Replace.."}} The Magician? and gives you flight for the room"
     )
-end
+end)
 
 return card

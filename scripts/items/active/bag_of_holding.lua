@@ -340,8 +340,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.BAG_OF_HOLDING,
         "#{{Collectible"..CollectibleType.COLLECTIBLE_VOID.."}} Absorbs Active Items that don't have a special charge"..
         "#{{Collectible"..CollectibleType.COLLECTIBLE_RESTOCK.."}} Isaac can cycle between absorbed items with the drop button ({{ButtonRT}})"..
@@ -354,4 +353,4 @@ if EID then
         ARAOI.CollectibleType.BAG_OF_HOLDING, 
         "Spawn a wisp as if the selected item was used"
     )
-end
+end)

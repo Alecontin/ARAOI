@@ -68,13 +68,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
     end
 end)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{EmptyHeart}} Drains all of Isaac's Red Hearts"..
         "#{{ArrowUp}} +"..Config.DAMAGE_GIVEN.." Damage for every {{HalfHeart}} Half a Heart lost"
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, "Effect calculated as if Isaac had double his current health!")
-end
+end)
 
 return card

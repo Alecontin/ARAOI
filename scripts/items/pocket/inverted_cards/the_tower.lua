@@ -19,12 +19,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Bomb}} Spawns 2-4 throwable bombs"
     )
     EID:addTarotClothMetadata(card.ID, {2, 3, 4, 5})
-end
+end)
 
 return card

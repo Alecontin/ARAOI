@@ -17,12 +17,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     SFX:Play(SoundEffect.SOUND_SUMMONSOUND)
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Confessional}} Spawns a Confessional{{Blank}}"
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, {" a ", " two ", "{{Blank}}", "s{{Blank}}"})
-end
+end)
 
 return card

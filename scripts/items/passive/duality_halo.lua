@@ -166,8 +166,7 @@ end, FamiliarVariant.ABYSS_LOCUST)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.DUALITY_HALO,
         "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a deal item in the boss room using the deal spawn chance"..
         "#{{Collectible}} Taking an item spawned this way will not affect deal chance"
@@ -177,4 +176,4 @@ if EID then
         ARAOI.CollectibleType.DUALITY_HALO,
         "Small black and white locusts that deal 0.5x Isaac's damage"
     )
-end
+end)

@@ -58,10 +58,9 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
     end
 end)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addTrinket(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE,
         "#{{ArrowUp}} All stats up"
     )
     EID:addGoldenTrinketMetadata(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE, {"Effect doubled", "Effect tripled"})
-end
+end)

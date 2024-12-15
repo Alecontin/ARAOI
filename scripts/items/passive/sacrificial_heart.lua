@@ -172,8 +172,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.SACRIFICIAL_HEART,
         "#{{BrokenHeart}} +"..Config.BROKEN_HEARTS.." Broken Hearts"..
         "# Changes all curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
@@ -205,4 +204,4 @@ if EID then
         return descObj
     end
     EID:addDescriptionModifier("Sacrificial Heart Voodoo Head Synergy", condition, modifier)
-end
+end)

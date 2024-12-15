@@ -67,3 +67,5 @@ for _, path in ipairs(files) do
         include(path)
     end
 end
+
+ARAOI.ReloadDescriptions()

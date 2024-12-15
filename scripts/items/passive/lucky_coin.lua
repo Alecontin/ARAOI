@@ -235,8 +235,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.LUCKY_COIN,
         "# Double-tapping a fire button throws a coin in that direction"..
         "#{{Tearsize}} Shooting at a coin:"..
@@ -250,4 +249,4 @@ if EID then
         ARAOI.CollectibleType.LUCKY_COIN,
         "Yellow locust with a 1.5% chance per hit of spawning a coin"
     )
-end
+end)

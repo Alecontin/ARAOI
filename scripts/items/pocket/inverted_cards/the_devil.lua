@@ -26,13 +26,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     game:StartRoomTransition(treasure_room_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local devils_crown = TrinketType.TRINKET_DEVILS_CROWN
 
     EID:addCard(card.ID,
         "#{{RedTreasureRoom}} Teleports Isaac to the Treasure Room, turning it into a {{Trinket"..devils_crown.."}} Devil Treasure Room if it hasn't been visited yet"
     )
-end
+end)
 
 return card

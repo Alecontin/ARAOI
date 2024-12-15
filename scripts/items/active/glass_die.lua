@@ -142,10 +142,9 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.GLASS_DIE,
         "#{{Mirror}} Copies the current room's item pool on use"..
         "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
     )
-end
+end)

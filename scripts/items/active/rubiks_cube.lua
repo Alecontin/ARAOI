@@ -165,8 +165,7 @@ end)
 -- DESCRIPTIONS --
 ------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.RUBIKS_CUBE,
         "#{{Luck}} "..Config.SOLVE_CHANCE.."% chance of dropping a {{Trinket"..ARAOI.TrinketType.SOLVED_RUBIKS_CUBE.."}} Solved Rubik's Cube and destroying itself"
     )
@@ -178,4 +177,4 @@ if EID then
         ARAOI.CollectibleType.RUBIKS_CUBE,
         "Color-changing locust that deals 1.2x Isaac's damage"
     )
-end
+end)

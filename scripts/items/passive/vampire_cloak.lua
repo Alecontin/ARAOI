@@ -263,11 +263,10 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK, 
         "# Negates the first hit taken once per room and will ignore enemy collision"..
         "#{{Heart}} Requires Red Heart pickups to recharge"..
         "#{{Collectible"..(CollectibleType.COLLECTIBLE_HOLY_MANTLE).."}} Holy Mantle will get used first"
     )
-end
+end)

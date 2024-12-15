@@ -31,12 +31,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Player0}} Spawns "..Config.NUM_MINIISAAC.." MiniIsaacs"
     )
     EID:addTarotClothMetadata(card.ID, {Config.NUM_MINIISAAC, Config.NUM_MINIISAAC*2})
-end
+end)
 
 return card

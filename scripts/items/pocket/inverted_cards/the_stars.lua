@@ -37,13 +37,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     ARAOI.ItemUtils.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local tmt = CollectibleType.COLLECTIBLE_TMTRAINER
     EID:addCard(card.ID,
         "#{{Collectible"..tmt.."}} Spawns a glitched item with "..Config.NUM_RANDOM_EFFECTS.." random effects"
     )
     EID:addTarotClothMetadata(card.ID, {" a glitched item ", " two glitched items "})
-end
+end)
 
 return card

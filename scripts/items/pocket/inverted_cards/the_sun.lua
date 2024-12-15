@@ -71,13 +71,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, selecte
     end
 end)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local damocles = CollectibleType.COLLECTIBLE_DAMOCLES
     EID:addCard(card.ID,
         "#{{Collectible"..damocles.."}} Gives Isaac all curses, Damocles and Sacred Orb for the floor"..
         "#!!! Only works at the start of a new floor, otherwise it will act like {{Card"..card.Replace.."}} The Sun?"
     )
-end
+end)
 
 return card

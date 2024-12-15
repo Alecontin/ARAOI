@@ -14,12 +14,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     entity:AddCharmed(EntityRef(player), -1)
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{DeathMark}} Spawns a friendly Death Horseman"
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, {" a ", " two "})
-end
+end)
 
 return card

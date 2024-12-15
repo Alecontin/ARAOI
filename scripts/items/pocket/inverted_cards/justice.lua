@@ -29,12 +29,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Collectible}} Spawns 2-4 items to choose from"
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, {2, 3, 4, 5})
-end
+end)
 
 return card

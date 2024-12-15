@@ -10,13 +10,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     player:UseActiveItem(CollectibleType.COLLECTIBLE_DELIRIOUS)
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local delirious = CollectibleType.COLLECTIBLE_DELIRIOUS
     EID:addCard(card.ID,
         "#{{Collectible"..delirious.."}} Uses the Delirious active item"
     )
     EID:addTarotClothMetadata(card.ID, "Twice!")
-end
+end)
 
 return card

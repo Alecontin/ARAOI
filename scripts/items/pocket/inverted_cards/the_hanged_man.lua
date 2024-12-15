@@ -42,13 +42,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Player14}} Spawns the Greed mini-boss"..
         "#{{Player33}} Spawns Super Greed if Greed was already spawned"..
         "#{{SecretRoom}} Spawns 2-10 secret room shopkeepers if Super Greed was already spawned"
     )
-end
+end)
 
 return card

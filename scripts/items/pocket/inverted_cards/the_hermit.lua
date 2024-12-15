@@ -75,13 +75,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local restock = CollectibleType.COLLECTIBLE_RESTOCK
     EID:addCard(card.ID,
         "#{{Collectible"..restock.."}} Converts the last collectible picked up into {{Coin}} or {{EmptyHeart}} depending on the price and the pool it was picked up from"..
         "#{{Card"..card.Replace.."}} If used when not having any collectibles, it will act like {{Card"..card.Replace.."}} The Hermit?"
     )
-end
+end)
 
 return card

@@ -30,13 +30,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Card}} Mimics a random card on use"..
         "# Has a 10% chance to destroy itself with each use"
     )
     EID:addTarotClothMetadata(card.ID, {10, 7})
-end
+end)
 
 return card

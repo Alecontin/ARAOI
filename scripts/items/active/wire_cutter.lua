@@ -127,8 +127,7 @@ end, ARAOI.CollectibleType.WIRE_CUTTER)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.WIRE_CUTTER,
         "# Allows Isaac to collect all pickups instead of choosing between them"..
         "#{{Battery}} Each pickup consumes 1 charge"..
@@ -147,4 +146,4 @@ if EID then
         ARAOI.CollectibleType.WIRE_CUTTER,
         "2 small red locusts that deal 0.5x Isaac's damage"
     )
-end
+end)

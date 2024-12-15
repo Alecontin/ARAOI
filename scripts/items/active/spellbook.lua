@@ -187,6 +187,12 @@ function ARAOI.Spellbook.AddSpellOverwrite(spell, item)
     Config.SPELL_OVERWRITE[spell] = item
 end
 
+-- Function to add an item to the blacklist from other scripts or mods more easily
+---@param item CollectibleType
+function ARAOI.Spellbook.AddItemToBlacklist(item)
+    table.insert(Config.REROLL_ITEMS, item)
+end
+
 
 -------------------
 -- INPUT BLOCKER --

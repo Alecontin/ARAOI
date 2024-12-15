@@ -430,8 +430,7 @@ end, CURSE_PIN)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(
         ARAOI.CollectibleType.VOODOO_BODY,
         "#{{BlackHeart}} +1 Black Heart"..
@@ -444,4 +443,4 @@ if EID then
         ARAOI.CollectibleType.VOODOO_BODY,
         "Gray locust that spawns pins on random enemies on hit"
     )
-end
+end)

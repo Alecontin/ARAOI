@@ -17,11 +17,10 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
 end, card.ID)
 
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Crown}} Transforms all enemies in the room into a random champion variant"
     )
-end
+end)
 
 return card

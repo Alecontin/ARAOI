@@ -254,8 +254,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@type EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local shell_game_icons = Sprite("gfx/ui/eid_shell_game_icons.anm2", true)
     EID:addIcon("ShellGame", "idle", 0, 12, 12, -1, -1.5, shell_game_icons)
     EID:addIcon("HellGame", "idle", 1, 12, 12, 1, -1.5, shell_game_icons)
@@ -284,5 +283,4 @@ if EID then
         ARAOI.CollectibleType.GAMBLING_CHIPS,
         "Yellow locust with a 5% chance per hit of spawning a coin"
     )
-
-end
+end)

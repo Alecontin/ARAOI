@@ -279,8 +279,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     EID:addCollectible(ARAOI.CollectibleType.ETERNAL_DPLOPIA,
         "Duplicates items into random ones from the current pool"..
         "#{{BrimstoneCurse}} Items will become cursed, having a "..Config.ITEM_DELETE_CHANCE.."% "..
@@ -315,4 +314,4 @@ if EID then
         return descObject
     end
     EID:addDescriptionModifier("Cursed Object Description", condition, modifier)
-end
+end)

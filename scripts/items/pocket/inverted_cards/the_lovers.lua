@@ -33,14 +33,13 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
----@class EID
-if EID then
+ARAOI.ReloadableDescription(function ()
     local altar = CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR
     EID:addCard(card.ID,
         "#{{Collectible"..altar.."}} Removes all familiars and spawns an item from the current room's item pool for every 3 familiars removed"..
         "#{{Card"..card.Replace.."}} If used when having less than 3 familiars, it will act like {{Card"..card.Replace.."}} The Lovers?"
     )
     EID:addTarotClothMetadata(card.ID, "I had to rebalance this items 3 times already, so this is not gonna happen any time soon.")
-end
+end)
 
 return card
