@@ -35,7 +35,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Player0}} Spawns "..Config.NUM_MINIISAAC.." MiniIsaacs"
     )
-    EID:addTarotClothMetadata(card.ID, {Config.NUM_MINIISAAC, Config.NUM_MINIISAAC*2})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {Config.NUM_MINIISAAC, Config.NUM_MINIISAAC*2})
 end)
 
 return card

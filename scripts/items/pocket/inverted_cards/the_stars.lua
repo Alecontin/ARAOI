@@ -42,7 +42,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Collectible"..tmt.."}} Spawns a glitched item with "..Config.NUM_RANDOM_EFFECTS.." random effects"
     )
-    EID:addTarotClothMetadata(card.ID, {" a glitched item ", " two glitched items "})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {" a glitched item ", " two glitched items "})
 end)
 
 return card

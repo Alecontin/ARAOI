@@ -22,7 +22,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{BlackHeart}} Spawns 2 Black Hearts"
     )
-    EID:addTarotClothMetadata(card.ID, {2, 3})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {2, 3})
 end)
 
 return card

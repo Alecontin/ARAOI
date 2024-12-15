@@ -23,7 +23,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Bomb}} Spawns 2-4 throwable bombs"
     )
-    EID:addTarotClothMetadata(card.ID, {2, 3, 4, 5})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {2, 3, 4, 5})
 end)
 
 return card

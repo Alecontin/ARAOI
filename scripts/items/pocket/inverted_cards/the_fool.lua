@@ -46,7 +46,7 @@ ARAOI.ReloadableDescription(function ()
         "#{{Collectible}} Drops all of Isaac's collectibles into 10 pedestals"..
         "#{{Collectible"..restock.."}} Excess items will be added to the pedestals item cycle"
     )
-    EID:addTarotClothMetadata(card.ID, {10, 15})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {10, 15})
 end)
 
 return card

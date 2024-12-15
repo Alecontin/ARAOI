@@ -15,7 +15,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{Collectible"..delirious.."}} Uses the Delirious active item"
     )
-    EID:addTarotClothMetadata(card.ID, "Twice!")
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, "Twice!")
 end)
 
 return card

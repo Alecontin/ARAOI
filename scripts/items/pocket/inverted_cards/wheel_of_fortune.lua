@@ -35,7 +35,7 @@ ARAOI.ReloadableDescription(function ()
         "#{{Card}} Mimics a random card on use"..
         "# Has a 10% chance to destroy itself with each use"
     )
-    EID:addTarotClothMetadata(card.ID, {10, 7})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {10, 7})
 end)
 
 return card

@@ -30,7 +30,7 @@ ARAOI.ReloadableDescription(function ()
     EID:addCard(card.ID,
         "#{{MomBoss}} Activates the effects of {{Card"..card.Replace.."}} The High Priestess? and 8 {{Trinket"..toenail.."}} Mom's Toenail"
     )
-    EID:addTarotClothMetadata(card.ID, "Twice! Yippee...?")
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, "Twice! Yippee...?")
 end)
 
 return card
