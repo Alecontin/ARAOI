@@ -21,13 +21,6 @@ ARAOI.Inverted_Cards.Config = Config
 local cards = "scripts.items.pocket.inverted_cards."
 
 local files = {
-    --[[ Example of a card that has a ReplaceChance overwrite:
-    cards.."card_script", --
-                          ^^
-    If a card is marked that way, go inside the script and
-    search for "card.ReplaceChance = #.##" near the top, you can
-    modify the value there or simply delete or comment the line
-    ]]
     cards.."the_fool",
     cards.."the_magician",
     cards.."the_high_priestess",

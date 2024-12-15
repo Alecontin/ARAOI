@@ -28,6 +28,7 @@ local Bats = {}
 -- FUNCTIONS --
 ---------------
 
+-- Creates a bat particle that follows the player
 ---@param player EntityPlayer
 ---@param amount integer
 ---@param offset number
@@ -47,8 +48,10 @@ function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset)
     end
 end
 
+
 local CloakInvincibility = {}
 
+-- Checks if the player has invincibility
 ---@param player EntityPlayer
 ---@param set? boolean
 function ARAOI.Vampire_Cloak.PlayerHasInvincibility(player, set)
@@ -56,6 +59,7 @@ function ARAOI.Vampire_Cloak.PlayerHasInvincibility(player, set)
 end
 
 
+-- Checks if the player has a Vampire Cloak charge
 ---@param player EntityPlayer
 ---@param set? boolean
 function ARAOI.Vampire_Cloak.PlayerHasVampireCloakCharge(player, set)

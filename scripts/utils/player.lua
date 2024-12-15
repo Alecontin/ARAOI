@@ -17,10 +17,10 @@ PlayerUtils.FireDirection = {
 ---@param player EntityPlayer
 ---@param delay number
 ---@param respectTearCap? boolean
-function PlayerUtils.ModifyFireDelay(player, delay, respectTearCap)
+function PlayerUtils.AddFireDelay(player, delay, respectTearCap)
     -- Get current MaxFireDelay and TearDelay
     local currentMaxFireDelay = player.MaxFireDelay
-    local currentTearDelay = PlayerUtils.FireDelayFormula(player)
+    local currentTearDelay = PlayerUtils.GetTearDelay(player)
 
     -- Calculate the target TearDelay
     local targetTearDelay = currentTearDelay - delay
@@ -39,13 +39,13 @@ function PlayerUtils.ModifyFireDelay(player, delay, respectTearCap)
 end
 
 ---@param player EntityPlayer
-function PlayerUtils.FireDelayFormula(player)
+function PlayerUtils.GetTearDelay(player)
     return 30 / (player.MaxFireDelay + 1)
 end
 
 ---@param player EntityPlayer
 ---@param range number
-function PlayerUtils.ModifyTearRange(player, range)
+function PlayerUtils.AddTearRange(player, range)
     player.TearRange = player.TearRange + (range * 40)
 end
 
@@ -175,19 +175,8 @@ function PlayerUtils.FromEntityRef(ref)
     return player
 end
 
--- Transforms the player's active item into another item
 ---@param player EntityPlayer
----@param collectibleType CollectibleType
----@param slot? ActiveSlot -- *Default: `ActiveSlot.SLOT_PRIMARY`*
-function PlayerUtils.TransformActiveItem(player, collectibleType, slot)
-    if slot == nil then slot = ActiveSlot.SLOT_PRIMARY end
-
-    local desc = player:GetActiveItemDesc(slot)
-    desc.Item = collectibleType
-end
-
----@param player EntityPlayer
-function PlayerUtils.IsShooting(player)
+function PlayerUtils.GetCurrentShootingDirection(player)
     if Input.IsActionPressed(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex)  then return PlayerUtils.FireDirection.DOWN  end
     if Input.IsActionPressed(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex)  then return PlayerUtils.FireDirection.LEFT  end
     if Input.IsActionPressed(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then return PlayerUtils.FireDirection.RIGHT end
@@ -263,7 +252,7 @@ function PlayerUtils.IsKeeper(player)
 end
 
 -- Gets the ID of the player in a reliable way that persists across closing and reopening the game
----- Might fail if other mods use the Collectible's RNG though
+---- Will fail if other mods use the Collectible's RNG though
 ---@param player? EntityPlayer Default: Isaac.GetPlayer(0) — The `EntityPlayer` to get the ID for
 ---@param collectible? CollectibleType Default: 1 — Change this to another collectible if you want to get the ID of sub-players like Esau
 function PlayerUtils.GetID(player, collectible)
@@ -454,7 +443,7 @@ end
 
 -- Function that keeps the active item's charge unchanged after item use
 --
--- To be called on ModCallbacks.MC_USE_ITEM
+-- To be called on `ModCallbacks.MC_USE_ITEM`
 ---@param player EntityPlayer -- The player who's item will get freezed
 ---@param slot ActiveSlot? -- The slot of the active item to freeze
 function PlayerUtils.FreezeActiveCharge(player, slot)

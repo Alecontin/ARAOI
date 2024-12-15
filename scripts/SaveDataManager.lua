@@ -52,7 +52,7 @@
 local json = require("json")
 
 ---@class SaveDataManager
-local save = {}
+local SaveDataManager = {}
 
 ---@class Timer
 local Timer = {}
@@ -84,28 +84,28 @@ local ShallowCopy = include("scripts.utils.table").ShallowCopy
 ------------------------------------
 
 ---@param Mod ModReference
-function save:init(Mod)
+function SaveDataManager:init(Mod)
     -- Get the game object
     local game = Game()
 
     -- Data can be stored in any of these tables
     -- Context will automatically clear
 
-    save.PERSISTENT = {}
-    save.RUN = {}
-    save.LEVEL = {}
-    save.ROOM = {}
-    save.TIMERS = {}
+    SaveDataManager.PERSISTENT = {}
+    SaveDataManager.RUN = {}
+    SaveDataManager.LEVEL = {}
+    SaveDataManager.ROOM = {}
+    SaveDataManager.TIMERS = {}
 
-    save.LAST_ROOM_RUN = {}
-    save.LAST_ROOM_LEVEL = {}
-    save.LAST_ROOM_ROOM = {}
-    save.LAST_ROOM_TIMERS = {}
+    SaveDataManager.LAST_ROOM_RUN = {}
+    SaveDataManager.LAST_ROOM_LEVEL = {}
+    SaveDataManager.LAST_ROOM_ROOM = {}
+    SaveDataManager.LAST_ROOM_TIMERS = {}
 
     -- Gets the data to save
     local function saveData()
         local data = json.encode({
-            save.PERSISTENT, save.RUN, save.LEVEL, save.ROOM, save.TIMERS
+            SaveDataManager.PERSISTENT, SaveDataManager.RUN, SaveDataManager.LEVEL, SaveDataManager.ROOM, SaveDataManager.TIMERS
         })
         return data
     end
@@ -121,10 +121,10 @@ function save:init(Mod)
         if not isContinued then
             -- Clearing all the contexts
 
-            save.RUN    = {}
-            save.LEVEL  = {}
-            save.ROOM   = {}
-            save.TIMERS = {}
+            SaveDataManager.RUN    = {}
+            SaveDataManager.LEVEL  = {}
+            SaveDataManager.ROOM   = {}
+            SaveDataManager.TIMERS = {}
         else
             -- The run is continued, try to load data
 
@@ -136,11 +136,11 @@ function save:init(Mod)
                 -- Decode the data
                 local data = json.decode(mod_data)
 
-                save.PERSISTENT = data[1] or {}
-                save.RUN        = data[2] or {}
-                save.LEVEL      = data[3] or {}
-                save.ROOM       = data[4] or {}
-                save.TIMERS     = data[5] or {}
+                SaveDataManager.PERSISTENT = data[1] or {}
+                SaveDataManager.RUN        = data[2] or {}
+                SaveDataManager.LEVEL      = data[3] or {}
+                SaveDataManager.ROOM       = data[4] or {}
+                SaveDataManager.TIMERS     = data[5] or {}
             end
         end
     end
@@ -158,7 +158,7 @@ function save:init(Mod)
     -- LEVEL context clearer
     local function onLevelChanged(_)
         if game:GetFrameCount() <= 1 then return end
-        save.LEVEL = {}
+        SaveDataManager.LEVEL = {}
         Mod:SaveData(saveData())
     end
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, onLevelChanged)
@@ -166,7 +166,7 @@ function save:init(Mod)
     -- ROOM context clearer
     local function onRoomChanged(_)
         if game:GetFrameCount() <= 1 then return end
-        save.ROOM = {}
+        SaveDataManager.ROOM = {}
         Mod:SaveData(saveData())
     end
     Mod:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, onRoomChanged)
@@ -193,11 +193,11 @@ function save:init(Mod)
 
     local function onRewind(_, COMMAND)
         -- if COMMAND == "rewind" or COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
-        if save.LAST_ROOM_RUN or save.LAST_ROOM_LEVEL or save.LAST_ROOM_ROOM or save.LAST_ROOM_TIMERS then
-            save.RUN    = ShallowCopy(save.LAST_ROOM_RUN)
-            save.LEVEL  = ShallowCopy(save.LAST_ROOM_LEVEL)
-            save.ROOM   = ShallowCopy(save.LAST_ROOM_ROOM)
-            save.TIMERS = ShallowCopy(save.LAST_ROOM_TIMERS)
+        if SaveDataManager.LAST_ROOM_RUN or SaveDataManager.LAST_ROOM_LEVEL or SaveDataManager.LAST_ROOM_ROOM or SaveDataManager.LAST_ROOM_TIMERS then
+            SaveDataManager.RUN    = ShallowCopy(SaveDataManager.LAST_ROOM_RUN)
+            SaveDataManager.LEVEL  = ShallowCopy(SaveDataManager.LAST_ROOM_LEVEL)
+            SaveDataManager.ROOM   = ShallowCopy(SaveDataManager.LAST_ROOM_ROOM)
+            SaveDataManager.TIMERS = ShallowCopy(SaveDataManager.LAST_ROOM_TIMERS)
         end
             -- if COMMAND == "rewind" then return "" end
             -- if COMMAND == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then return true end
@@ -209,10 +209,10 @@ function save:init(Mod)
     local function roomChangedStore(_)
         if game:GetFrameCount() <= 1 then return end
 
-        save.LAST_ROOM_RUN    = ShallowCopy(save.RUN)
-        save.LAST_ROOM_LEVEL  = ShallowCopy(save.LEVEL)
-        save.LAST_ROOM_ROOM   = ShallowCopy(save.ROOM)
-        save.LAST_ROOM_TIMERS = ShallowCopy(save.TIMERS)
+        SaveDataManager.LAST_ROOM_RUN    = ShallowCopy(SaveDataManager.RUN)
+        SaveDataManager.LAST_ROOM_LEVEL  = ShallowCopy(SaveDataManager.LEVEL)
+        SaveDataManager.LAST_ROOM_ROOM   = ShallowCopy(SaveDataManager.ROOM)
+        SaveDataManager.LAST_ROOM_TIMERS = ShallowCopy(SaveDataManager.TIMERS)
     end
     Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, roomChangedStore)
 
@@ -222,14 +222,14 @@ function save:init(Mod)
 
     -- Updates the timers, subtracting 1 from the update frames and calling the callback when the frames are 0
     local function timerUpdate()
-        for i, t in ipairs(save.TIMERS) do
+        for i, t in ipairs(SaveDataManager.TIMERS) do
             if t.FRAMES <= 0 then
                 if t.PARAMS then
                     Isaac.RunCallback(t.CALLBACK, table.unpack(t.PARAMS))
                 else
                     Isaac.RunCallback(t.CALLBACK)
                 end
-                table.remove(save.TIMERS, i)
+                table.remove(SaveDataManager.TIMERS, i)
             else
                 t.FRAMES = t.FRAMES - 1
             end
@@ -244,7 +244,7 @@ function save:init(Mod)
     ---@param callbackID string -- The ID of the callback to be ran
     ---@param time number -- Time, in seconds, after which the callback will run
     ---@param ... any -- Parameters to pass to the callback
-    function save:CreateTimer(callbackID, time, ...)
+    function SaveDataManager:CreateTimer(callbackID, time, ...)
         self:CreateTimerInFrames(callbackID, time * 30, ...)
     end
 
@@ -255,14 +255,14 @@ function save:init(Mod)
     ---@param callbackID string -- The ID of the callback to be ran
     ---@param time number -- Time, in seconds, after which the callback will run
     ---@param ... any -- Parameters to pass to the callback
-    function save:CreateTimerInFrames(callbackID, time, ...)
+    function SaveDataManager:CreateTimerInFrames(callbackID, time, ...)
         local timer = Timer:New()
 
         timer.CALLBACK = callbackID
         timer.FRAMES = time
         timer.PARAMS = {...}
 
-        table.insert(save.TIMERS, timer)
+        table.insert(SaveDataManager.TIMERS, timer)
     end
 
     -- Get/Set data from/to an access point
@@ -273,7 +273,7 @@ function save:init(Mod)
     ---@param default_value any -- What should the default returned value be?
     ---@param value? any -- The value to set the key to, leave blank to not set the value
     ---@return any
-    function save:Data(access, point, default, key, default_value, value)
+    function SaveDataManager:Data(access, point, default, key, default_value, value)
         local data = access[tostring(point)] or default
         if value ~= nil then
             data[tostring(key)] = value
@@ -293,7 +293,7 @@ function save:init(Mod)
     ---@param default any -- What should the default value of the access point (`save.RUN["CursedObjects"]`) be, for example: `{}`
     ---@param value? any -- The value to set the key to, leave blank to not set the value
     ---@return any
-    function save:Key(access, key, default, value)
+    function SaveDataManager:Key(access, key, default, value)
         if value ~= nil then
             access[tostring(key)] = value
             Mod:SaveData(saveData())
@@ -310,4 +310,4 @@ function save:init(Mod)
     return self
 end
 
-return save
+return SaveDataManager

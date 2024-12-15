@@ -1,6 +1,7 @@
 \.vscode
 \.luarc\.json
-EID\.lua
+EID_API\.lua
 metadata\.xml
 update\.py
 debug
+changelog\.txt

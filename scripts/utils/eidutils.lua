@@ -72,8 +72,8 @@ end
 -- The `Book Of Virtues` icon will be automatically appended to the description string
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
----@param append_to_description string
-function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, append_to_description)
+---@param description string
+function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
     local Book_Of_Virtues = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
     local function condition(descObject)
         if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
@@ -81,7 +81,7 @@ function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, append_to_desc
         then return true end
     end
     local function modifier(descObject)
-        EID:appendToDescription(descObject, "#{{Collectible"..Book_Of_Virtues.."}} "..append_to_description)
+        EID:appendToDescription(descObject, "#{{Collectible"..Book_Of_Virtues.."}} "..description)
         return descObject
     end
     EID:addDescriptionModifier(modifier_id, condition, modifier)
@@ -92,8 +92,8 @@ end
 -- The `Book Of Virtues` icon will be automatically appended to the description string
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
----@param append_to_description string
-function EIDUtils.AbyssSynergy(modifier_id, to_this_item, append_to_description)
+---@param description string
+function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
     local Abyss = CollectibleType.COLLECTIBLE_ABYSS
     local function condition(descObject)
         if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
@@ -101,7 +101,7 @@ function EIDUtils.AbyssSynergy(modifier_id, to_this_item, append_to_description)
         then return true end
     end
     local function modifier(descObject)
-        EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..append_to_description.."{{CR}}")
+        EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..description.."{{CR}}")
         return descObject
     end
     EID:addDescriptionModifier(modifier_id, condition, modifier)

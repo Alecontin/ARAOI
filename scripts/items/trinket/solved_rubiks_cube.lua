@@ -20,6 +20,8 @@ Config.STAT_BOOST_PER_WISP = 10 -- *Default: `10` — Percentage of the stat boo
 ------------------------
 
 ARAOI.Solved_Rubiks_Cube = {}
+ARAOI.Solved_Rubiks_Cube.Config = Config
+
 ARAOI.TrinketType.SOLVED_RUBIKS_CUBE = Isaac.GetTrinketIdByName("Solved Rubik's Cube")
 
 
@@ -42,13 +44,13 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
         player.MoveSpeed = player.MoveSpeed + 0.20 * effect_multiplier * player:GetD8SpeedModifier()
     end
     if cacheFlag == CacheFlag.CACHE_FIREDELAY then
-        ARAOI.PlayerUtils.ModifyFireDelay(player, (-1 * effect_multiplier * ARAOI.PlayerUtils.GetAproxTearRateMultiplier(player)))
+        ARAOI.PlayerUtils.AddFireDelay(player, (-1 * effect_multiplier * ARAOI.PlayerUtils.GetAproxTearRateMultiplier(player)))
     end
     if cacheFlag == CacheFlag.CACHE_DAMAGE then
         player.Damage = player.Damage + 1.5 * effect_multiplier * ARAOI.PlayerUtils.GetAproxDamageMultiplier(player)
     end
     if cacheFlag == CacheFlag.CACHE_RANGE then
-        ARAOI.PlayerUtils.ModifyTearRange(player, 1.5 * effect_multiplier * player:GetD8RangeModifier())
+        ARAOI.PlayerUtils.AddTearRange(player, 1.5 * effect_multiplier * player:GetD8RangeModifier())
     end
     if cacheFlag == CacheFlag.CACHE_SHOTSPEED then
         player.ShotSpeed = player.ShotSpeed + 0.2 * effect_multiplier

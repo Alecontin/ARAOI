@@ -151,32 +151,6 @@ function TableUtils.ShuffleTable(t, rng)
     end
 end
 
--- Splits a string into a list of strings
-function TableUtils.SplitStr(inputstr, sep)
-    if sep == nil then
-        sep = "%s"
-    end
-    local t = {}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-        table.insert(t, str)
-    end
-    return t
-end
-
-function TableUtils.Join(t, sep)
-    if sep == nil then
-        sep = " "
-    end
-    local str = ""
-    for i, v in ipairs(t) do
-        if i > 0 then
-            str = str..sep
-        end
-        str = str..v
-    end
-    return str
-end
-
 function TableUtils.ReverseList(list)
     local result = {}
     for i = #list, 1, -1 do

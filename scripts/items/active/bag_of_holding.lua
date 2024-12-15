@@ -8,7 +8,7 @@
 -- CONSTANTS AND INIT --
 ------------------------
 
-ARAOI.Bag_Of_Holding = {}
+ARAOI.Bag_of_Holding = {}
 
 local BAG_OF_HOLDING_SPRITE = Sprite("gfx/ui/hud_bag_of_holding.anm2")
 BAG_OF_HOLDING_SPRITE:SetOverlayRenderPriority(true)
@@ -18,7 +18,7 @@ BAG_OF_HOLDING_SPRITE:SetFrame(1)
 -- Single use items. Modded items do not need to be added as they trigger the RemoveCollectible function,
 -- which will be detected automatically
 ---@type CollectibleType[]
-ARAOI.Bag_Of_Holding.SingleUseItems = {
+ARAOI.Bag_of_Holding.SingleUseItems = {
     CollectibleType.COLLECTIBLE_FORGET_ME_NOW,
     CollectibleType.COLLECTIBLE_BLUE_BOX,
     CollectibleType.COLLECTIBLE_DIPLOPIA,
@@ -53,7 +53,7 @@ local SFX = SFXManager()
 ---@param add? CollectibleType
 ---@param removeInstead? boolean -- Default: `false`
 ---@return CollectibleType[]
-function ARAOI.Bag_Of_Holding.StoredItems(player, add, removeInstead)
+function ARAOI.Bag_of_Holding.StoredItems(player, add, removeInstead)
     local data = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "BagOfHoldingStoredItems", {}, ARAOI.PlayerUtils.GetID(player), {})
     if add then
         if removeInstead == true then
@@ -73,11 +73,11 @@ end
 -- Cycles to the next item from the player's stored items. If we reached the end, it automatically wraps around
 ---@param player EntityPlayer
 ---@return integer
-function ARAOI.Bag_Of_Holding.CycleItem(player)
+function ARAOI.Bag_of_Holding.CycleItem(player)
     local slot = player:GetActiveItemSlot(ARAOI.CollectibleType.BAG_OF_HOLDING)
     local desc = player:GetActiveItemDesc(slot)
 
-    local stored_items = ARAOI.Bag_Of_Holding.StoredItems(player)
+    local stored_items = ARAOI.Bag_of_Holding.StoredItems(player)
 
     desc.VarData = (desc.VarData + 1) % (#stored_items + 1)
 
@@ -87,11 +87,11 @@ end
 -- Gets the currently selected item, returns `nil` if no item is selected
 ---@param player EntityPlayer
 ---@return CollectibleType | nil
-function ARAOI.Bag_Of_Holding.GetSelectedItem(player)
+function ARAOI.Bag_of_Holding.GetSelectedItem(player)
     local slot = player:GetActiveItemSlot(ARAOI.CollectibleType.BAG_OF_HOLDING)
     local desc = player:GetActiveItemDesc(slot)
 
-    local stored_items = ARAOI.Bag_Of_Holding.StoredItems(player)
+    local stored_items = ARAOI.Bag_of_Holding.StoredItems(player)
 
     if stored_items[desc.VarData] == nil then
         desc.VarData = 0
@@ -103,7 +103,7 @@ end
 ---@param player EntityPlayer
 ---@param set? CollectibleType
 ---@return CollectibleType
-function ARAOI.Bag_Of_Holding.LastItemUsed(player, set)
+function ARAOI.Bag_of_Holding.LastItemUsed(player, set)
     return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "BagOfHoldingLastItemUse", {}, ARAOI.PlayerUtils.GetID(player), ARAOI.CollectibleType.BAG_OF_HOLDING, set)
 end
 
@@ -130,7 +130,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
     and Input.IsActionTriggered(buttonAction, player.ControllerIndex) then
 
         -- Cycle the object and get the current cycle index
-        local cycle = ARAOI.Bag_Of_Holding.CycleItem(player)
+        local cycle = ARAOI.Bag_of_Holding.CycleItem(player)
 
         -- If we returned to the start, do nothing
         -- We do this to trigger schoolbag and be able to change the selected card
@@ -160,12 +160,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
     -- Check if we have an item selected
-    local selected = ARAOI.Bag_Of_Holding.GetSelectedItem(player)
+    local selected = ARAOI.Bag_of_Holding.GetSelectedItem(player)
 
     -- We don't have an item selected
     if selected == nil then
         -- Make the last item used be our item
-        ARAOI.Bag_Of_Holding.LastItemUsed(player, ARAOI.CollectibleType.BAG_OF_HOLDING)
+        ARAOI.Bag_of_Holding.LastItemUsed(player, ARAOI.CollectibleType.BAG_OF_HOLDING)
 
         local options_voided = {}
 
@@ -219,7 +219,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
                         pickup:TryRemoveCollectible()
 
                         -- Store the voided item
-                        ARAOI.Bag_Of_Holding.StoredItems(player, absorb_id)
+                        ARAOI.Bag_of_Holding.StoredItems(player, absorb_id)
                     end
                 end
             end
@@ -232,7 +232,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
     else
 
         -- Is it in the list of single use items and our active item isn't being mimicked?
-        if ARAOI.TableUtils.IsValueInTable(selected, ARAOI.Bag_Of_Holding.SingleUseItems) and useFlags & UseFlag.USE_MIMIC == 0 then
+        if ARAOI.TableUtils.IsValueInTable(selected, ARAOI.Bag_of_Holding.SingleUseItems) and useFlags & UseFlag.USE_MIMIC == 0 then
             -- Is the selected item Mama Mega and do we have gold bombs?
             if selected == CollectibleType.COLLECTIBLE_MAMA_MEGA and player:HasGoldenBomb() then
                 -- Do nothing
@@ -255,7 +255,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
         end
 
         -- Store the last item used to set the new charges
-        ARAOI.Bag_Of_Holding.LastItemUsed(player, selected)
+        ARAOI.Bag_of_Holding.LastItemUsed(player, selected)
 
         return false
     end
@@ -275,7 +275,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_,
     if collectibleType ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
 
     -- Get and return the last item's max charge
-    local config = ItemConfig:GetCollectible(ARAOI.Bag_Of_Holding.LastItemUsed(player))
+    local config = ItemConfig:GetCollectible(ARAOI.Bag_of_Holding.LastItemUsed(player))
     return config.MaxCharges
 end)
 
@@ -289,13 +289,13 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, function
     if player:HasCollectible(collectibleType) then return end
 
     -- Get all the stored items
-    local stored_items = ARAOI.Bag_Of_Holding.StoredItems(player)
+    local stored_items = ARAOI.Bag_of_Holding.StoredItems(player)
 
     -- Check if the deleted item is among the stored items
     if ARAOI.TableUtils.IsValueInTable(collectibleType, stored_items) then
 
         -- Remove the stored item
-        ARAOI.Bag_Of_Holding.StoredItems(player, collectibleType, true)
+        ARAOI.Bag_of_Holding.StoredItems(player, collectibleType, true)
     end
 end)
 
@@ -315,7 +315,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, functio
     if collectible_id ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
 
     -- Get the currently selected item
-    local selected_item = ARAOI.Bag_Of_Holding.GetSelectedItem(player)
+    local selected_item = ARAOI.Bag_of_Holding.GetSelectedItem(player)
 
     -- The selected item is nil, which means we don't need to do anything
     if selected_item == nil then return end

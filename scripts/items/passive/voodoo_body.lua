@@ -5,7 +5,7 @@ local Config = {}
 
 
 
-Config.DAMAGE_SCALE  = 0.35 -- *Default: `0.35` — The number that the player's damage will be multiplied by when doing damage with the pin.*
+Config.DAMAGE_SCALE    = 0.35 -- *Default: `0.35` — The number that the player's damage will be multiplied by when doing damage with the pin.*
 Config.VOODOO_HEAD_ADD = 0.15 -- *Default: `0.15` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
 
 

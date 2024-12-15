@@ -62,7 +62,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
     if not player:HasCollectible(ARAOI.CollectibleType.BLESSINGS_PETAL) then return end
 
     if cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasCollectible(CollectibleType.COLLECTIBLE_EDENS_BLESSING) then
-        ARAOI.PlayerUtils.ModifyFireDelay(player, -0.35 * ARAOI.PlayerUtils.GetAproxTearRateMultiplier(player), true)
+        ARAOI.PlayerUtils.AddFireDelay(player, -0.35 * ARAOI.PlayerUtils.GetAproxTearRateMultiplier(player), true)
     end
     if cacheFlag == CacheFlag.CACHE_LUCK then
         player.Luck = player.Luck + 1

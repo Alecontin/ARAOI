@@ -50,9 +50,11 @@ ARAOI.CollectibleType = {
     VAMPIRE_CLOAK = Isaac.GetItemIdByName("Vampire Cloak"),
 
     ---@type integer
-    VOODOO_BODY = Isaac.GetItemIdByName("Voodoo Body")
+    VOODOO_BODY = Isaac.GetItemIdByName("Voodoo Body"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 15
 }
-ARAOI.CollectibleType.NUM_COLLECTIBLES = ARAOI.CollectibleType.LUCKY_COIN - ARAOI.CollectibleType.ETERNAL_DPLOPIA
 
 ---@class TrinketType
 ARAOI.TrinketType = {
@@ -63,11 +65,13 @@ ARAOI.TrinketType = {
     SOLVED_RUBIKS_CUBE = Isaac.GetTrinketIdByName("Solved Rubik's Cube"),
 
     ---@type integer
-    INVERTED_SPADES = Isaac.GetTrinketIdByName("Inverted Spades")
-}
-ARAOI.TrinketType.NUM_TRINKETS = ARAOI.TrinketType.SOLVED_RUBIKS_CUBE - ARAOI.TrinketType.SPARE_BATTERY
+    INVERTED_SPADES = Isaac.GetTrinketIdByName("Inverted Spades"),
 
----@class Card
+    ---@type integer
+    NUM_TRINKETS = 3
+}
+
+---@class CardSubType
 ARAOI.CardSubType = {
     ---@type integer
     INVERTED_FOOL = Isaac.GetCardIdByName("Inverted Fool"),
@@ -133,9 +137,11 @@ ARAOI.CardSubType = {
     INVERTED_JUDGEMENT = Isaac.GetCardIdByName("Inverted Judgement"),
 
     ---@type integer
-    INVERTED_WORLD = Isaac.GetCardIdByName("Inverted World")
+    INVERTED_WORLD = Isaac.GetCardIdByName("Inverted World"),
+
+    ---@type integer
+    NUM_CARDS = 22
 }
-ARAOI.CardSubType.NUM_CARDS = ARAOI.CardSubType.INVERTED_WORLD - ARAOI.CardSubType.INVERTED_FOOL
 
 ---@class SaveDataManager
 ARAOI.SaveData = include("scripts.SaveDataManager"):init(ARAOI.Mod)
@@ -158,7 +164,7 @@ ARAOI.RoomUtils = include("scripts.utils.room")
 ---@class TableUtils
 ARAOI.TableUtils = include("scripts.utils.table")
 
--- Wrapper foor the description reloaded callback
+-- Wrapper for the description reloaded callback
 function ARAOI.ReloadableDescription(func)
     if EID then
         ARAOI.Mod:AddCallback("Reload ARAOI EID Descriptions", func)
