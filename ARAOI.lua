@@ -52,7 +52,7 @@ ARAOI.CollectibleType = {
     ---@type integer
     VOODOO_BODY = Isaac.GetItemIdByName("Voodoo Body")
 }
-ARAOI.CollectibleType.NUM_COLLECTIBLES = #ARAOI.CollectibleType
+ARAOI.CollectibleType.NUM_COLLECTIBLES = ARAOI.CollectibleType.LUCKY_COIN - ARAOI.CollectibleType.ETERNAL_DPLOPIA
 
 ---@class TrinketType
 ARAOI.TrinketType = {
@@ -65,6 +65,77 @@ ARAOI.TrinketType = {
     ---@type integer
     INVERTED_SPADES = Isaac.GetTrinketIdByName("Inverted Spades")
 }
+ARAOI.TrinketType.NUM_TRINKETS = ARAOI.TrinketType.SOLVED_RUBIKS_CUBE - ARAOI.TrinketType.SPARE_BATTERY
+
+---@class Card
+ARAOI.CardSubType = {
+    ---@type integer
+    INVERTED_FOOL = Isaac.GetCardIdByName("Inverted Fool"),
+
+    ---@type integer
+    INVERTED_MAGICIAN = Isaac.GetCardIdByName("Inverted Magician"),
+
+    ---@type integer
+    INVERTED_HIGH_PRIESTESS = Isaac.GetCardIdByName("Inverted High Priestess"),
+
+    ---@type integer
+    INVERTED_EMPRESS = Isaac.GetCardIdByName("Inverted Empress"),
+
+    ---@type integer
+    INVERTED_EMPEROR = Isaac.GetCardIdByName("Inverted Emperor"),
+
+    ---@type integer
+    INVERTED_HERMIT = Isaac.GetCardIdByName("Inverted Hermit"),
+
+    ---@type integer
+    INVERTED_HIEROPHANT = Isaac.GetCardIdByName("Inverted Hierophant"),
+
+    ---@type integer
+    INVERTED_LOVERS = Isaac.GetCardIdByName("Inverted Lovers"),
+
+    ---@type integer
+    INVERTED_CHARIOT = Isaac.GetCardIdByName("Inverted Chariot"),
+
+    ---@type integer
+    INVERTED_JUSTICE = Isaac.GetCardIdByName("Inverted Justice"),
+
+    ---@type integer
+    INVERTED_WHEEL_OF_FORTUNE = Isaac.GetCardIdByName("Inverted Wheel of Fortune"),
+
+    ---@type integer
+    INVERTED_STRENGTH = Isaac.GetCardIdByName("Inverted Strength"),
+
+    ---@type integer
+    INVERTED_HANGED_MAN = Isaac.GetCardIdByName("Inverted Hanged Man"),
+
+    ---@type integer
+    INVERTED_DEATH = Isaac.GetCardIdByName("Inverted Death"),
+
+    ---@type integer
+    INVERTED_TEMPERANCE = Isaac.GetCardIdByName("Inverted Temperance"),
+
+    ---@type integer
+    INVERTED_DEVIL = Isaac.GetCardIdByName("Inverted Devil"),
+
+    ---@type integer
+    INVERTED_TOWER = Isaac.GetCardIdByName("Inverted Tower"),
+
+    ---@type integer
+    INVERTED_STARS = Isaac.GetCardIdByName("Inverted Stars"),
+
+    ---@type integer
+    INVERTED_MOON = Isaac.GetCardIdByName("Inverted Moon"),
+
+    ---@type integer
+    INVERTED_SUN = Isaac.GetCardIdByName("Inverted Sun"),
+
+    ---@type integer
+    INVERTED_JUDGEMENT = Isaac.GetCardIdByName("Inverted Judgement"),
+
+    ---@type integer
+    INVERTED_WORLD = Isaac.GetCardIdByName("Inverted World")
+}
+ARAOI.CardSubType.NUM_CARDS = ARAOI.CardSubType.INVERTED_WORLD - ARAOI.CardSubType.INVERTED_FOOL
 
 ---@class SaveDataManager
 ARAOI.SaveData = include("scripts.SaveDataManager"):init(ARAOI.Mod)

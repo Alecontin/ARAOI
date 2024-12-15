@@ -1,6 +1,6 @@
 local card = {}
 
-card.ID = Isaac.GetCardIdByName("Inverted Hierophant")
+card.ID = ARAOI.CardSubType.INVERTED_HIEROPHANT
 card.Replace = Card.CARD_REVERSE_HIEROPHANT
 
 ARAOI.Inverted_Cards.Hierophant = card

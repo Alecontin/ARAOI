@@ -18,7 +18,7 @@ Config.DAMAGE_GIVEN = 0.75 -- *Default: `0.75` — Amount of damage that will be
 local card = {}
 card.Config = Config
 
-card.ID = Isaac.GetCardIdByName("Inverted Temperance")
+card.ID = ARAOI.CardSubType.INVERTED_TEMPERANCE
 card.Replace = Card.CARD_REVERSE_TEMPERANCE
 
 ARAOI.Inverted_Cards.Temperance = card

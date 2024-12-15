@@ -58,6 +58,14 @@ local extension = {}
 local ItemConfig = Isaac.GetItemConfig()
 local inverted_cards_inline_sprite = Sprite("gfx/ui/eid_inline_cardfronts.anm2", true)
 
+-- Gets a random inverted card
+---@param rng RNG
+---@return integer
+function ARAOI.Inverted_Cards.GetRandomCard(rng)
+    if rng == nil then rng = RNG(math.random(9999999999)) end
+    return rng:RandomInt(ARAOI.CardSubType.INVERTED_FOOL, ARAOI.CardSubType.INVERTED_FOOL + ARAOI.CardSubType.NUM_CARDS)
+end
+
 for _, path in ipairs(files) do
     local card = include(path)
 

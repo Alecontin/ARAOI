@@ -18,7 +18,7 @@ Config.NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects 
 local card = {}
 card.Config = Config
 
-card.ID = Isaac.GetCardIdByName("Inverted Stars")
+card.ID = ARAOI.CardSubType.INVERTED_STARS
 card.Replace = Card.CARD_REVERSE_STARS
 
 ARAOI.Inverted_Cards.Stars = card

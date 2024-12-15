@@ -19,7 +19,7 @@ Config.NUM_MINIISAAC = 10 -- *Default: `10` — The number of MiniIsaacs to spaw
 local card = {}
 card.Config = Config
 
-card.ID = Isaac.GetCardIdByName("Inverted Empress")
+card.ID = ARAOI.CardSubType.INVERTED_EMPRESS
 card.Replace = Card.CARD_REVERSE_EMPRESS
 
 ARAOI.Inverted_Cards.Empress = card

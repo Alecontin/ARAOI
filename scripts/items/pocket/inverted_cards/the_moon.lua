@@ -1,6 +1,6 @@
 local card = {}
 
-card.ID = Isaac.GetCardIdByName("Inverted Moon")
+card.ID = ARAOI.CardSubType.INVERTED_MOON
 card.Replace = Card.CARD_REVERSE_MOON
 
 ARAOI.Inverted_Cards.Mood = card

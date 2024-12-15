@@ -1,6 +1,7 @@
 local card = {}
+
+card.ID = ARAOI.CardSubType.INVERTED_DEATH
 card.Replace = Card.CARD_REVERSE_DEATH
-card.ID = Isaac.GetCardIdByName("Inverted Death")
 
 ARAOI.Inverted_Cards.Death = card
 

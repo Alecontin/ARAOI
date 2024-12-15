@@ -1,6 +1,6 @@
 local card = {}
 
-card.ID = Isaac.GetCardIdByName("Inverted Hermit")
+card.ID = ARAOI.CardSubType.INVERTED_HERMIT
 card.Replace = Card.CARD_REVERSE_HERMIT
 
 ARAOI.Inverted_Cards.Hermit = card

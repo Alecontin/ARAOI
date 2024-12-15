@@ -1,6 +1,6 @@
 local card = {}
 
-card.ID = Isaac.GetCardIdByName("Inverted Strength")
+card.ID = ARAOI.CardSubType.INVERTED_STRENGTH
 card.Replace = Card.CARD_REVERSE_STRENGTH
 
 ARAOI.Inverted_Cards.Strength = card

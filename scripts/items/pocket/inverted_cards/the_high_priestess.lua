@@ -1,6 +1,6 @@
 local card = {}
 
-card.ID = Isaac.GetCardIdByName("Inverted High Priestess")
+card.ID = ARAOI.CardSubType.INVERTED_HIGH_PRIESTESS
 card.Replace = Card.CARD_REVERSE_HIGH_PRIESTESS
 
 ARAOI.Inverted_Cards.High_Priestess = card
