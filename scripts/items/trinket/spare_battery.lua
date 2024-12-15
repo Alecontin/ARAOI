@@ -4,125 +4,115 @@
 
 
 
+------------------------
+-- CONSTANTS AND INIT --
+------------------------
 
-
-
----------------
--- CONSTANTS --
----------------
-
-local SPARE_BATTERY = Isaac.GetTrinketIdByName("Spare Battery")
 
 
 -------------------------
 -- ITEM INITIALIZATION --
 -------------------------
 
-local modded_item = {}
+--------------------------------
+-- MAIN TRINKET FUNCTIONALITY --
+--------------------------------
 
-function modded_item:init(Mod)
+---@param entity Entity
+---@param inputHook any
+---@param buttonAction any
+ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
     local game = Game()
 
-    --------------------------------
-    -- MAIN TRINKET FUNCTIONALITY --
-    --------------------------------
+    -- Noone pressed anything
+    if not entity then return end
 
-    ---@param entity Entity
-    ---@param inputHook any
-    ---@param buttonAction any
-    Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
-        -- Noone pressed anything
-        if not entity then return end
+    -- Getting the player that pressed the active button
+    local player = entity:ToPlayer()
+    if not player then return end
 
-        -- Getting the player that pressed the active button
-        local player = entity:ToPlayer()
-        if not player then return end
+    if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_ITEM then return end
 
-        if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_ITEM then return end
+    -- End the function prematurely if the player doesn't have the trinket
+    if not player:HasTrinket(ARAOI.TrinketType.SPARE_BATTERY) then return end
 
-        -- End the function prematurely if the player doesn't have the trinket
-        if not player:HasTrinket(SPARE_BATTERY) then return end
+    -- Check if the button pressed is actually the active button
+    if not Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex) then return end
 
-        -- Check if the button pressed is actually the active button
-        if not Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex) then return end
+    -- Get the slot and the item_id of the active
+    local slot = ActiveSlot.SLOT_PRIMARY
+    local item_id = player:GetActiveItem(slot)
 
-        -- Get the slot and the item_id of the active
-        local slot = ActiveSlot.SLOT_PRIMARY
-        local item_id = player:GetActiveItem(slot)
+    -- If the player has no active item then we stop here
+    if not item_id or item_id == CollectibleType.COLLECTIBLE_NULL then return end
 
-        -- If the player has no active item then we stop here
-        if not item_id or item_id == CollectibleType.COLLECTIBLE_NULL then return end
+    -- Encasing the functionality inside a function to use it in a timer
+    -- this is because there's a lot of edge cases regarding sharp plug
+    local function spawnBatteries()
+        -- Get some charging information
+        local min_charges = player:GetActiveMinUsableCharge(slot)
+        local current_charge = player:GetTotalActiveCharge(ActiveSlot.SLOT_PRIMARY)
 
-        -- Encasing the functionality inside a function to use it in a timer
-        -- this is because there's a lot of edge cases regarding sharp plug
-        local function spawnBatteries()
-            -- Get some charging information
-            local min_charges = player:GetActiveMinUsableCharge(slot)
-            local current_charge = player:GetTotalActiveCharge(ActiveSlot.SLOT_PRIMARY)
+        -- Getting more charging information
+        local config = Isaac.GetItemConfig()
+        local item = config:GetCollectible(item_id)
+        local charge_type = item.ChargeType
 
-            -- Getting more charging information
-            local config = Isaac.GetItemConfig()
-            local item = config:GetCollectible(item_id)
-            local charge_type = item.ChargeType
+        -- We shouldn't spawn batteries for a item that can't use them
+        if charge_type == ChargeType.Special then return end
 
-            -- We shouldn't spawn batteries for a item that can't use them
-            if charge_type == ChargeType.Special then return end
+        -- Same for an item that doesn't need them
+        if current_charge >= min_charges then return end
 
-            -- Same for an item that doesn't need them
-            if current_charge >= min_charges then return end
+        -- Check if the player is currently holding an item above their head
+        -- This acts more like a debounce for the trinket more than anything
+        if player:IsHoldingItem() then return end
 
-            -- Check if the player is currently holding an item above their head
-            -- This acts more like a debounce for the trinket more than anything
-            if player:IsHoldingItem() then return end
+        -- Getting the room so we can later find a free space to spawn the pickups
+        local room = game:GetRoom()
 
-            -- Getting the room so we can later find a free space to spawn the pickups
-            local room = game:GetRoom()
+        -- How many batteries should we spawn?
+        local batteries = player:GetTrinketMultiplier(ARAOI.TrinketType.SPARE_BATTERY)
 
-            -- How many batteries should we spawn?
-            local batteries = player:GetTrinketMultiplier(SPARE_BATTERY)
-
-            -- For every battery that we need to spawn...
-            for _ = 1, batteries do
-                -- Spawn a battery
-                Isaac.Spawn(
-                    EntityType.ENTITY_PICKUP,
-                    PickupVariant.PICKUP_LIL_BATTERY,
-                    BatterySubType.BATTERY_NORMAL,
-                    room:FindFreePickupSpawnPosition(player.Position, 50, true, false),
-                    Vector.Zero,
-                    player
-                ):ToPickup()
-            end
-
-            -- Lastly, show an animation and remove the trinket
-            player:AnimateTrinket(SPARE_BATTERY, "UseItem") -- "UseItem" is a bit faster than default
-            player:TryRemoveTrinket(SPARE_BATTERY)
+        -- For every battery that we need to spawn...
+        for _ = 1, batteries do
+            -- Spawn a battery
+            Isaac.Spawn(
+                EntityType.ENTITY_PICKUP,
+                PickupVariant.PICKUP_LIL_BATTERY,
+                BatterySubType.BATTERY_NORMAL,
+                room:FindFreePickupSpawnPosition(player.Position, 50, true, false),
+                Vector.Zero,
+                player
+            ):ToPickup()
         end
 
-        -- Check for sharp plug
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_SHARP_PLUG) then
-            Isaac.CreateTimer(spawnBatteries, 1, 1, false)
-
-        -- No sharp plug, spawn the batteries immediately
-        else
-            spawnBatteries()
-        end
-
-    end)
-
-
-    ----------------------
-    -- ITEM DESCRIPTION --
-    ----------------------
-
-    ---@class EID
-    if EID then
-        EID:addTrinket(SPARE_BATTERY,
-            "#!!! SINGLE USE !!!"..
-            "#{{Battery}} Spawns a battery when trying to use an active item without enough charges"
-        )
-        EID:addGoldenTrinketMetadata(SPARE_BATTERY, {"{{Battery}} Spawns an extra battery", "{{Battery}} Spawns 2 extra batteries"})
+        -- Lastly, show an animation and remove the trinket
+        player:AnimateTrinket(ARAOI.TrinketType.SPARE_BATTERY, "UseItem") -- "UseItem" is a bit faster than default
+        player:TryRemoveTrinket(ARAOI.TrinketType.SPARE_BATTERY)
     end
-end
 
-return modded_item
+    -- Check for sharp plug
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_SHARP_PLUG) then
+        Isaac.CreateTimer(spawnBatteries, 1, 1, false)
+
+    -- No sharp plug, spawn the batteries immediately
+    else
+        spawnBatteries()
+    end
+
+end)
+
+
+----------------------
+-- ITEM DESCRIPTION --
+----------------------
+
+---@class EID
+if EID then
+    EID:addTrinket(ARAOI.TrinketType.SPARE_BATTERY,
+        "#!!! SINGLE USE !!!"..
+        "#{{Battery}} Spawns a battery when trying to use an active item without enough charges"
+    )
+    EID:addGoldenTrinketMetadata(ARAOI.TrinketType.SPARE_BATTERY, {"{{Battery}} Spawns an extra battery", "{{Battery}} Spawns 2 extra batteries"})
+end

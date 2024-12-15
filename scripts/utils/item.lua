@@ -1,6 +1,9 @@
 ---@class ItemUtils
 local ItemUtils = {}
 
+---@type TableUtils
+local tableUtils = include("scripts.utils.table")
+
 ChargeType = {
     Normal = 0,
     Timed = 1,
@@ -205,6 +208,62 @@ function ItemUtils.SpawnCollectibleFromPool(ItemPool, Position, Velocity, Spawne
     -- the entity because IT COULD BE NIL! (it can't)
     ---@diagnostic disable-next-line: return-type-mismatch
     return pedestal
+end
+
+-- Returns a random pickup for you to spawn
+---@param rng? RNG
+---@param allowHearts? boolean -- Default: `true`
+---@param allowCoins? boolean -- Default: `true`
+---@param allowKeys? boolean -- Default: `true`
+---@param allowBombs? boolean -- Default: `true`
+---@param allowBatteries? boolean -- Default: `true`
+---@param allowChests? boolean -- Default: `true`
+---@param allowExtremelyRareOccurrences? boolean -- Default: `false` — Should we allow extremely rare occurrences? Like spawning Mom's Chest.
+---@return PickupVariant
+function ItemUtils.GetRandomPickup(rng, allowHearts, allowCoins, allowKeys, allowBombs, allowBatteries, allowChests, allowExtremelyRareOccurrences)
+    -- Set the rng and seed
+    if rng == nil then
+        rng = RNG()
+        rng:SetSeed(game:GetSeeds():GetStartSeed())
+    end
+
+    local chests = {
+        [PickupVariant.PICKUP_CHEST] = 1,
+        [PickupVariant.PICKUP_LOCKEDCHEST] = 1,
+        [PickupVariant.PICKUP_REDCHEST] = 1,
+        [PickupVariant.PICKUP_BOMBCHEST] = 1,
+        [PickupVariant.PICKUP_ETERNALCHEST] = 1,
+        [PickupVariant.PICKUP_SPIKEDCHEST] = 1,
+        [PickupVariant.PICKUP_MIMICCHEST] = 1,
+        [PickupVariant.PICKUP_OLDCHEST] = 0.5,
+        [PickupVariant.PICKUP_MOMSCHEST] = allowExtremelyRareOccurrences == true and 0.01 or 0
+    }
+    if Isaac.GetCompletionMark(PlayerType.PLAYER_LAZARUS_B, CompletionType.MEGA_SATAN) then
+        chests[PickupVariant.PICKUP_WOODENCHEST] = 1
+    end
+    if Isaac.GetCompletionMark(PlayerType.PLAYER_ISAAC_B, CompletionType.MEGA_SATAN) then
+        chests[PickupVariant.PICKUP_MEGACHEST] = 0.1
+    end
+    if Isaac.GetCompletionMark(PlayerType.PLAYER_THELOST_B, CompletionType.MEGA_SATAN) then
+        chests[PickupVariant.PICKUP_HAUNTEDCHEST] = 1
+    end
+
+    local keys, values = tableUtils.KeysAndValues(chests)
+    local randomChest = tableUtils.Choice(keys, values, rng)
+
+    -- Set a list of pickups and weights
+    local pickups = {
+        [PickupVariant.PICKUP_COIN] = allowCoins ~= false and 1 or 0,
+        [PickupVariant.PICKUP_KEY] = allowKeys ~= false and 1 or 0,
+        [PickupVariant.PICKUP_BOMB] = allowBombs ~= false and 1 or 0,
+        [PickupVariant.PICKUP_HEART] = allowHearts ~= false and 0.7 or 0,
+        [PickupVariant.PICKUP_LIL_BATTERY] = allowBatteries ~= false and 0.5 or 0,
+        [randomChest] = allowChests ~= false and 0.2 or 0
+    }
+
+    -- Separate the pickups and weights
+    local keys, values = tableUtils.KeysAndValues(pickups)
+    return tableUtils.Choice(keys, values, rng)
 end
 
 return ItemUtils

@@ -2,24 +2,7 @@
 local Mod = RegisterMod("ARAOI", 1)
 
 if not REPENTOGON then
-    error("REPENTAGON IS MISSING, ARAOI WILL NOT WORK. PLEASE INSTALL REPENTAGON OR UNINSTALL THIS MOD!")
-end
-
--- There's no EID:addGoldenTrinketMetadata() for cards? That's weird... Or maybe I'm the weird one...
-if EID then
-    -- @_param_ `changes`
-    --
-    -- _type_ `string` — Text will be appended to the description
-    --
-    -- _type_ `string[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{" a ", " a lot ", " an ", " two "}` will replace `" a "` with `" a lot "` and `" an "` with `" two "`
-    --
-    -- _type_ `number[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{1, 2, 0.6, 0.8}` will replace `1` with `2` and `0.6` with `0.8`
-    ---@param id Card
-    ---@param changes string | string[] | number[]
-    ---@param language any?
-    function EID:addTarotClothMetadata(id, changes, language)
-        include("scripts.utils.eidutils").TarotClothMetadata(id, changes, language)
-    end
+    error("REPENTOGON IS MISSING! ARAOI WILL NOT WORK! PLEASE INSTALL REPENTOGON OR UNINSTALL THIS MOD!")
 end
 
 --[[
@@ -29,7 +12,12 @@ end
 
 ]]--
 
-require("scripts.SaveDataManager"):init(Mod)
+---@class ARAOI
+ARAOI = {}
+ARAOI.Mod = Mod
+
+include("ARAOI")
+
 
 local item = "scripts.items."
 
@@ -41,7 +29,7 @@ local trinket = item.."trinket."
 local files = {
     --[[ ACTIVE ITEMS ]]--
     active.."eternal_dplopia",
-    active.."rubiks_cube", -- + Trinket
+    active.."rubiks_cube",
     active.."3d_glasses",
     active.."bag_of_holding",
     active.."glass_die",
@@ -59,10 +47,12 @@ local files = {
     passive.."lucky_coin",
 
     --[[ POCKET ITEMS ]]--
-    pocket.."inverted_cards", -- + Trinket
+    pocket.."inverted_cards",
 
     --[[ TRINKETS ]]--
     trinket.."spare_battery",
+    trinket.."solved_rubiks_cube",
+    trinket.."inverted_spades",
 
     --[[ DEBUGGING ]]--
     "debug.code"
@@ -71,9 +61,9 @@ local files = {
 for _, path in ipairs(files) do
     if path == "debug.code" then
         pcall(function ()
-            include(path):init(Mod)
+            include(path)
         end)
     else
-        include(path):init(Mod)
+        include(path)
     end
 end

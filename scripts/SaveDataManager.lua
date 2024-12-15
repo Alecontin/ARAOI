@@ -91,7 +91,7 @@ function save:init(Mod)
     -- Data can be stored in any of these tables
     -- Context will automatically clear
 
-    save.PERSISTANT = {}
+    save.PERSISTENT = {}
     save.RUN = {}
     save.LEVEL = {}
     save.ROOM = {}
@@ -105,7 +105,7 @@ function save:init(Mod)
     -- Gets the data to save
     local function saveData()
         local data = json.encode({
-            save.PERSISTANT, save.RUN, save.LEVEL, save.ROOM, save.TIMERS
+            save.PERSISTENT, save.RUN, save.LEVEL, save.ROOM, save.TIMERS
         })
         return data
     end
@@ -136,7 +136,7 @@ function save:init(Mod)
                 -- Decode the data
                 local data = json.decode(mod_data)
 
-                save.PERSISTANT = data[1] or {}
+                save.PERSISTENT = data[1] or {}
                 save.RUN        = data[2] or {}
                 save.LEVEL      = data[3] or {}
                 save.ROOM       = data[4] or {}
@@ -306,6 +306,8 @@ function save:init(Mod)
     end
 
     loadSaveData(true)
+
+    return self
 end
 
 return save

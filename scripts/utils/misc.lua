@@ -2,47 +2,50 @@
 ---@class MiscUtils
 local MiscUtils = {}
 
+---@type TableUtils
+local tableUtils = include("scripts.utils.table")
+
 local game = Game()
 
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isAngelItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_ANGEL or item_pool == ItemPoolType.POOL_GREED_ANGEL
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isBossItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_BOSS or item_pool == ItemPoolType.POOL_GREED_BOSS
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isCurseItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_CURSE or item_pool == ItemPoolType.POOL_GREED_CURSE
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isSecretItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_SECRET or item_pool == ItemPoolType.POOL_GREED_SECRET
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isShopItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_SHOP or item_pool == ItemPoolType.POOL_GREED_SHOP
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isTreasureItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_TREASURE or item_pool == ItemPoolType.POOL_GREED_TREASURE
 end
--- This function returns true when cheching for the normal item pool and its greed counterpart
+-- This function returns true when checking for the normal item pool and its greed counterpart
 ---@param item_pool ItemPoolType | ItemPool
 function MiscUtils.isDevilItemPool(item_pool)
     return item_pool == ItemPoolType.POOL_DEVIL or item_pool == ItemPoolType.POOL_GREED_DEVIL
 end
 
----@param H any -- *Number between 0 and 360*
----@param S? any -- *Default: `1` — Number between 0 and 1*
----@param L? any -- *Default: `0.5` — Number between 0 and 1*
+---@param H integer -- *Number between 0 and 360*
+---@param S? number -- *Default: `1` — Number between 0 and 1*
+---@param L? number -- *Default: `0.5` — Number between 0 and 1*
 function MiscUtils.HSLtoRGB(H, S, L)
     H = H % 360
     S = S or 1
@@ -82,8 +85,18 @@ function MiscUtils.Lerp(A, B, t)
     return A + (B - A) * t
 end
 
+function MiscUtils.IsAnyReverseCardUnlocked()
+    local PGD = Isaac.GetPersistentGameData()
+    for i = Achievement.REVERSED_FOOL, Achievement.REVERSED_WORLD, 1 do
+        if PGD:Unlocked(i) == true then
+            return true
+        end
+    end
+    return false
+end
+
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
--- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentagon functions
+-- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
 ---@return number[] -- List where the first item is the devil chance and the second the angel chance
 function MiscUtils.getDevilAngelRoomChance()
     local level = game:GetLevel()
