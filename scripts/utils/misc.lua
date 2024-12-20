@@ -95,6 +95,49 @@ function MiscUtils.IsAnyReverseCardUnlocked()
     return false
 end
 
+---@param pennies integer
+---@return integer dimes
+---@return integer nickels
+---@return integer pennies
+function MiscUtils.PenniesToCoins(pennies)
+    local dimes = math.floor(pennies / 10)
+    pennies = pennies - dimes * 10
+
+    local nickels = math.floor(pennies / 5)
+    pennies = pennies - nickels * 5
+
+    return dimes, nickels, pennies
+end
+
+---@param pennies integer
+---@param position? Vector -- Default: `Game():GetRoom():FindFreePickupSpawnPosition(Game():GetRoom():GetCenterPos())`
+---@param velocityMult? number -- Default: `1`
+function MiscUtils.DropCompactedCoins(pennies, position, velocityMult)
+    if position == nil then position = Game():GetRoom():FindFreePickupSpawnPosition(Game():GetRoom():GetCenterPos()) end
+    if velocityMult == nil then velocityMult = 1 end
+
+    dimes, nickels, pennies = MiscUtils.PenniesToCoins(pennies)
+
+    local coins = dimes + nickels + pennies
+
+    local function DropCoin()
+        if dimes > 0 then
+            dimes = dimes - 1
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_DIME, position, EntityPickup.GetRandomPickupVelocity(position) * velocityMult, nil)
+        elseif nickels > 0 then
+            nickels = nickels - 1
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_NICKEL, position, EntityPickup.GetRandomPickupVelocity(position) * velocityMult, nil)
+        else
+            pennies = pennies - 1
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, position, EntityPickup.GetRandomPickupVelocity(position) * velocityMult, nil)
+        end
+    end
+
+    for _ = 1, coins do
+        DropCoin()
+    end
+end
+
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
 ---@return number[] -- List where the first item is the devil chance and the second the angel chance

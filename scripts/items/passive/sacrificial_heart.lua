@@ -172,7 +172,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.SACRIFICIAL_HEART,
         "#{{BrokenHeart}} +"..Config.BROKEN_HEARTS.." Broken Hearts"..
         "# Changes all curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..

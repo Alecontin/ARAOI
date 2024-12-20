@@ -343,6 +343,21 @@ end
 function MiscUtils.IsAnyReverseCardUnlocked()
 end
 
+-- Converts pennies into dimes, nickels and pennies
+---@param pennies integer
+---@return integer dimes
+---@return integer nickels
+---@return integer pennies
+function MiscUtils.PenniesToCoins(pennies)
+end
+
+-- Function that drops the specified amount of pennies into dimes, nickels and pennies
+---@param pennies integer
+---@param position? Vector -- Default: `Game():GetRoom():FindFreePickupSpawnPosition(Game():GetRoom():GetCenterPos())`
+---@param velocityMult? number -- Default: `1`
+function MiscUtils.DropCompactedCoins(pennies, position, velocityMult)
+end
+
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
 ---@return number[] -- List where the first item is the devil chance and the second the angel chance
@@ -629,12 +644,18 @@ ARAOI.TableUtils = TableUtils
 
 
 -- Wrapper for the description reloaded callback
-function ARAOI.ReloadableDescription(func)
+---@param func function
+function ARAOI.EIDWrapper(func)
 end
 
 -- Calls the callback responsible for reloading the EID descriptions
-function ARAOI.ReloadDescriptions()
+function ARAOI.EIDReload()
 end
+
+---@class ModCallbacks
+---@field OnReload string
+---@field EIDReload string
+ARAOI.ModCallbacks = {}
 
 
 
@@ -735,6 +756,20 @@ end
 ---@param player EntityPlayer
 ---@return number float From 0 to 1
 function ARAOI.Eternal_Dplopia.GetCollectibleDeleteChanceForPlayer(player)
+end
+
+ARAOI.Glass_Die = {}
+
+-- Function to add modded icons to the Glass Die
+--
+-- Sprites added this way will be rendered in the middle of the die with an offset of `Vector(16, 16)`, which means you should place the sprite in the middle of the green cursor when creating the ANM2 file
+---@param sprite Sprite
+---@param pool_id ItemPoolType
+---@param sprite_frame integer
+---@param sprite_offset? Vector
+---@param sprite_scale? integer
+---@param do_initial_setup? boolean -- Default: `true` — Sets some initial sprite variables just in case. Set this to `false` if it's giving errors
+function ARAOI.Glass_Die.RegisterPoolSprite(sprite, pool_id, sprite_frame, sprite_offset, sprite_scale, do_initial_setup)
 end
 
 ARAOI.Rubiks_Cube = {}
@@ -1013,3 +1048,8 @@ ARAOI.Inverted_Cards.Empress.Config = {
 ARAOI.Inverted_Cards.Stars.Config = {
     NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects the glitched item will have.*
 }
+
+-- Register a curse to be added when this card is used
+---@param curse LevelCurse
+function ARAOI.Inverted_Cards.Sun.AddCurse(curse)
+end

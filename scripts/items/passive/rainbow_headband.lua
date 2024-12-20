@@ -165,7 +165,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.RAINBOW_HEADBAND,
         "# Isaac leaves a trail of rainbow creep"..
         "#{{Damage}} The creep deals 66% of Isaac's damage per tick and inherits his tear effects"..

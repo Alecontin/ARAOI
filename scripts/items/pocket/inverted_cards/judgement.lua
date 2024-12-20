@@ -17,7 +17,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     SFX:Play(SoundEffect.SOUND_SUMMONSOUND)
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{Confessional}} Spawns a Confessional{{Blank}}"
     )

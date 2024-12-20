@@ -18,7 +18,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{BlackHeart}} Spawns 2 Black Hearts"
     )

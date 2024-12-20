@@ -68,7 +68,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
     end
 end)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{EmptyHeart}} Drains all of Isaac's Red Hearts"..
         "#{{ArrowUp}} +"..Config.DAMAGE_GIVEN.." Damage for every {{HalfHeart}} Half a Heart lost"

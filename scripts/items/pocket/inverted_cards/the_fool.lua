@@ -40,7 +40,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local restock = CollectibleType.COLLECTIBLE_RESTOCK
     EID:addCard(card.ID,
         "#{{Collectible}} Drops all of Isaac's collectibles into 10 pedestals"..

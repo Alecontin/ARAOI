@@ -127,7 +127,7 @@ end, ARAOI.CollectibleType.WIRE_CUTTER)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.WIRE_CUTTER,
         "# Allows Isaac to collect all pickups instead of choosing between them"..
         "#{{Battery}} Each pickup consumes 1 charge"..

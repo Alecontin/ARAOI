@@ -9,52 +9,67 @@
 
 ARAOI.Glass_Die = {}
 
-local GLASS_DIE_SPRITE = Sprite("gfx/ui/hud_glass_die.anm2")
+local GLASS_DIE_SPRITE = Sprite("gfx/ui/hud_glass_die.anm2", true)
+GLASS_DIE_SPRITE:SetAnimation(GLASS_DIE_SPRITE:GetDefaultAnimation())
 
-local POOL_ID_TO_NAME = {
-    [0] = "Empty",
-    [1] = "Treasure",
-    [2] = "Shop",
-    [3] = "Boss",
-    [4] = "Devil",
-    [5] = "Angel",
-    [6] = "Secret",
-    [7] = "Library",
-    [9] = "GoldenChest",
-    [13] = "Curse",
-    [16] = "MomsChest",
-    [17] = "Treasure",
-    [18] = "Boss",
-    [19] = "Shop",
-    [20] = "Curse",
-    [21] = "Devil",
-    [22] = "Angel",
-    [23] = "Secret",
-    [25] = "UltraSecret",
-    [27] = "Planetarium",
-}
+-- Variable containing sprite data for modded pools: [PoolID] = {ANM2, Frame, Offset, Scale}
+local Modded_Sprite_Data = {}
+
+---------------
+-- FUNCTIONS --
+---------------
+
+---@param sprite Sprite
+---@param pool_id ItemPoolType
+---@param sprite_frame integer
+---@param sprite_offset? Vector
+---@param sprite_scale? integer
+---@param do_initial_setup? boolean -- Default: `true` — Sets some initial sprite variables just in case. Set this to `false` if it's giving errors
+function ARAOI.Glass_Die.RegisterPoolSprite(sprite, pool_id, sprite_frame, sprite_offset, sprite_scale, do_initial_setup)
+    if Modded_Sprite_Data[pool_id] ~= nil then
+        Isaac.ConsoleOutput("ARAOI - The pool: "..pool_id..", is already registered. This might cause problems.")
+    end
+    if do_initial_setup ~= false then
+        sprite:LoadGraphics()
+        sprite:SetAnimation(sprite:GetDefaultAnimation())
+    end
+    Modded_Sprite_Data[pool_id] = {
+        sprite,
+        sprite_frame,
+        sprite_offset or Vector.Zero,
+        sprite_scale or 1,
+    }
+end
+
+---------------
+-- ON PICKUP --
+---------------
+
+---@param firstTime boolean
+---@param slot ActiveSlot
+---@param player EntityPlayer
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, _, _, firstTime, slot, _, player)
+    if firstTime then
+        player:GetActiveItemDesc(slot).VarData = -1
+    end
+end, ARAOI.CollectibleType.GLASS_DIE)
+
 
 --------------
 -- ITEM USE --
 --------------
 
 ---@param player EntityPlayer
----@param rng RNG
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
+ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player)
     local game = Game()
     local room = game:GetRoom()
 
     local desc = player:GetActiveItemDesc()
-    local offset = 1
 
     -- Is the item empty?
-    if desc.VarData == 0 then
-        -- Get the room's pool and offset it
-        local pool_id = room:GetItemPool(1)
-        local offset_id = pool_id + offset
-
+    if desc.VarData == -1 then
         -- Set the item's var data to the room's pool
-        desc.VarData = offset_id
+        desc.VarData = room:GetItemPool(1)
 
 
     -- The item has a pool stored
@@ -69,7 +84,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
             if pickup and ARAOI.ItemUtils.IsCollectible(pickup) and pickup:CanReroll() then
 
                 -- Get a list of collectibles from the stored pool
-                local collectibles = ARAOI.ItemUtils.GetCollectibleCycle(desc.VarData - offset)
+                local collectibles = ARAOI.ItemUtils.GetCollectibleCycle(desc.VarData)
 
                 -- For every item in the list
                 for i, collectible in ipairs(collectibles) do
@@ -89,7 +104,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
             end
         end
 
-        desc.VarData = 0
+        desc.VarData = -1
     end
 
     -- Play the item animation
@@ -114,24 +129,38 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, functio
     -- Get the currently selected pool
     local selected_pool = player:GetActiveItemDesc(slot).VarData
 
-    -- The selected item is 0, which means we don't need to do anything
-    if selected_pool == 0 then return end
+    -- The selected pool is -1, which means we don't need to do anything
+    if selected_pool == -1 then return end
 
     -- Setting some render options to be the same as what the game wants
     GLASS_DIE_SPRITE.Scale = Vector(scale, scale)
     GLASS_DIE_SPRITE.Color.A = alpha
 
-    -- Translate the pool id into the name
-    local pool_name = POOL_ID_TO_NAME[selected_pool]
+    -- Check if the selected pool is a registered modded one
+    if ARAOI.TableUtils.IsValueInTable(selected_pool, ARAOI.TableUtils.Keys(Modded_Sprite_Data)) then
+        -- Set the glass die frame to an empty one (which is a pool that you can not encounter in a room)
+        GLASS_DIE_SPRITE:SetFrame(7)
 
-    -- If the id is not in the pool names
-    if pool_name == nil then
-        -- The pool must be modded, so we set the pool name to "Modded"
-        pool_name = "Modded"
+        -- Get the modded sprite's data
+        local data = Modded_Sprite_Data[selected_pool]
+
+        -- Getting the modded sprite
+        ---@type Sprite
+        local modded_sprite = data[1]
+
+        -- Setting the frame to the provided one
+        modded_sprite:SetFrame(data[2])
+
+        -- Setting some render options to be the same as what the game wants
+        modded_sprite.Scale = Vector(scale, scale) * data[4]
+        modded_sprite.Color.A = alpha
+
+        -- Rendering it to the screen
+        modded_sprite:Render(offset + (Vector(16, 16) + data[3]) * scale)
+    else
+        -- Set the frame to the pool frame
+        GLASS_DIE_SPRITE:SetFrame(selected_pool)
     end
-
-    -- Change the animation to the new pool
-    GLASS_DIE_SPRITE:Play(pool_name, true)
 
     -- Render the sprite to the screen
     GLASS_DIE_SPRITE:Render(offset)
@@ -142,7 +171,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.GLASS_DIE,
         "#{{Mirror}} Copies the current room's item pool on use"..
         "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"

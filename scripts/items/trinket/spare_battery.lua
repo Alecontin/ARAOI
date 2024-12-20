@@ -108,7 +108,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addTrinket(ARAOI.TrinketType.SPARE_BATTERY,
         "#!!! SINGLE USE !!!"..
         "#{{Battery}} Spawns a battery when trying to use an active item without enough charges"

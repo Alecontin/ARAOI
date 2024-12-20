@@ -9,7 +9,7 @@ ARAOI.Inverted_Cards.Tower = card
 ---@param useFlags UseFlag
 ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
-    local tarotClothModifier = player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) and 1 or 0
+    local tarotClothModifier = player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) and 3 or 0
 
     local rng = player:GetCardRNG(card.ID)
 
@@ -19,11 +19,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{Bomb}} Spawns 2-4 throwable bombs"
     )
-    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {2, 3, 4, 5})
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {2, 5, 4, 7})
 end)
 
 return card

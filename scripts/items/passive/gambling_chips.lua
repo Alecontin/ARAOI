@@ -254,7 +254,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local shell_game_icons = Sprite("gfx/ui/eid_shell_game_icons.anm2", true)
     EID:addIcon("ShellGame", "idle", 0, 12, 12, -1, -1.5, shell_game_icons)
     EID:addIcon("HellGame", "idle", 1, 12, 12, 1, -1.5, shell_game_icons)

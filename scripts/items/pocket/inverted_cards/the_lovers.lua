@@ -14,8 +14,19 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     local room = game:GetRoom()
     local rng = player:GetCardRNG(card.ID)
 
+    local num_needed_familiars = 3
+    if player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) then
+        num_needed_familiars = 2
+    end
+
     local familiars = ARAOI.PlayerUtils.GetCollectibleListCurated(player, nil, ItemTag.TAG_QUEST, {ItemType.ITEM_FAMILIAR})
-    if #ARAOI.TableUtils.Keys(familiars) < 3 then
+
+    local num_familiars = 0
+    for _, amount in pairs(familiars) do
+        num_familiars = num_familiars + amount
+    end
+
+    if num_familiars < num_needed_familiars then
         player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         return
     end
@@ -28,18 +39,18 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
             removed_familiars = removed_familiars + 1
         end
     end
-    for _ = 1, math.floor(removed_familiars / 3) do
+    for _ = 1, math.floor(removed_familiars / num_needed_familiars) do
         ARAOI.ItemUtils.SpawnCollectible(room:GetSeededCollectible(rng:GetSeed()), room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local altar = CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR
     EID:addCard(card.ID,
         "#{{Collectible"..altar.."}} Removes all familiars and spawns an item from the current room's item pool for every 3 familiars removed"..
         "#{{Card"..card.Replace.."}} If used when having less than 3 familiars, it will act like {{Card"..card.Replace.."}} The Lovers?"
     )
-    ARAOI.EIDUtils.TarotClothMetadata(card.ID, "I had to rebalance this items 3 times already, so this is not gonna happen any time soon.")
+    ARAOI.EIDUtils.TarotClothMetadata(card.ID, {3, 2, 3, 2})
 end)
 
 return card

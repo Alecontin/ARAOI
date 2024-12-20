@@ -31,7 +31,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{Player0}} Spawns "..Config.NUM_MINIISAAC.." MiniIsaacs"
     )

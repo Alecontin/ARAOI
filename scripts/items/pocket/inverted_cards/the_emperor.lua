@@ -10,7 +10,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     player:UseActiveItem(CollectibleType.COLLECTIBLE_DELIRIOUS)
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local delirious = CollectibleType.COLLECTIBLE_DELIRIOUS
     EID:addCard(card.ID,
         "#{{Collectible"..delirious.."}} Uses the Delirious active item"

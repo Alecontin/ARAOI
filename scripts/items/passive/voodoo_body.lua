@@ -430,7 +430,7 @@ end, CURSE_PIN)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(
         ARAOI.CollectibleType.VOODOO_BODY,
         "#{{BlackHeart}} +1 Black Heart"..

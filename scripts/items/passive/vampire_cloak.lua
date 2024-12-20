@@ -32,7 +32,8 @@ local Bats = {}
 ---@param player EntityPlayer
 ---@param amount integer
 ---@param offset number
-function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset)
+---@param poof? boolean
+function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset, poof)
     for _ = 1, amount do
         local bat = Isaac.Spawn(
             1000, BAT_PARTICLE_ID, 0,
@@ -45,6 +46,12 @@ function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset)
         bat.RenderZOffset = 10000000
 
         table.insert(Bats, bat)
+
+        if poof then
+            local effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 1, bat.Position, Vector.Zero, nil):ToEffect()
+            assert(effect)
+            effect:GetSprite().Color:SetTint(0.2, 0.2, 0.2, 1)
+        end
     end
 end
 
@@ -150,7 +157,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, player,
         ARAOI.Vampire_Cloak.PlayerHasVampireCloakCharge(player, true)
 
         -- Add a bat for visual feedback
-        ARAOI.Vampire_Cloak.AddBatParticles(player, 1, 0)
+        ARAOI.Vampire_Cloak.AddBatParticles(player, 1, 0, true)
 
         -- Play a sound for audio feedback
         SFX:Play(SoundEffect.SOUND_VAMP_GULP)
@@ -267,7 +274,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK, 
         "# Negates the first hit taken once per room and will ignore enemy collision"..
         "#{{Heart}} Requires Red Heart pickups to recharge"..

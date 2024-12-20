@@ -14,7 +14,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     entity:AddCharmed(EntityRef(player), -1)
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{DeathMark}} Spawns a friendly Death Horseman"
     )

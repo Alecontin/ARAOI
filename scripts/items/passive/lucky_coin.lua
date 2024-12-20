@@ -235,7 +235,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.LUCKY_COIN,
         "# Double-tapping a fire button throws a coin in that direction"..
         "#{{Tearsize}} Shooting at a coin:"..

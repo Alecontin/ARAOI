@@ -206,7 +206,7 @@ end, FamiliarVariant.ABYSS_LOCUST)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.THREED_GLASSES,
         "#{{Timer}} On use, toggles Isaac's color between {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..
         "#{{Tearsize}} While holding the item, enemy projectiles will now be {{ColorRed}}Red{{ColorReset}} and {{ColorBlue}}Blue{{ColorReset}}"..

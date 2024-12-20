@@ -25,7 +25,7 @@ ARAOI.Mod:AddCallback("Remove Inverted High Priestess Effect From Player", funct
     end
 end)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local toenail = TrinketType.TRINKET_MOMS_TOENAIL
     EID:addCard(card.ID,
         "#{{MomBoss}} Activates the effects of {{Card"..card.Replace.."}} The High Priestess? and 8 {{Trinket"..toenail.."}} Mom's Toenail"

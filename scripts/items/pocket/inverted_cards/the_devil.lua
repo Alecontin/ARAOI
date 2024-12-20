@@ -26,7 +26,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     game:StartRoomTransition(treasure_room_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local devils_crown = TrinketType.TRINKET_DEVILS_CROWN
 
     EID:addCard(card.ID,

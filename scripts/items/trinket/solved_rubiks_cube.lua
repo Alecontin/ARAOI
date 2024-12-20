@@ -60,7 +60,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
     end
 end)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addTrinket(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE,
         "#{{ArrowUp}} All stats up"
     )

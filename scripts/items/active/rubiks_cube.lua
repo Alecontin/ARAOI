@@ -165,7 +165,7 @@ end)
 -- DESCRIPTIONS --
 ------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.RUBIKS_CUBE,
         "#{{Luck}} "..Config.SOLVE_CHANCE.."% chance of dropping a {{Trinket"..ARAOI.TrinketType.SOLVED_RUBIKS_CUBE.."}} Solved Rubik's Cube and destroying itself"
     )

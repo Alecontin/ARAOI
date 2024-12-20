@@ -181,7 +181,7 @@ function ARAOI.Spellbook.AddSpellOverwrite(spell, item)
     spell = tostring(spell)
 
     if Config.SPELL_OVERWRITE[spell] ~= nil then
-        Isaac.ConsoleOutput("The spell: "..spell.." is already defined. Consider using another spell.")
+        Isaac.ConsoleOutput("ARAOI - The spell: "..spell..", is already defined. Consider using another spell.")
     end
 
     Config.SPELL_OVERWRITE[spell] = item

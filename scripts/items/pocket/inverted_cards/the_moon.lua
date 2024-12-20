@@ -61,7 +61,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     game:StartRoomTransition(location, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{DiceRoom}} Spawns a Dice Room and teleports Isaac to it"..
         "# If a Dice Room can't be generated, teleports Isaac to a random room"

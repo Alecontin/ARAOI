@@ -279,7 +279,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.ETERNAL_DPLOPIA,
         "Duplicates items into random ones from the current pool"..
         "#{{BrimstoneCurse}} Items will become cursed, having a "..Config.ITEM_DELETE_CHANCE.."% "..

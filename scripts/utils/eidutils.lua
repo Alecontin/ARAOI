@@ -149,17 +149,29 @@ end
 --
 -- _type_ `string` — Text will be appended to the description
 --
--- _type_ `string[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{" a ", " a lot ", " an ", " two "}` will replace `" a "` with `" a lot "` and `" an "` with `" two "`
+-- _type_ `table<string | number>` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{" 1 ", " a lot ", 2, "three"}` will replace `" 1 "` with `" a lot "` and `2` with `"three"`
 --
--- _type_ `number[]` — Replaces index 1 with 2, 3 with 4, etc. So passing in `{1, 2, 0.6, 0.8}` will replace `1` with `2` and `0.6` with `0.8`
+-- _type_ `table<string | number>` — As an added bonus, passing in a string at the end will append it to the description, so passing in `{1, 2, "All downsides are removed!"}` will replace `1` with `2` and add "All downsides are removed!" to the description
 ---@param id Card
----@param changes string | string[] | number[]
+---@param changes string | table<string | number>
 ---@param language any?
 function EIDUtils.TarotClothMetadata(id, changes, language)
 	language = language or "en_us"
 
     EID:CreateDescriptionTableIfMissing("tarotClothBuffs", language)
-    EID.descriptions[language].tarotClothBuffs[id] = type(changes) ~= "string" and changes or "{{ColorShinyPurple}}"..changes.."{{CR}}"
+
+    local function SetCardDesc(data)
+        EID.descriptions[language].tarotClothBuffs[id] = data
+    end
+
+    if type(changes) == "string" then
+        SetCardDesc("{{ColorShinyPurple}}"..changes.."{{CR}}")
+    else
+        if #changes % 2 == 1 then
+            changes[#changes] = "{{ColorShinyPurple}}"..changes[#changes].."{{CR}}"
+        end
+        SetCardDesc(changes)
+    end
 end
 
 return EIDUtils

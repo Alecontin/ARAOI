@@ -42,7 +42,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 end, card.ID)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{Player14}} Spawns the Greed mini-boss"..
         "#{{Player33}} Spawns Super Greed if Greed was already spawned"..

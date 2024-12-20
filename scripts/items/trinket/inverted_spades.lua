@@ -40,7 +40,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addTrinket(ARAOI.TrinketType.INVERTED_SPADES, "Increases chance for Reverse Cards to be replaced with Inverted Cards by "..Config.REPLACE_CHANCE_ADDED.."%")
     EID:addGoldenTrinketMetadata(ARAOI.TrinketType.INVERTED_SPADES, nil, Config.REPLACE_CHANCE_ADDED, 3)
 end)

@@ -5,6 +5,20 @@ card.Replace = Card.CARD_REVERSE_SUN
 
 ARAOI.Inverted_Cards.Sun = card
 
+local CursesToAdd = {
+    LevelCurse.CURSE_OF_DARKNESS,
+    LevelCurse.CURSE_OF_MAZE,
+    LevelCurse.CURSE_OF_THE_LOST,
+    LevelCurse.CURSE_OF_THE_UNKNOWN,
+    LevelCurse.CURSE_OF_BLIND
+}
+
+-- Register a curse to be added when this card is used
+---@param curse LevelCurse
+function ARAOI.Inverted_Cards.Sun.AddCurse(curse)
+    table.insert(CursesToAdd, curse)
+end
+
 ---@param player EntityPlayer
 ---@param set? boolean
 local function CardEffect(player, set)
@@ -44,11 +58,9 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
 
     CardEffect(player, true)
 
-    level:AddCurse(LevelCurse.CURSE_OF_DARKNESS, false)
-    level:AddCurse(LevelCurse.CURSE_OF_MAZE, false)
-    level:AddCurse(LevelCurse.CURSE_OF_THE_LOST, false)
-    level:AddCurse(LevelCurse.CURSE_OF_THE_UNKNOWN, false)
-    level:AddCurse(LevelCurse.CURSE_OF_BLIND, false)
+    for _, curse in ipairs(CursesToAdd) do
+        level:AddCurse(curse, false)
+    end
 end, card.ID)
 
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
@@ -71,7 +83,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, selecte
     end
 end)
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     local damocles = CollectibleType.COLLECTIBLE_DAMOCLES
     EID:addCard(card.ID,
         "#{{Collectible"..damocles.."}} Gives Isaac all curses, Damocles and Sacred Orb for the floor"..

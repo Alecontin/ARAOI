@@ -74,7 +74,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.BLESSINGS_PETAL,
         "#{{ArrowUp}} +0.35 Tears"..
         "#{{ArrowUp}} +1 Luck"..

@@ -340,7 +340,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.BAG_OF_HOLDING,
         "#{{Collectible"..CollectibleType.COLLECTIBLE_VOID.."}} Absorbs Active Items that don't have a special charge"..
         "#{{Collectible"..CollectibleType.COLLECTIBLE_RESTOCK.."}} Isaac can cycle between absorbed items with the drop button ({{ButtonRT}})"..

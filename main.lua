@@ -68,4 +68,6 @@ for _, path in ipairs(files) do
     end
 end
 
-ARAOI.ReloadDescriptions()
+ARAOI.EIDReload()
+
+Isaac.RunCallback(ARAOI.ModCallbacks.OnReload)

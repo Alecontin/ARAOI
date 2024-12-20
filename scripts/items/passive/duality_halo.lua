@@ -166,7 +166,7 @@ end, FamiliarVariant.ABYSS_LOCUST)
 -- ITEM DESCRIPTION --
 ----------------------
 
-ARAOI.ReloadableDescription(function ()
+ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.DUALITY_HALO,
         "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a deal item in the boss room using the deal spawn chance"..
         "#{{Collectible}} Taking an item spawned this way will not affect deal chance"
