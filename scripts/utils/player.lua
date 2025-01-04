@@ -238,10 +238,13 @@ function PlayerUtils.IsEden(player)
 end
 
 ---@param player EntityPlayer
+---@param accountForCurses? boolean -- Should we account for the white fire curse and T. Jacob?
 ---@return boolean
-function PlayerUtils.IsLost(player)
+function PlayerUtils.IsLost(player, accountForCurses)
     local t = player:GetPlayerType()
+    local e = player:GetEffects()
     return t == PlayerType.PLAYER_THELOST or t == PlayerType.PLAYER_THELOST_B
+    or (accountForCurses == true and (e:GetNullEffectNum(NullItemID.ID_LOST_CURSE) > 0 or t == PlayerType.PLAYER_JACOB2_B))
 end
 
 ---@param player EntityPlayer
@@ -327,7 +330,7 @@ end
 -- Returns a table with the amount of each collectible the player has without counting innate items.
 ---- This function has extra parameters for blacklisting certain items and tags.
 ---- Unlike `Isaac.GetPlayer():GetCollectiblesList()`, this table contains items the player ACTUALLY HAS.
----- If you only need the items without the amount, pass the result through `Helper.Keys()`
+---- If you only need the items without the amount, pass the result through `TableUtils.Keys()`
 ---@param player EntityPlayer
 ---@param itemTypeBlacklist? ItemType[]
 ---@param itemTagBlacklist? integer
@@ -450,7 +453,19 @@ function PlayerUtils.FreezeActiveCharge(player, slot)
     if slot == nil then slot = ActiveSlot.SLOT_PRIMARY end
 
     local max_charges = player:GetActiveMaxCharge(slot)
-    PlayerUtils.AddActiveCharge(player, slot, max_charges)
+    PlayerUtils.AddActiveCharge(player, slot, max_charges, true, true)
+end
+
+---@param player EntityPlayer
+---@param cooldown integer -- Amount of time, in frames, that the shield should last
+function PlayerUtils.AddShield(player, cooldown)
+    local effects = player:GetEffects()
+    if effects:GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS) > 0 then
+        cooldown = cooldown + effects:GetCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS).Cooldown
+    else
+        effects:AddCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS)
+    end
+    effects:GetCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS).Cooldown = cooldown
 end
 
 return PlayerUtils

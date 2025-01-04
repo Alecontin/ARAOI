@@ -82,7 +82,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         -- If the player that used the item is The Lost
         -- and we are in a Devil Deal, Black Market or in the dark room
         -- and there are pickups that cost hearts
-        if ARAOI.PlayerUtils.IsLost(player)
+        if ARAOI.PlayerUtils.IsLost(player, true)
         and (ARAOI.TableUtils.IsValueInTable(room:GetType(), {RoomType.ROOM_DEVIL, RoomType.ROOM_BLACK_MARKET}) or game:GetLevel():GetStage() == LevelStage.STAGE6)
         and pickup.Price < 0 then
             -- Return this function, which handles this situation
@@ -137,7 +137,7 @@ ARAOI.EIDWrapper(function ()
     ARAOI.EIDUtils.PlayerBasedModifier(
         "Wire Cutter The Lost Description",
         ARAOI.CollectibleType.WIRE_CUTTER,
-        {PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THELOST_B},
+        {PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THELOST_B, PlayerType.PLAYER_JACOB2_B},
         PlayerType.PLAYER_THELOST,
         "When used within a {{DevilRoom}} Devil Deal or Black Market, consumes all charges and makes all items free"
     )

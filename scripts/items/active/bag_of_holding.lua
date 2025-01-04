@@ -37,7 +37,7 @@ ARAOI.Bag_of_Holding.SingleUseItems = {
     CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS
 }
 
-local ItemConfig = Isaac:GetItemConfig()
+local ItemConfig = Isaac.GetItemConfig()
 local SFX = SFXManager()
 
 ---------------
@@ -271,7 +271,6 @@ end, ARAOI.CollectibleType.BAG_OF_HOLDING)
 ---@param collectibleType CollectibleType
 ---@param player EntityPlayer
 ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_, collectibleType, player, _)
-    local ItemConfig = Isaac:GetItemConfig()
     if collectibleType ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
 
     -- Get and return the last item's max charge

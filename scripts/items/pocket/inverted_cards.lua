@@ -79,11 +79,10 @@ for _, path in ipairs(files) do
         end
     end)
 
-    ---@type EID
-    if EID then
+    ARAOI.EIDWrapper(function ()
         local card_name = ItemConfig:GetCard(card.ID).HudAnim
         EID:addIcon("Card"..card.ID, card_name, -1, 9, 9, 4, 7, inverted_cards_inline_sprite)
-    end
+    end)
 end
 
 return extension

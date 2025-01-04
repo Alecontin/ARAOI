@@ -13,6 +13,8 @@
   <active id="8" name="Rubik's Cube" achievement="196" quality="2" maxcharges="6" gfx="rubiks_cube.png" description="Can you solve it in 20 moves or less?" tags="offensive" />
   <!-- Defeat The Beast as Isaac -->
   <active id="13" name="Wire Cutter" achievement="441" quality="2" maxcharges="8" chargetype="special" gfx="wire_cutter.png" description="Cut away your destiny" tags="offensive nocantrip" />
+  <!-- Defeat Ultra Greedier as Cain -->
+  <active id="15" name="Recycle" achievement="298" quality="2" maxcharges="8" gfx="recycle.png" description="Reduce, Reuse, Recycle" tags="offensive nocantrip" />
 
   <!-- Beat Greedier Mode with Lilith -->
   <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed" />
@@ -35,6 +37,8 @@
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
   <!-- Available after unlocking any Reverse card -->
   <trinket name="Inverted Spades" gfx="inverted_spades.png" description="The other side reveals itself" tags="offensive" />
+  <!-- Defeat Ultra Greedier as The Lost -->
+  <trinket name="Bountiful Sack" achievement="307" gfx="bountiful_sack.png" description="Finders keepers" tags="offensive" />
 
   <!-- Trinkets with a random achievement number to prevent them from being spawned -->
   <trinket name="Solved Rubik's Cube" achievement="759807" gfx="rubiks_cube_solved.png" description="Blood, sweat and tears." cache="speed firedelay damage range shotspeed luck" tags="offensive" />

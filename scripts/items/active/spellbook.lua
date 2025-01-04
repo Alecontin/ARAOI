@@ -239,20 +239,6 @@ end)
 -- MISC FUNCTIONS --
 --------------------
 
----@param slot ActiveSlot
----@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function (_, slot, player)
-    -- Get the collectible from the checked slot
-    local collectible = player:GetActiveItem(slot)
-
-    -- If we are checking the charges for our item and we are writing a spell
-    if collectible == ARAOI.CollectibleType.SPELLBOOK and ARAOI.Spellbook.IsPlayerWritingSpell(player) then
-        -- Make the item's min charges be 0 which essentially means it's a free use
-        -- Do note that the item still gets discharged as normal. This just allows us to mark it as "usable"
-        return 0
-    end
-end)
-
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
     for _, player in pairs(PlayerManager.GetPlayers()) do
         ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
@@ -336,23 +322,18 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
         -- Clear the spell
         ARAOI.Spellbook.PlayerWrittenSpell(player, "")
 
-        -- We already used a charge to open the book, so we negate this one
-        ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
-
     -- We just stopped writing but there was no spell written
     elseif writing == false and spell == "" then
         -- Play an error sound
         SFXManager():Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ)
-
-        -- We already used a charge to open the book, so we negate this one
         ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
 
 
     -- We used the item to start writing a spell, show the item's use animation and play a sound
     else
+        ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
         SFX:Play(SoundEffect.SOUND_MENU_RIP, 3)
         return true
-
     end
 end, ARAOI.CollectibleType.SPELLBOOK)
 
@@ -427,6 +408,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
                     SFX:Play(SoundEffect.SOUND_PLOP, 0.6)
                 end
             end
+
+            -- If we switched items we cancel the interaction
+            if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
+                ARAOI.Spellbook.PlayerWrittenSpell(player, "")
+                ARAOI.Spellbook.IsPlayerWritingSpell(player, false)
+            end
         end
 
         -- For every character in the written spell
@@ -480,8 +467,7 @@ end)
 -- ITEM DESCRIPTION --
 ----------------------
 
----@class EID
-if EID then
+ARAOI.EIDWrapper(function ()
     local arrow_sprite = Sprite("gfx/ui/eid_inline_arrow.anm2")
     EID:addIcon("SBArrow1", "idle", 0, 14, 11, 7, 6, arrow_sprite)
     EID:addIcon("SBArrow2", "idle", 1, 11, 14, 6, 5, arrow_sprite)
@@ -501,4 +487,4 @@ if EID then
         ARAOI.CollectibleType.SPELLBOOK,
         "Casting an active item spell will also spawn its wisp"
     )
-end
+end)

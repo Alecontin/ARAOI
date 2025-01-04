@@ -10,21 +10,20 @@
 local chargebar = {}
 chargebar.__index = chargebar
 
----@param angle? number -- *Default: `19` — The angle relative to the player, upwards.*
----@param distance? number -- *Default: `57.245086669922` — The distance from the player's position, towards the provided angle.*
-function chargebar:Render(angle, distance)
-    angle = angle or 19
-    distance = distance or 57.245086669922
-
+-- Always render this using `ModCallbacks.MC_POST_PLAYER_RENDER`
+---@param offset Vector
+function chargebar:Render(offset)
     local player = self.ActivePlayer or Isaac.GetPlayer()
-    self.Sprite:Render(Isaac.WorldToScreen(player.Position - (Vector(0,1):Normalized():Rotated(angle) * distance) ))
 
     local animation = self.Sprite:GetAnimation()
     local frame = self.Sprite:GetFrame()
 
     if animation == "Charging" then
-        if frame >= 100 then
+        self.Sprite:SetFrame(math.floor(self.Charge))
+        if self.Charge >= 100 then
             self.Sprite:Play("StartCharged")
+        elseif self.Charge == 0 then
+            self.Sprite:Play("Disappear")
         end
 
     elseif animation == "StartCharged" and frame == 11 then
@@ -32,52 +31,33 @@ function chargebar:Render(angle, distance)
 
     elseif animation == "Charged" and frame == 5 then
         self.Sprite:SetFrame(0)
+
+    elseif animation == "Disappear" then
+        if self.Charge > 0 then
+            self.Sprite:Play("Charging")
+        end
+
     end
+    self.Sprite:Render(Isaac.WorldToScreen(player.Position + offset))
 end
 
-function chargebar:GetCharge()
-    if self.Sprite:GetAnimation() == "Charging" then
-        return self.Sprite:GetFrame()
-    elseif self.Sprite:GetAnimation() == "StartCharged" or self.Sprite:GetAnimation() == "Charged" then
-        return 100
-    else
-        return 0
-    end
-end
-
+-- Always update this using `ModCallbacks.MC_POST_UPDATE`
 ---@param charge? integer
-function chargebar:Advance(charge)
-    if self.Sprite:GetAnimation() == "Disappear" then
-        self:SetCharge(0)
+function chargebar:Update(charge)
+    self.Charge = charge or self.Charge
+    if (self.Charge > 0 and self.Charge < 100) or ((self.LastCharge ~= self.Charge) and self.Charge < 100) then
+        self.Sprite:Play("Charging")
     end
-
-    if self.Sprite:GetAnimation() == "Charging" then
-        self.Sprite:SetFrame(self.Sprite:GetFrame() + (charge or 1))
-    end
+    self.LastCharge = self.Charge
+    self.Sprite:SetFrame(self.Sprite:GetFrame() + 1)
 end
 
----@param charge integer
-function chargebar:SetCharge(charge)
-    self.Sprite:Play("Charging")
-    self.Sprite:SetFrame(charge)
-end
-
-function chargebar:Update()
-    if self.Sprite:GetAnimation() ~= "Charging" then
-        self.Sprite:SetFrame(self.Sprite:GetFrame() + 1)
-    end
-end
-
-function chargebar:Release()
-    self.Sprite:Play("Disappear")
-end
-
+-- Get the chargebar of the provided player
 ---@param player EntityPlayer
----@param createIfNeeded? boolean
----@return Chargebar | nil
-function chargebar:GetPlayerChargebar(player, createIfNeeded)
+---@return Chargebar
+function chargebar:GetPlayerChargebar(player)
     local data = player:GetData()
-    if data[self.ID] == nil and createIfNeeded == true then
+    if data[self.ID] == nil then
         local new = chargebar:Create(self.ID)
         new:SetActivePlayer(player)
         data[self.ID] = new
@@ -86,23 +66,29 @@ function chargebar:GetPlayerChargebar(player, createIfNeeded)
     return data[self.ID]
 end
 
+-- Change the chargebars player
 ---@param player EntityPlayer
 function chargebar:SetActivePlayer(player)
     self.ActivePlayer = player
 end
 
----@param path string -- Path relative to the resources directory
-function chargebar:SetCustomSpritesheet(path)
-    self.Sprite:ReplaceSpritesheet(0, path)
+-- Function used to change the chargebars sprite to a custom one
+---@param PNG_path string -- Path relative to the resources directory
+function chargebar:SetCustomSpritesheet(PNG_path)
+    self.Sprite:ReplaceSpritesheet(0, PNG_path)
     self.Sprite:LoadGraphics()
 end
 
+-- Create a chargebar instance
 function chargebar:Create(id)
     ---@class Chargebar
     local instance = setmetatable({}, chargebar)
     instance.ID = id
 
     instance.ActivePlayer = nil
+
+    instance.Charge = 0
+    instance.LastCharge = 0
 
     instance.Sprite = Sprite()
     instance.Sprite:Load("gfx/chargebar.anm2", true)

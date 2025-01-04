@@ -122,4 +122,5 @@
 	<!-- Wisp is being handled through code -->
 	<!-- Wire Cutter -->
 	<wisp id="13" count="0" />
+	<wisp id="15" count="0" />
 </wisps>

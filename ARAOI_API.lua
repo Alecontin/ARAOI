@@ -8,11 +8,14 @@
 
     Next, go into the .luarc.json file created by `Binding of Isaac Lua API`, which I assume you are using
 
-    Add "ARAOI_API" into the "diagnostics.globals" list, make sure to save your change!
+    Add "ARAOI" into the "diagnostics.globals" list, make sure to save your change!
 
     Now go into your mod and type "ARAOI." (without quotes)
 
-    There you go! Now you should be getting autocompletion!
+    There you go! Now you should be getting autocomplete suggestions!
+
+    If you don't, I noticed that adding the API script into the .gitignore file can mess
+    with API autocompletion. To fix this, simply open the API file in a new tab
 
     Make sure to check if the user does actually have my mod installed:
 
@@ -44,15 +47,17 @@ ARAOI = {}
 ---@field SACRIFICIAL_HEART integer
 ---@field VAMPIRE_CLOAK integer
 ---@field VOODOO_BODY integer
+---@field RECYCLE integer
 ARAOI.CollectibleType = {}
-ARAOI.CollectibleType.NUM_COLLECTIBLES = 15
+ARAOI.CollectibleType.NUM_COLLECTIBLES = 16
 
 ---@class TrinketType
 ---@field SPARE_BATTERY integer
 ---@field SOLVED_RUBIKS_CUBE integer
 ---@field INVERTED_SPADES integer
+---@field BOUNTIFUL_SACK integer
 ARAOI.TrinketType = {}
-ARAOI.TrinketType.NUM_TRINKETS = 3
+ARAOI.TrinketType.NUM_TRINKETS = 4
 
 ---@class Card
 ---@field INVERTED_FOOL integer
@@ -456,10 +461,10 @@ end
 function PlayerUtils.IsEden(player)
 end
 
--- Checks if the player is Lost or T. Lost
 ---@param player EntityPlayer
+---@param accountForCurses boolean -- Should we account for the white fire curse and T. Jacob?
 ---@return boolean
-function PlayerUtils.IsLost(player)
+function PlayerUtils.IsLost(player, accountForCurses)
 end
 
 -- Checks if the player is Keeper or T. Keeper
@@ -493,7 +498,7 @@ end
 -- Returns a table with the amount of each collectible the player has without counting innate items.
 ---- This function has extra parameters for blacklisting certain items and tags.
 ---- Unlike `Isaac.GetPlayer():GetCollectiblesList()`, this table contains items the player ACTUALLY HAS.
----- If you only need the items without the amount, pass the result through `Helper.Keys()`
+---- If you only need the items without the amount, pass the result through `TableUtils.Keys()`
 ---@param player EntityPlayer
 ---@param itemTypeBlacklist? ItemType[]
 ---@param itemTagBlacklist? integer
@@ -539,6 +544,11 @@ end
 ---@param player EntityPlayer -- The player who's item will get freezed
 ---@param slot ActiveSlot? -- The slot of the active item to freeze
 function PlayerUtils.FreezeActiveCharge(player, slot)
+end
+
+---@param player EntityPlayer
+---@param cooldown integer -- Amount of time, in frames, that the shield should last
+function PlayerUtils.AddShield(player, cooldown)
 end
 
 ARAOI.PlayerUtils = PlayerUtils

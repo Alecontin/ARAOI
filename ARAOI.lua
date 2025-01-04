@@ -53,7 +53,10 @@ ARAOI.CollectibleType = {
     VOODOO_BODY = Isaac.GetItemIdByName("Voodoo Body"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 15
+    RECYCLE = Isaac.GetItemIdByName("Recycle"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 16
 }
 
 ---@class TrinketType
@@ -68,7 +71,10 @@ ARAOI.TrinketType = {
     INVERTED_SPADES = Isaac.GetTrinketIdByName("Inverted Spades"),
 
     ---@type integer
-    NUM_TRINKETS = 3
+    BOUNTIFUL_SACK = Isaac.GetTrinketIdByName("Bountiful Sack"),
+
+    ---@type integer
+    NUM_TRINKETS = 4
 }
 
 ---@class CardSubType

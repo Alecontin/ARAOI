@@ -35,6 +35,7 @@ local files = {
     active.."glass_die",
     active.."spellbook",
     active.."wire_cutter",
+    active.."recycle",
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",
@@ -53,6 +54,7 @@ local files = {
     trinket.."spare_battery",
     trinket.."solved_rubiks_cube",
     trinket.."inverted_spades",
+    trinket.."bountiful_sack",
 
     --[[ DEBUGGING ]]--
     "debug.code"

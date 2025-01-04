@@ -21,6 +21,7 @@
     <color name="fly_gray" r="500" g="500" b="500" or="0" og="0" ob="0" />
     <color name="fly_white" r="1024" g="1024" b="1024" or="1" og="1" ob="1" />
     <color name="fly_purple" r="768" g="512" b="1024" or="0" og="-255" ob="0" />
+    <color name="fly_green" r="512" g="768" b="512" or="-255" og="0" ob="-255"/>
     
     <!-- Duality Halo -->
     <locust id="0" color="fly_white" gfx="small.png" scale="0.5" count="2" damageMultiplier="0.5" />
@@ -52,5 +53,7 @@
     <locust id="13" color="fly_red" gfx="small.png" scale="0.5" count="2" damageMultiplier="0.5" />
     <!-- Lucky Coin -->
     <locust id="14" color="fly_yellow" tearFlags2="40" procChance="0.015" />
+    <!-- Recycle -->
+    <locust id="15" color="fly_green" tearFlags="4" />
 
 </locusts>
