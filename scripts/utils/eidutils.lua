@@ -77,7 +77,7 @@ function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
     local Book_Of_Virtues = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
     local function condition(descObject)
         if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
-        and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
+        and PlayerManager.AnyoneHasCollectible(Book_Of_Virtues)
         then return true end
     end
     local function modifier(descObject)
@@ -87,9 +87,9 @@ function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
     EID:addDescriptionModifier(modifier_id, condition, modifier)
 end
 
--- Function that makes it easier to append Book Of Virtues synergies to items
+-- Function that makes it easier to append Abyss synergies to items
 --
--- The `Book Of Virtues` icon will be automatically appended to the description string
+-- The `Abyss` icon will be automatically appended to the description string
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param description string
@@ -97,11 +97,31 @@ function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
     local Abyss = CollectibleType.COLLECTIBLE_ABYSS
     local function condition(descObject)
         if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
-        and PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_ABYSS)
+        and PlayerManager.AnyoneHasCollectible(Abyss)
         then return true end
     end
     local function modifier(descObject)
         EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..description.."{{CR}}")
+        return descObject
+    end
+    EID:addDescriptionModifier(modifier_id, condition, modifier)
+end
+
+-- Function that makes it easier to append Car Battery synergies to items
+--
+-- The `Car Battery` icon will be automatically appended to the description string
+---@param modifier_id string
+---@param to_this_item CollectibleType
+---@param description string
+function EIDUtils.CarBatterySynergy(modifier_id, to_this_item, description)
+    local Car_Battery = CollectibleType.COLLECTIBLE_CAR_BATTERY
+    local function condition(descObject)
+        if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
+        and PlayerManager.AnyoneHasCollectible(Car_Battery)
+        then return true end
+    end
+    local function modifier(descObject)
+        EID:appendToDescription(descObject, "#{{Collectible"..Car_Battery.."}} "..description)
         return descObject
     end
     EID:addDescriptionModifier(modifier_id, condition, modifier)

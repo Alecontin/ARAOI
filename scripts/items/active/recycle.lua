@@ -217,6 +217,11 @@ ARAOI.EIDWrapper(function ()
         "#{{Luck}} 1 in 5 chance of spawning a collectible instead"..
         "#{{Collectible"..ARAOI.CollectibleType.RECYCLE.."}} Recycling this item will yield no rewards !!!"
     )
+    ARAOI.EIDUtils.CarBatterySynergy(
+        "Recycle Book of Virtues synergy",
+        ARAOI.CollectibleType.RECYCLE,
+        "Spawns 1 random extra pickup"
+    )
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Recycle Book of Virtues synergy",
         ARAOI.CollectibleType.RECYCLE,

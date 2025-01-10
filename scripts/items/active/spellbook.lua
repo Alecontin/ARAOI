@@ -296,19 +296,24 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
 
         -- If the item is a passive item or a familiar
         if config.Type == ItemType.ITEM_PASSIVE or config.Type == ItemType.ITEM_FAMILIAR then
-            -- We add the item to the list of temporary items for them to get deleted later
-            ARAOI.Spellbook.AddTemporaryItemToPlayer(player, spell_item)
+            -- We add the item to the list of temporary items for them to get deleted later, keeping in mind Car Battery
+            ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_use)
+                ARAOI.Spellbook.AddTemporaryItemToPlayer(player, spell_item)
+            end)
 
         else -- If the item is not a passive item
-            -- Use it as normal
-            player:UseActiveItem(spell_item)
+            -- Use the active item, and twice if we have Car Battery
+            ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
+                -- Use the active item, adding the necessary UseFlags
+                player:UseActiveItem(spell_item, car_battery_flag)
 
-            -- If we have book of virtues, we artificially spawn wisps
-            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-                -- Spawn a wisp
-                player:AddWisp(spell_item, player.Position)
-                SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
-            end
+                -- If we have book of virtues, we artificially spawn wisps
+                if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+                    -- Spawn a wisp
+                    player:AddWisp(spell_item, player.Position)
+                    SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
+                end
+            end)
         end
 
         -- Show the player what item was used by the spell and play a sound
@@ -482,6 +487,11 @@ ARAOI.EIDWrapper(function ()
         "#{{TreasureRoom}} If the used item was a passive item, it will instead give it to Isaac for the rest of the floor"
     )
 
+    ARAOI.EIDUtils.CarBatterySynergy(
+        "Spellbook Car Battery Synergy",
+        ARAOI.CollectibleType.SPELLBOOK,
+        "Will cast the spells twice"
+    )
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Spellbook Book Of Virtues",
         ARAOI.CollectibleType.SPELLBOOK,

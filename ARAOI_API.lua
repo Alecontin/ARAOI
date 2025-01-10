@@ -167,13 +167,22 @@ end
 function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
 end
 
--- Function that makes it easier to append Book Of Virtues synergies to items
+-- Function that makes it easier to append Abyss synergies to items
 --
--- The `Book Of Virtues` icon will be automatically appended to the description string
+-- The `Abyss` icon will be automatically appended to the description string
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param description string
 function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
+end
+
+-- Function that makes it easier to append Car Battery synergies to items
+--
+-- The `Car Battery` icon will be automatically appended to the description string
+---@param modifier_id string
+---@param to_this_item CollectibleType
+---@param description string
+function EIDUtils.CarBatterySynergy(modifier_id, to_this_item, description)
 end
 
 -- Function that makes it easier to append a synergy description to items
@@ -549,6 +558,22 @@ end
 ---@param player EntityPlayer
 ---@param cooldown integer -- Amount of time, in frames, that the shield should last
 function PlayerUtils.AddShield(player, cooldown)
+end
+
+-- Wrapper to make Car Battery synergies easier to write
+-- Calls the provided function twice:
+---- First time calls it with the parameter being 0
+---- Second time it calls it with the flag UseFlag.USE_CARBATTERY as a parameter if Car Battery was used, otherwise it doesn't call the function at all
+--
+-- You should use this function like this:
+-- ```
+-- ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
+--     player:UseActiveItem(105, car_battery_flag)
+-- end)
+-- ```
+---@param player EntityPlayer
+---@param func function
+function PlayerUtils.CarBatteryWrapper(player, func)
 end
 
 ARAOI.PlayerUtils = PlayerUtils

@@ -289,6 +289,11 @@ ARAOI.EIDWrapper(function ()
         "#{{Luck}} "..Config.LUCK_DECREASE_DELETION_CHANCE.."% less chance per 1 luck"
     )
 
+    ARAOI.EIDUtils.CarBatterySynergy(
+        "Eternal Dplopia Car Battery Synergy",
+        ARAOI.CollectibleType.ETERNAL_DPLOPIA,
+        "Triplicates items into random ones from the current pool"
+    )
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Eternal Dplopia Book Of Virtues Synergy",
         ARAOI.CollectibleType.ETERNAL_DPLOPIA,

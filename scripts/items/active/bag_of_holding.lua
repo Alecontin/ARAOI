@@ -243,16 +243,19 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
             end
         end
 
-        -- Use the active item as if it was owned by the player
-        -- This for some reason does not spawn wisps, even after adding the corresponding flags
-        player:UseActiveItem(selected)
+        -- Car Battery wrapper which will run the given function twice if the player has Car Battery
+        -- Otherwise, it will run just once
+        ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
+            -- Use the active item
+            player:UseActiveItem(selected, car_battery_flag)
 
-        -- If we have book of virtues, we artificially spawn wisps
-        if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-            -- Spawn a wisp
-            player:AddWisp(selected, player.Position)
-            SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
-        end
+            -- If we have book of virtues, we artificially spawn wisps
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+                -- Spawn a wisp
+                player:AddWisp(selected, player.Position)
+                SFX:Play(SoundEffect.SOUND_CANDLE_LIGHT)
+            end
+        end)
 
         -- Store the last item used to set the new charges
         ARAOI.Bag_of_Holding.LastItemUsed(player, selected)
@@ -346,7 +349,6 @@ ARAOI.EIDWrapper(function ()
         "# Using Bag of Holding while an item is selected will use that item instead"..
         "#{{Battery}} Charge time varies depending on the last item used and updates with every use"
     )
-
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Bag Of Holding Book Of Virtues", 
         ARAOI.CollectibleType.BAG_OF_HOLDING, 

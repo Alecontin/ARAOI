@@ -12,6 +12,8 @@ ARAOI.Glass_Die = {}
 local GLASS_DIE_SPRITE = Sprite("gfx/ui/hud_glass_die.anm2", true)
 GLASS_DIE_SPRITE:SetAnimation(GLASS_DIE_SPRITE:GetDefaultAnimation())
 
+local game = Game()
+
 -- Variable containing sprite data for modded pools: [PoolID] = {ANM2, Frame, Offset, Scale}
 local Modded_Sprite_Data = {}
 
@@ -60,11 +62,14 @@ end, ARAOI.CollectibleType.GLASS_DIE)
 --------------
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player)
-    local game = Game()
-    local room = game:GetRoom()
+ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
+    if useFlag & UseFlag.USE_CARBATTERY > 0 then return end
 
-    local desc = player:GetActiveItemDesc()
+    -- Getting our item's ItemDesc
+    local desc = player:GetActiveItemDesc(slot)
+
+    -- Getting the current room
+    local room = game:GetRoom()
 
     -- Is the item empty?
     if desc.VarData == -1 then
@@ -84,7 +89,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player)
             if pickup and ARAOI.ItemUtils.IsCollectible(pickup) and pickup:CanReroll() then
 
                 -- Get a list of collectibles from the stored pool
-                local collectibles = ARAOI.ItemUtils.GetCollectibleCycle(desc.VarData)
+                local collectibles = ARAOI.ItemUtils.GetCollectibleCycle(desc.VarData, player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2 or 1)
 
                 -- For every item in the list
                 for i, collectible in ipairs(collectibles) do
@@ -104,6 +109,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player)
             end
         end
 
+        -- Reset the VarData
         desc.VarData = -1
     end
 
@@ -175,5 +181,10 @@ ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.GLASS_DIE,
         "#{{Mirror}} Copies the current room's item pool on use"..
         "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
+    )
+    ARAOI.EIDUtils.CarBatterySynergy(
+        "Glass Die Car Battery Synergy",
+        ARAOI.CollectibleType.GLASS_DIE,
+        "Adds an extra item to the pedestals item cycle"
     )
 end)

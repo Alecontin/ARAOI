@@ -39,11 +39,7 @@ end
 
 ---@param rng RNG
 ---@param player EntityPlayer
----@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags)
-    -- Don't do anything if the item was used by car battery
-    if useFlags & UseFlag.USE_CARBATTERY > 0 then return false end
-
+ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
     -- Reevaluate cache
     player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 
@@ -52,6 +48,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
 
     -- Get the var data, these are the tries
     local tries = desc.VarData
+    print(tries)
 
     -- Get the chance to spawn the Solved Cube
     local chance = rng:RandomFloat()

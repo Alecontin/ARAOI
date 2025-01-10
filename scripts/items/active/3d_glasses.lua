@@ -213,12 +213,10 @@ ARAOI.EIDWrapper(function ()
         "#{{HolyMantle}} Isaac will not take damage from tears of the same color as him"
     )
 
-    local TT = CollectibleType.COLLECTIBLE_20_20
-    ARAOI.EIDUtils.SimpleSynergyModifier(
+    ARAOI.EIDUtils.CarBatterySynergy(
         "3D Glasses Car Battery Synergy",
         ARAOI.CollectibleType.THREED_GLASSES,
-        CollectibleType.COLLECTIBLE_CAR_BATTERY,
-        "Gives the 20/20{{Collectible"..TT.."}} effect while held"
+        "Gives the 20/20{{Collectible"..CollectibleType.COLLECTIBLE_20_20.."}} effect while held"
     )
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "3D Glasses Book Of Virtues Synergy",

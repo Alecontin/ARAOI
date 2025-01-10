@@ -468,4 +468,23 @@ function PlayerUtils.AddShield(player, cooldown)
     effects:GetCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS).Cooldown = cooldown
 end
 
+-- Wrapper to make Car Battery synergies easier to write
+-- Calls the provided function twice:
+---- First time calls it with the parameter being 0
+---- Second time it calls it with the flag UseFlag.USE_CARBATTERY as a parameter if Car Battery was used, otherwise it doesn't call the function at all
+--
+-- You should use this function like this:
+-- ```
+-- ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
+--     player:UseActiveItem(105, car_battery_flag)
+-- end)
+-- ```
+---@param player EntityPlayer
+---@param func function
+function PlayerUtils.CarBatteryWrapper(player, func)
+    for i = 1, 1 + (player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 1 or 0) do
+        func((i == 2) and UseFlag.USE_CARBATTERY or 0)
+    end
+end
+
 return PlayerUtils
