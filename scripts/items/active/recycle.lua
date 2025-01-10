@@ -10,6 +10,7 @@
 
 local game = Game()
 local ItemConfig = Isaac.GetItemConfig()
+local SFX = SFXManager()
 
 local collectible = Sprite("gfx/005.100_collectible.anm2", true)
 collectible:SetAnimation("ShopIdle")
@@ -99,7 +100,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         player:AnimateHappy()
 
         -- Did we hit the 1 in 5 chance?
-        if rng:RandomInt(5) == 1 then
+        if rng:RandomInt(1, 5) == 1 then
             -- Spawn an item
             Isaac.Spawn(5, 100, game:GetRoom():GetSeededCollectible(rng:Next()), game:GetRoom():FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
 
@@ -176,15 +177,23 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function ()
             -- And then this for offset 0, this way the item in the middle always appears on top
             RenderSelectedItem(0)
 
+            -- Avoid copy-pasting!
+            local function PlaySwitchSound()
+                -- Sound that plays whenever we switch the selected item
+                SFX:Play(SoundEffect.SOUND_PAPER_IN, 0.7, 0, false, 3)
+            end
+
             -- If we just shot right on this render frame
             if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then
                 -- Shift the current selection to the right
                 CurrentSelection(player, CurrentSelection(player) + 1)
+                PlaySwitchSound()
             end
             -- If we just shot left on this render frame
             if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) then
                 -- Shift the current selection to the left
                 CurrentSelection(player, CurrentSelection(player) - 1)
+                PlaySwitchSound()
             end
             -- If we just switched items
             if Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex) then
