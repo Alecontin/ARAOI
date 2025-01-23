@@ -816,6 +816,7 @@ ARAOI.Rubiks_Cube.Config = {
 ARAOI.Spellbook = {}
 ARAOI.Spellbook.Config = {
     ENABLE_EID_HISTORY = true, -- *Default: `true` — Enables the External Item Descriptions history.*
+    MAX_EID_HISTORY = 10, -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
 
     -- If we get these items, we roll again.
     -- This can be because the game just crashes, or the item just doesn't work.
