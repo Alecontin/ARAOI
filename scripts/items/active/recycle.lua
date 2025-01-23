@@ -131,10 +131,12 @@ end, ARAOI.CollectibleType.RECYCLE)
 -- RENDERING OF THE SELECTION --
 --------------------------------
 
--- Using ModCallbacks.MC_POST_PLAYER_RENDER so that this gets hidden on splash screens
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function ()
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
     -- For every player
     for _, player in ipairs(PlayerManager:GetPlayers()) do
+        -- Don't render if the player is not visible
+        if not player:IsVisible() then goto next_player end
+
         -- Check if the player is recycling
         if IsRecycling(player) then
             -- We somehow don't have our item

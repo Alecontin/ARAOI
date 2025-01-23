@@ -48,7 +48,6 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
 
     -- Get the var data, these are the tries
     local tries = desc.VarData
-    print(tries)
 
     -- Get the chance to spawn the Solved Cube
     local chance = rng:RandomFloat()

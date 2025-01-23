@@ -46,7 +46,6 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 
     heartsLost(player, heartsLost(player) + 0.5 * hearts_lost)
-    print(heartsLost(player))
 
     player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
     player:EvaluateItems()

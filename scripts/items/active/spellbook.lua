@@ -7,6 +7,7 @@ local Config = {}
 
 
 Config.ENABLE_EID_HISTORY = true -- *Default: `true` — Enables the External Item Descriptions history.*
+Config.MAX_EID_HISTORY = 10 -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
 
 -- If we get these items, we roll again.
 -- This can be because the game just crashes, or the item just doesn't work.
@@ -42,6 +43,12 @@ ARAOI.Spellbook = {}
 ARAOI.Spellbook.Config = Config
 
 local SFX = SFXManager()
+local ItemConfig = Isaac.GetItemConfig()
+
+local collectible = Sprite("gfx/005.100_collectible.anm2", true)
+collectible:SetAnimation("ShopIdle")
+collectible:SetFrame(1)
+collectible.Color.A = 0.7
 
 ---------------
 -- FUNCTIONS --
@@ -151,10 +158,6 @@ function ARAOI.Spellbook.EIDRegisteredSpells(spell, item)
         end
 
         table.insert(data, {spell, item})
-
-        if #data > 10 then
-            table.remove(data, 1)
-        end
     end
 
     ARAOI.SaveData:Key(ARAOI.SaveData.RUN, "SpellbookRegisteredSpells", {}, data)
@@ -347,12 +350,14 @@ end, ARAOI.CollectibleType.SPELLBOOK)
 -- BOOK AND ARROWS RENDERER --
 ------------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, function ()
     -- If anyone is writing a spell, keep track of it
     local anyone_is_writing_spell = false
 
     -- Do a render pass for each player
     for _, player in ipairs(PlayerManager.GetPlayers()) do
+        -- Don't render if the player is not visible
+        if not player:IsVisible() then goto next_player end
 
         -- Get the written spell
         local spell = ARAOI.Spellbook.PlayerWrittenSpell(player)
@@ -389,21 +394,30 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             -- This is an arbitrary value good enough to generate a spell for every item
             -- in the game while not going over the integer limit
             if #spell < 8 then
+                local s = ARAOI.Spellbook.PlayerWrittenSpell(player)
                 if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, player.ControllerIndex) then
-                    ARAOI.Spellbook.PlayerWrittenSpell(player, ARAOI.Spellbook.PlayerWrittenSpell(player).."1")
+                    ARAOI.Spellbook.PlayerWrittenSpell(player, s.."1")
                     playInputSoundEffect()
                 end
                 if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, player.ControllerIndex) then
-                    ARAOI.Spellbook.PlayerWrittenSpell(player, ARAOI.Spellbook.PlayerWrittenSpell(player).."2")
+                    ARAOI.Spellbook.PlayerWrittenSpell(player, s.."2")
                     playInputSoundEffect()
                 end
                 if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, player.ControllerIndex) then
-                    ARAOI.Spellbook.PlayerWrittenSpell(player, ARAOI.Spellbook.PlayerWrittenSpell(player).."3")
+                    ARAOI.Spellbook.PlayerWrittenSpell(player, s.."3")
                     playInputSoundEffect()
                 end
                 if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, player.ControllerIndex) then
-                    ARAOI.Spellbook.PlayerWrittenSpell(player, ARAOI.Spellbook.PlayerWrittenSpell(player).."4")
+                    ARAOI.Spellbook.PlayerWrittenSpell(player, s.."4")
                     playInputSoundEffect()
+                end
+                if Input.IsButtonTriggered(Keyboard.KEY_BACKSPACE, player.ControllerIndex)
+                or Input.IsButtonTriggered(Keyboard.KEY_DELETE, player.ControllerIndex)
+                then
+                    if #spell > 0 then
+                        ARAOI.Spellbook.PlayerWrittenSpell(player, string.sub(s, 1, #s - 1))
+                        SFX:Play(SoundEffect.SOUND_PLOP, 0.6)
+                    end
                 end
 
             -- If we wrote past the spell cap then we erase the spell and play a sound
@@ -438,9 +452,37 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             arrows[tonumber(character)]:Render(position)
         end
 
+        -- Getting all the known spells
+        local known_spells = ARAOI.Spellbook.EIDRegisteredSpells()
+        -- Looping through every known spell
+        for i = 1,#known_spells do
+            -- Getting the spell and the item
+            local registered_spell, spell_item = known_spells[i][1], known_spells[i][2]
+            -- If the registered spell is the same as the spell we are currently writing
+            if registered_spell == spell then
+                -- Get the item image
+                local item_image = ItemConfig:GetCollectible(spell_item).GfxFileName
+
+                -- Replace the spritesheet of the collectible sprite
+                collectible:ReplaceSpritesheet(1, item_image, true)
+
+                -- Setting the position for the item to be rendered
+                local position = Isaac.WorldToScreen(player.Position)
+                position.Y = position.Y - 57
+
+                -- Render the item
+                collectible:Render(position)
+
+                -- We don't need to keep checking spells, so we break out of the loop
+                break
+            end
+        end
+
         -- This is some left-over debug code which shows what the actual spell is
         -- local pos = Isaac.WorldToScreen(player.Position)
         -- Isaac.RenderText(spell, pos.X - string.len(spell) * 3, pos.Y - 50, 1, 1, 1, 1)
+
+        ::next_player::
     end
 
     if anyone_is_writing_spell and Config.ENABLE_EID_HISTORY and EID and not EID.isHidden then
@@ -451,7 +493,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
         )
         local known_spells = ARAOI.Spellbook.EIDRegisteredSpells()
         if #known_spells > 0 then
-            for i = 1,#known_spells do
+            for i = 1,math.min(#known_spells, Config.MAX_EID_HISTORY) do
                 local spell, item = known_spells[i][1], known_spells[i][2]
                 EID:renderString(
                     "{{Collectible"..item.."}} "..ARAOI.Spellbook.SpellToEIDInlineArrows(spell),
