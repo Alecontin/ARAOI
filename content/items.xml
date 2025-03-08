@@ -15,6 +15,8 @@
   <active id="13" name="Wire Cutter" achievement="441" quality="2" maxcharges="8" chargetype="special" gfx="wire_cutter.png" description="Cut away your destiny" tags="offensive nocantrip" />
   <!-- Defeat Ultra Greedier as Cain -->
   <active id="15" name="Recycle" achievement="298" quality="2" maxcharges="4" gfx="recycle.png" description="Reduce, Reuse, Recycle" tags="offensive nocantrip" />
+  <!-- Earn all Hard Mode Completion Marks as Cain -->
+  <active id="16" name="Gamblecore" achievement="261" quality="4" maxcharges="0" coins="21" gfx="gamblecore.png" description="Let's go gambling!" tags="offensive nocantrip" />
 
   <!-- Beat Greedier Mode with Lilith -->
   <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed" />

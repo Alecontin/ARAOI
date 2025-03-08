@@ -140,7 +140,7 @@ end
 
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
----@return number[] -- List where the first item is the devil chance and the second the angel chance
+---@return number DevilChance, number AngelChance
 function MiscUtils.getDevilAngelRoomChance()
     local level = game:GetLevel()
     local room = level:GetCurrentRoom()
@@ -203,10 +203,7 @@ function MiscUtils.getDevilAngelRoomChance()
     end
 
     local angelRoomChance = 1.0 - devilRoomChance
-    if PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_DUALITY) then
-        angelRoomChance = devilRoomChance
-    end
-    return {totalChance * devilRoomChance, totalChance * angelRoomChance}
+    return totalChance * devilRoomChance, totalChance * angelRoomChance
 end
 
 return MiscUtils

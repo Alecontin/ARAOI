@@ -23,9 +23,9 @@ card.Replace = Card.CARD_REVERSE_TEMPERANCE
 
 ARAOI.Inverted_Cards.Temperance = card
 
----@param player EntityPlayer
-local function heartsLost(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.LEVEL, "InvertedTemperanceDamageBoost", {}, ARAOI.PlayerUtils.GetID(player), 0, set)
+local function HeartsLost(player, add)
+    local lost = ARAOI.SaveData:Data(ARAOI.SaveData.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetID(player), 0)
+    return ARAOI.SaveData:Data(ARAOI.SaveData.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetID(player), 0, lost + (add or 0))
 end
 
 ---@param player EntityPlayer
@@ -45,32 +45,32 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
         return
     end
 
-    heartsLost(player, heartsLost(player) + 0.5 * hearts_lost)
+    -- local effects = player:GetEffects()
+    -- effects:AddNullEffect(NullItemID.ID_BLOOD_OATH, true, hearts_lost)
 
-    player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
-    player:EvaluateItems()
+    for _ = 1, hearts_lost do
+        player:AddNullItemEffect(NullItemID.ID_BLOOD_OATH, true)
+        player:TakeDamage(0, DamageFlag.DAMAGE_FAKE, EntityRef(player), 0)
+    end
+    player:SetMinDamageCooldown(60)
+
+    HeartsLost(player, hearts_lost)
 end, card.ID)
 
----@param player EntityPlayer
----@param flag CacheFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
-    if flag == CacheFlag.CACHE_DAMAGE then
-        local hearts_lost = heartsLost(player)
-        player.Damage = player.Damage + (Config.DAMAGE_GIVEN * hearts_lost) * ARAOI.PlayerUtils.GetAproxDamageMultiplier(player)
-    end
-end)
-
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
-    for _, player in ipairs(PlayerManager.GetPlayers()) do
-        player:AddCacheFlags(CacheFlag.CACHE_DAMAGE)
-        player:EvaluateItems()
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+    for _, player in ipairs(PlayerManager:GetPlayers()) do
+        for _ = 1, HeartsLost(player) do
+            player:AddNullItemEffect(NullItemID.ID_BLOOD_OATH, true)
+        end
     end
 end)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,
         "#{{EmptyHeart}} Drains all of Isaac's Red Hearts"..
-        "#{{ArrowUp}} +"..Config.DAMAGE_GIVEN.." Damage for every {{HalfHeart}} Half a Heart lost"
+        "#{{ArrowUp}} Damage & Speed up for every {{HalfHeart}} Half a Heart lost"..
+        "#{{HalfHeart}} Every Half Heart lost triggers on-hit effects"..
+        "#{{Collectible"..CollectibleType.COLLECTIBLE_BLOOD_OATH.."}} Same effect as Blood Oath"
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, "Effect calculated as if Isaac had double his current health!")
 end)

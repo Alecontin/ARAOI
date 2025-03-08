@@ -10,10 +10,11 @@
 local chargebar = {}
 chargebar.__index = chargebar
 
--- Always render this using `ModCallbacks.MC_POST_PLAYER_RENDER`
+-- Always render this using `ModCallbacks.MC_POST_RENDER`
 ---@param offset Vector
 function chargebar:Render(offset)
     local player = self.ActivePlayer or Isaac.GetPlayer()
+    if not player:IsVisible() then return end
 
     local animation = self.Sprite:GetAnimation()
     local frame = self.Sprite:GetFrame()

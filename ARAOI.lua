@@ -56,7 +56,10 @@ ARAOI.CollectibleType = {
     RECYCLE = Isaac.GetItemIdByName("Recycle"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 16
+    GAMBLECORE = Isaac.GetItemIdByName("Gamblecore"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 17
 }
 
 ---@class TrinketType

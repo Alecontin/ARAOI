@@ -122,5 +122,8 @@
 	<!-- Wisp is being handled through code -->
 	<!-- Wire Cutter -->
 	<wisp id="13" count="0" />
+	<!-- Recycle -->
 	<wisp id="15" count="0" />
+	<!-- Gamblecore -->
+	<wisp id="16" count="0" />
 </wisps>

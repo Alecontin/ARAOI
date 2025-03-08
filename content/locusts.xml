@@ -55,5 +55,7 @@
     <locust id="14" color="fly_yellow" tearFlags2="40" procChance="0.015" />
     <!-- Recycle -->
     <locust id="15" color="fly_green" tearFlags="4" />
+    <!-- Gamblecore -->
+    <locust id="0" color="fly_white" gfx="small.png" scale="0.5" count="7" damageMultiplier="0.14" />
 
 </locusts>

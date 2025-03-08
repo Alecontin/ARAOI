@@ -17,30 +17,16 @@ local game = Game()
 -- VARIABLES --
 ---------------
 
----@type number[] -- List containing the Devil Chance and Angel Chance: `{DevilChance: number, AngelChance: number}`
-ARAOI.Duality_Halo.Devil_Angel_Chances = {0, 0}
+local devil_chance, angel_chance = 0, 0
 
 
 ---------------
 -- FUNCTIONS --
 ---------------
 
--- Sets the Devil and Angel Chances of spawning an item to the provided values
---
--- This will be updated immediately after defeating the floor's boss, so this function should only be used for testing purposes
----@param devilChance number -- Between 0 and 1
----@param angelChance number -- Between 0 and 1
-function ARAOI.Duality_Halo.SetDevilAngelChances(devilChance, angelChance)
-    ARAOI.Duality_Halo.Devil_Angel_Chances = {devilChance, angelChance}
-end
-
--- Updates the Devil and Angel Chances according to the current Devil and Angel room chances
-function ARAOI.Duality_Halo.UpdateDevilAngelChances()
-    ARAOI.Duality_Halo.Devil_Angel_Chances = ARAOI.MiscUtils.getDevilAngelRoomChance()
-end
-
 -- Spawns the collectibles according to the `Devil_Angel_Chances`
-function ARAOI.Duality_Halo.SpawnCollectibles()
+---@param ignoreChances boolean -- Should we ignore the deal spawn chance?
+function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
     local room = game:GetRoom()
     local level = game:GetLevel()
 
@@ -65,13 +51,18 @@ function ARAOI.Duality_Halo.SpawnCollectibles()
     -- Get the RNG and chance to spawn the items
     local rng = level:GetDevilAngelRoomRNG()
     local chance = rng:RandomFloat()
+    if ignoreChances == true then chance = -1 end
 
-    -- This for loop basically spawns 2 items
-    for i, v in ipairs(ARAOI.Duality_Halo.Devil_Angel_Chances) do
-        -- If the chance is more than 0 and the new chance is within spawning bounds
-        if v > 0 and chance <= v then
+    -- We hit the chance to spawn the items
+    if chance <= (devil_chance + angel_chance) then
+
+        -- This for loop basically spawns 2 items
+        for i = 1, 2 do
             -- Check if the current item to be spawned should be from the angel pool
             local is_angel = i == 2
+
+            -- We don't need to spawn a second item since our angel chance is 0
+            if is_angel and angel_chance == 0 then return end
 
             -- Get the item pool and offset for the spawn
             local item_pool = ItemPoolType.POOL_DEVIL
@@ -132,9 +123,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, function ()
 
     -- Check if the room is the last boss room
     if room:IsCurrentRoomLastBoss() then
-        -- Store the current Devil/Angel chance because we can't check if a door will spawn or not
-        -- we need to check if the door spawned after it spawns
-        
+        -- Store the current deal chance before it gets possibly overwritten
+        devil_chance, angel_chance = ARAOI.MiscUtils.getDevilAngelRoomChance()
 
         -- Create a timer to trigger the item's functionality
         Isaac.CreateTimer(ARAOI.Duality_Halo.SpawnCollectibles, 3, 1, false)

@@ -67,7 +67,7 @@ function RoomUtils.GetNearestEnemy(position)
             end
         end
     end
-    return nearest_enemy
+    return nearest_enemy, nearest_distance
 end
 
 return RoomUtils

@@ -48,8 +48,9 @@ ARAOI = {}
 ---@field VAMPIRE_CLOAK integer
 ---@field VOODOO_BODY integer
 ---@field RECYCLE integer
+---@field GAMBLECORE integer
 ARAOI.CollectibleType = {}
-ARAOI.CollectibleType.NUM_COLLECTIBLES = 16
+ARAOI.CollectibleType.NUM_COLLECTIBLES = 17
 
 ---@class TrinketType
 ---@field SPARE_BATTERY integer
@@ -374,7 +375,7 @@ end
 
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
----@return number[] -- List where the first item is the devil chance and the second the angel chance
+---@return number DevilChance, number AngelChance
 function MiscUtils.getDevilAngelRoomChance()
 end
 
@@ -597,7 +598,7 @@ function RoomUtils.GetPickups()
 end
 
 -- Returns the nearest enemy to the provided position
----@return Entity
+---@return Entity, number
 function RoomUtils.GetNearestEnemy(position)
 end
 
@@ -897,33 +898,16 @@ end
 
 ARAOI.Blessings_Petal = {}
 
--- Checks if the player has picked up the item in a previous run
---
--- If `set` is passed, it will set the variable to the provided boolean
----@param set? boolean
+---@param add? integer -- How many pickups to add. Set to `0` to reset, `nil` to get the current value
 ---@return boolean
-function ARAOI.Blessings_Petal.HasPickedUpBlessingsPetal(set)
+function ARAOI.Blessings_Petal.PickupCount(add)
 end
 
 ARAOI.Duality_Halo = {}
 
----@type number[] -- List containing the Devil Chance and Angel Chance: `{DevilChance: number, AngelChance: number}`
-ARAOI.Duality_Halo.Devil_Angel_Chances = {0, 0}
-
--- Sets the Devil and Angel Chances of spawning an item to the provided values
---
--- This will be updated immediately after defeating the floor's boss, so this function should only be used for testing purposes
----@param devilChance number -- Between 0 and 1
----@param angelChance number -- Between 0 and 1
-function ARAOI.Duality_Halo.SetDevilAngelChances(devilChance, angelChance)
-end
-
--- Updates the Devil and Angel Chances according to the current Devil and Angel room chances
-function ARAOI.Duality_Halo.UpdateDevilAngelChances()
-end
-
--- Spawns the collectibles according to the `Devil_Angel_Chances`
-function ARAOI.Duality_Halo.SpawnCollectibles()
+-- Spawns the collectibles
+---@param ignoreChances boolean -- Should we ignore the deal spawn chance?
+function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
 end
 
 ARAOI.Gambling_Chips = {}
@@ -1084,6 +1068,24 @@ ARAOI.Inverted_Cards.Empress.Config = {
 ARAOI.Inverted_Cards.Stars.Config = {
     NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects the glitched item will have.*
 }
+
+
+
+---@param player EntityPlayer
+function ARAOI.Inverted_Cards.Magician.GetEffectCountdown(player)
+end
+
+---@param player EntityPlayer
+---@param set number -- Time in seconds that the effect should last
+function ARAOI.Inverted_Cards.Magician.SetEffectCountdown(player, set)
+end
+
+---@param player EntityPlayer
+---@param add number -- Time in seconds that should be added to the effect duration
+function ARAOI.Inverted_Cards.Magician.AddEffectCountdown(player, add)
+end
+
+
 
 -- Register a curse to be added when this card is used
 ---@param curse LevelCurse

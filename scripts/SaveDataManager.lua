@@ -105,7 +105,11 @@ function SaveDataManager:init(Mod)
     -- Gets the data to save
     local function saveData()
         local data = json.encode({
-            SaveDataManager.PERSISTENT, SaveDataManager.RUN, SaveDataManager.LEVEL, SaveDataManager.ROOM, SaveDataManager.TIMERS
+            SaveDataManager.PERSISTENT,
+            SaveDataManager.RUN,
+            SaveDataManager.LEVEL,
+            SaveDataManager.ROOM,
+            SaveDataManager.TIMERS
         })
         return data
     end
@@ -115,7 +119,7 @@ function SaveDataManager:init(Mod)
     -------------
 
     -- Load the save file data when a game is continued,
-    -- otherwise wipe everything except the PERSISTANT context
+    -- otherwise wipe everything except the PERSISTENT context
 
     local function loadSaveData(isContinued)
         if not isContinued then

@@ -15,4 +15,52 @@
         <sample weight="1" path="ultrakill/coin.wav" />
         <sample weight="1" path="ultrakill/coin_-10.wav" />
     </sound>
+    <sound name="inverted_magician_1">
+        <sample weight="1" path="ultra_instinct/ultra_instinct1.wav" />
+    </sound>
+    <sound name="inverted_magician_2">
+        <sample weight="1" path="ultra_instinct/ultra_instinct2.wav" />
+    </sound>
+    <sound name="inverted_magician_3">
+        <sample weight="1" path="ultra_instinct/ultra_instinct3.wav" />
+    </sound>
+    <sound name="inverted_magician_4">
+        <sample weight="1" path="ultra_instinct/ultra_instinct4.wav" />
+    </sound>
+    <sound name="inverted_magician_5">
+        <sample weight="1" path="ultra_instinct/ultra_instinct5.wav" />
+    </sound>
+    <sound name="inverted_magician_6">
+        <sample weight="1" path="ultra_instinct/ultra_instinct6.wav" />
+    </sound>
+    <sound name="inverted_magician_7">
+        <sample weight="1" path="ultra_instinct/ultra_instinct7.wav" />
+    </sound>
+    <sound name="inverted_magician_8">
+        <sample weight="1" path="ultra_instinct/ultra_instinct8.wav" />
+    </sound>
+    <sound name="inverted_magician_9">
+        <sample weight="1" path="ultra_instinct/ultra_instinct9.wav" />
+    </sound>
+    <sound name="inverted_magician_10">
+        <sample weight="1" path="ultra_instinct/ultra_instinct10.wav" />
+    </sound>
+    <sound name="inverted_magician_11">
+        <sample weight="1" path="ultra_instinct/ultra_instinct11.wav" />
+    </sound>
+    <sound name="inverted_magician_12">
+        <sample weight="1" path="ultra_instinct/ultra_instinct12.wav" />
+    </sound>
+    <sound name="gc_letsgogambling">
+        <sample weight="1" path="gamblecore/letsgogambling.wav" />
+    </sound>
+    <sound name="gc_tick">
+        <sample weight="1" path="gamblecore/tick.wav" />
+    </sound>
+    <sound name="gc_awdangit">
+        <sample weight="1" path="gamblecore/awdangit.wav" />
+    </sound>
+    <sound name="gc_icantstopwinning">
+        <sample weight="1" path="gamblecore/icantstopwinning.wav" />
+    </sound>
 </sounds>

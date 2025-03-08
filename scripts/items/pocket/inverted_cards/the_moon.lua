@@ -49,7 +49,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
 
     local location = ARAOI.TableUtils.Choice(locations_curated, nil, rng)
 
-    -- We couldn't fint a valid location
+    -- We couldn't find a valid location
     if location == nil then
         game:StartRoomTransition(level:GetRandomRoomIndex(true, rng:Next()), Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)
         return

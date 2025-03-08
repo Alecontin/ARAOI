@@ -35,11 +35,13 @@
     <Item Name="Duality Halo" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedDevil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="angel">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -71,6 +73,7 @@
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="oldChest">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
@@ -88,18 +91,21 @@
   <Pool Name="demonBeggar">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="curse">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedCurse">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="craneGame">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
@@ -111,17 +117,291 @@
   <Pool Name="ultraSecret">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Wire Cutter" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="secret">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Bag of Holding" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Glass Die" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedSecret">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Bag of Holding" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Glass Die" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <Pool Name="gamblecoreSpeedUp">
+    <Item Id="12" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="13" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="14" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="27" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="28" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="70" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="71" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="79" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="82" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="101" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="119" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="120" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="122" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="143" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="189" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="230" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="232" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="300" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="304" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="306" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="307" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="340" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="407" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="445" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="497" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="571" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="590" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="688" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="695" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="716" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+  </Pool>
+  <Pool Name="gamblecoreTearsUp">
+    <Item Id="1" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="6" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="32" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="72" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="80" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="90" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="101" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="115" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="120" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="183" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="189" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="196" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="206" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="222" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="224" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="228" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="255" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="304" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="307" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="309" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="330" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="341" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="342" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="368" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="370" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="381" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="394" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="397" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="407" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="436" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="438" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="440" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="442" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="443" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="465" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="497" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="543" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="547" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="549" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="560" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="561" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="564" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="567" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="582" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="589" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="598" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="600" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="601" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="644" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="651" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="695" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+  </Pool>
+  <Pool Name="gamblecoreDamageUp">
+    <Item Id="4" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="5" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="7" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="12" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="50" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="51" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="62" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="70" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="79" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="80" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="90" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="101" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="109" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="118" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="121" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="122" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="138" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="149" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="165" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="169" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="182" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="189" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="193" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="197" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="201" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="206" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="208" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="216" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="230" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="237" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="245" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="254" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="259" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="261" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="304" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="307" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="310" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="328" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="331" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="345" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="359" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="373" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="407" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="441" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="415" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="417" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="445" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="463" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="493" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="497" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="513" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="531" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="543" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="572" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="573" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="588" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="592" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="621" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="644" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="651" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="654" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="692" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="708" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="716" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="730" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="732" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+  </Pool>
+  <Pool Name="gamblecoreRangeUp">
+    <Item Id="5" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="12" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="14" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="29" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="30" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="31" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="71" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="101" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="110" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="121" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="189" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="197" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="214" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="233" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="254" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="304" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="307" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="336" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="339" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="345" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="355" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="369" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="370" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="394" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="397" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="407" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="442" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="453" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="455" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="462" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="572" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="644" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="659" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="716" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+  </Pool>
+  <Pool Name="gamblecoreShotspeedUp">
+    <Item Id="5" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="143" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="165" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="176" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="183" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="194" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="255" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="339" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="341" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="342" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="397" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="442" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="564" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+  </Pool>
+  <Pool Name="gamblecoreLuckUp">
+    <Item Id="46" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="240" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="253" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="258" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="343" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="355" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="492" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="530" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="588" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="632" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="664" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="669" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="671" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="686" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
+    <Item Id="730" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
   </Pool>
 </ItemPools>

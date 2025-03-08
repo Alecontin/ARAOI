@@ -15,16 +15,26 @@ ARAOI.Blessings_Petal = {}
 -- FUNCTIONS --
 ---------------
 
----@param set? boolean
+---@param add? integer -- How many pickups to add. Set to `0` to reset, `nil` to get the current value
 ---@return boolean
-function ARAOI.Blessings_Petal.HasPickedUpBlessingsPetal(set)
-    return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "hasPickedUpBlessingsPetal", false, set)
+function ARAOI.Blessings_Petal.PickupCount(add)
+    if add and add == 0 then
+        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0, 0)
+    elseif add then
+        local count = ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0)
+        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0, math.min(2, count + add))
+    else
+        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0)
+    end
 end
 
 
 -- Save the fact that the item has been picked up
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function ()
-    ARAOI.Blessings_Petal.HasPickedUpBlessingsPetal(true)
+---@param firstTime boolean
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, _, _, firstTime)
+    if firstTime then
+        ARAOI.Blessings_Petal.PickupCount(1)
+    end
 end, ARAOI.CollectibleType.BLESSINGS_PETAL)
 
 
@@ -36,18 +46,25 @@ end, ARAOI.CollectibleType.BLESSINGS_PETAL)
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, isContinued)
     local game = Game()
 
-    -- Only spawn a pickup if it's a new run and you previously picked up the item
-    if ARAOI.Blessings_Petal.HasPickedUpBlessingsPetal() and not isContinued then
-        -- Reset the data
-        ARAOI.Blessings_Petal.HasPickedUpBlessingsPetal(false)
+    -- Get how many times we picked up our item
+    local pickupCount = ARAOI.Blessings_Petal.PickupCount()
 
+    -- If the run is not continued (A.K.A. we started a new run)
+    -- and we picked up at least 1 of our item
+    if not isContinued and pickupCount > 0 then
         -- Get some necessary data
         local player = Isaac.GetPlayer()
         local room = game:GetRoom()
 
-        -- Spawn a pickup according to the weights
-        Isaac.Spawn(EntityType.ENTITY_PICKUP, ARAOI.ItemUtils.GetRandomPickup(nil, nil, nil, nil, nil, nil, nil, true), 0,
-        room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, nil)
+        -- Repeat this as many times as we picked up our item
+        for _ = 1, pickupCount do
+            -- Spawn a pickup according to the weights
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, ARAOI.ItemUtils.GetRandomPickup(nil, nil, nil, nil, nil, nil, nil, true), 0,
+            room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, nil)
+        end
+
+        -- Reset the pickup count
+        ARAOI.Blessings_Petal.PickupCount(0)
     end
 end)
 
