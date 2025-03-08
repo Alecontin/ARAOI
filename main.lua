@@ -47,6 +47,7 @@ local files = {
     passive.."voodoo_body",
     passive.."vampire_cloak",
     passive.."lucky_coin",
+    passive.."chocolate_birthday_cake",
 
     --[[ POCKET ITEMS ]]--
     pocket.."inverted_cards",

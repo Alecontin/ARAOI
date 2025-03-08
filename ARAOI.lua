@@ -59,7 +59,10 @@ ARAOI.CollectibleType = {
     GAMBLECORE = Isaac.GetItemIdByName("Gamblecore"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 17
+    CHOCOLATE_BIRTHDAY_CAKE = Isaac.GetItemIdByName("Chocolate Birthday Cake"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 18
 }
 
 ---@class TrinketType

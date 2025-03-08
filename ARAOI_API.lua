@@ -49,8 +49,9 @@ ARAOI = {}
 ---@field VOODOO_BODY integer
 ---@field RECYCLE integer
 ---@field GAMBLECORE integer
+---@field CHOCOLATE_BIRTHDAY_CAKE integer
 ARAOI.CollectibleType = {}
-ARAOI.CollectibleType.NUM_COLLECTIBLES = 17
+ARAOI.CollectibleType.NUM_COLLECTIBLES = 18
 
 ---@class TrinketType
 ---@field SPARE_BATTERY integer
