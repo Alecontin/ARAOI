@@ -215,16 +215,24 @@ local function CalculateReward(player)
     ClearGambling(player)
 end
 
+---@param player EntityPlayer
+ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function (_, _, player)
+    if player:GetNumCoins() >= 7 then
+        return 0
+    end
+end, ARAOI.CollectibleType.GAMBLECORE)
+
 -- Takes care of initializing everything
 ---@param rng RNG
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags)
+---@param slot ActiveSlot
+ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags, slot)
     -- If this is a car battery use, nothing should happen
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
-    -- If we have at least 7 coins and we are not currently gambling
-    if player:GetNumCoins() >= 7 and not IsGambling(player) then
+    -- If we are not currently gambling
+    if not IsGambling(player) then
         -- If the timeout for the sound effect is over
         if SFX_LETS_GO_GAMBLING_TIMEOUT == 0 then
             -- Play the sound effect
@@ -233,31 +241,38 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         -- Reset the timeout
         SFX_LETS_GO_GAMBLING_TIMEOUT = SFX_LETS_GO_GAMBLING_COOLDOWN
 
-        -- Remove 7 coins from the player
-        player:AddCoins(-7)
+        -- We used our item but we didn't have enough charges
+        if player:GetActiveCharge(slot) < player:GetActiveMaxCharge(slot) then
+            -- Remove 7 coins from the player
+            player:AddCoins(-7)
+            ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
+        end
+
         -- Create slots for the player, spawning more reels if the player has car battery
         CreateSlots(player, not player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 3 or 5, rng)
-    end
 
 
-    ---------------------
-    -- BOOK OF VIRTUES --
-    ---------------------
+        ---------------------
+        -- BOOK OF VIRTUES --
+        ---------------------
 
-    -- If we have Book of Virtues
-    if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-        -- Get the chance
-        local chance = rng:RandomFloat()
-        -- Did we land in that 7%?
-        if chance <= 0.07 then
-            -- Do this 7 times
-            for _=1,7 do
-                -- Spawn a wisp
-                Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.WISP, ARAOI.CollectibleType.GAMBLECORE,
-                player.Position, Vector.Zero, player)
-                sfx:Play(SoundEffect.SOUND_SUMMON_POOF)
+        -- If we have Book of Virtues
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
+            -- Get the chance
+            local chance = rng:RandomFloat()
+            -- Did we land in that 21%?
+            if chance <= 0.21 then
+                -- Do this 7 times
+                for _=1,7 do
+                    -- Spawn a wisp
+                    Isaac.Spawn(EntityType.ENTITY_FAMILIAR, FamiliarVariant.WISP, ARAOI.CollectibleType.GAMBLECORE,
+                    player.Position, Vector.Zero, player)
+                    sfx:Play(SoundEffect.SOUND_SUMMON_POOF)
+                end
             end
         end
+    else
+        ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
     end
 
     return true
@@ -367,7 +382,7 @@ end)
 ---@param flag CacheFlag
 ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
     if flag == CacheFlag.CACHE_SPEED then
-        player.MoveSpeed = player.MoveSpeed + PlayerReward(player, REWARDS_TYPE.Speed) * 0.14
+        player.MoveSpeed = player.MoveSpeed + PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
     end
     if flag == CacheFlag.CACHE_FIREDELAY then
         ARAOI.PlayerUtils.AddFireDelay(player, PlayerReward(player, REWARDS_TYPE.Tears) * -0.77, false)
@@ -417,10 +432,11 @@ end)
 
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.GAMBLECORE,
+        "#{{Coin}} +7 Coins"..
         "# Spawns 3 reels above Isaac"..
         "#{{ArrowUp}} Getting a line of 2 symbols gives Isaac a respective stat up"..
         "#{{Collectible}} Getting a line of 3 symbols spawns an item related to the respective stat"..
-        "#{{Coin}} Costs 7 coins per use"
+        "#{{Coin}} Costs 7 coins to use if it's not charged"
     )
     ARAOI.EIDUtils.CarBatterySynergy(
         "gamblecore car battery synergy",
@@ -435,6 +451,6 @@ ARAOI.EIDWrapper(function ()
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "gamblecore book of vietues synergy",
         ARAOI.CollectibleType.GAMBLECORE,
-        "7% chance to spawn 7 wisps"
+        "21% chance to spawn 7 wisps"
     )
 end)

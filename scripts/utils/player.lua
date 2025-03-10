@@ -78,7 +78,7 @@ function PlayerUtils.GetAproxDamageMultiplier(player)
     then mult(0.5) end
 
     if player:HasCollectible(CollectibleType.COLLECTIBLE_BRIMSTONE) and player:HasCollectible(CollectibleType.COLLECTIBLE_TECHNOLOGY)
-    and not player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BRIMSTONE) >= 2 then
+    and not (player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BRIMSTONE) >= 2) then
         mult(1.5)
     elseif player:HasCollectible(CollectibleType.COLLECTIBLE_HAEMOLACRIA) then
         mult(1.5)
@@ -468,6 +468,12 @@ function PlayerUtils.AddShield(player, cooldown)
     effects:GetCollectibleEffect(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS).Cooldown = cooldown
 end
 
+---@param player EntityPlayer
+function PlayerUtils.HasShield(player)
+    local effects = player:GetEffects()
+    return effects:GetCollectibleEffectNum(CollectibleType.COLLECTIBLE_BOOK_OF_SHADOWS) > 0
+end
+
 -- Wrapper to make Car Battery synergies easier to write
 -- Calls the provided function twice:
 ---- First time calls it with the parameter being 0
@@ -485,6 +491,32 @@ function PlayerUtils.CarBatteryWrapper(player, func)
     for i = 1, 1 + (player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 1 or 0) do
         func((i == 2) and UseFlag.USE_CARBATTERY or 0)
     end
+end
+
+
+---@param player EntityPlayer
+---@param sizeMultiplier? number -- The size of the attack
+---@param direction? Vector -- The direction to spawn the attack towards
+---@param mirror? boolean -- Should the attack be mirrored
+---@param playSound? boolean -- Should we play the attack sound
+function PlayerUtils.FireMelee(player, sizeMultiplier, direction, mirror, playSound)
+    direction = direction or Vector.Zero
+
+    local offset = Vector(0, -6)
+    local rotation = direction:GetAngleDegrees()-90
+
+    local woosh = ARAOI.MiscUtils.SpawnMeleeWoosh(
+        player.Position + Vector(8, 0):Rotated(direction:GetAngleDegrees()) * math.max(((player.TearRange - 260) / 43.5), 1),
+        mirror,
+        player.Damage,
+        sizeMultiplier,
+        rotation,
+        offset,
+        playSound
+    )
+    woosh:FollowParent(player)
+
+    return woosh
 end
 
 return PlayerUtils

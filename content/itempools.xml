@@ -8,6 +8,7 @@
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Recycle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedTreasure">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -17,6 +18,7 @@
     <Item Name="Blessing's Petal" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="shop">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -25,6 +27,7 @@
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Wire Cutter" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="greedShop">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -32,6 +35,15 @@
     <Item Name="3D Glasses" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+  <Pool Name="boss">
+    <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+  <Pool Name="greedBoss">
+    <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="devil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -39,12 +51,14 @@
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Katana" Weight="0.2" DecreaseBy="0.2" RemoveOn="0.01" />
   </Pool>
   <Pool Name="greedDevil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Katana" Weight="0.2" DecreaseBy="0.2" RemoveOn="0.01" />
   </Pool>
   <Pool Name="angel">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -56,6 +70,22 @@
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Rainbow Headband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+  <Pool Name="curse">
+    <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+  <Pool Name="greedCurse">
+    <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  </Pool>
+  <Pool Name="library">
   </Pool>
   <Pool Name="shellGame">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
@@ -74,6 +104,7 @@
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Recycle" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="redChest">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
@@ -90,31 +121,24 @@
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
+  <Pool Name="momsChest">
+  </Pool>
   <Pool Name="beggar">
     <Item Name="Rubik's Cube" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Recycle" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Lunchbox" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
   <Pool Name="demonBeggar">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
-  <Pool Name="curse">
-    <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  <Pool Name="batteryBum">
   </Pool>
-  <Pool Name="greedCurse">
-    <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="3D Glasses" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Voodoo Body" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Vampire Cloak" Weight="1" DecreaseBy="0.5" RemoveOn="0.1" />
-    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+  <Pool Name="keyMaster">
   </Pool>
   <Pool Name="craneGame">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
@@ -124,11 +148,6 @@
     <Item Name="Lucky Coin" Weight="1" DecreaseBy="0.1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
   </Pool>
-  <Pool Name="ultraSecret">
-    <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
-    <Item Name="Wire Cutter" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-  </Pool>
   <Pool Name="secret">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Bag of Holding" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -136,6 +155,7 @@
     <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Katana" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
   </Pool>
   <Pool Name="greedSecret">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -144,6 +164,13 @@
     <Item Name="Spellbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Katana" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
+  </Pool>
+  <Pool Name="ultraSecret">
+    <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />
+    <Item Name="Wire Cutter" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Katana" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
   </Pool>
 
 
@@ -298,7 +325,6 @@
     <Item Id="304" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     <Item Id="307" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     <Item Id="310" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
-    <Item Id="328" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     <Item Id="331" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     <Item Id="345" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>
     <Item Id="359" Weight="1" DecreaseBy="1" RemoveOn="0.1"/>

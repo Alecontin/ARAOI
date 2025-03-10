@@ -5,8 +5,8 @@ local Config = {}
 
 
 
-Config.DAMAGE_SCALE    = 0.35 -- *Default: `0.35` — The number that the player's damage will be multiplied by when doing damage with the pin.*
-Config.VOODOO_HEAD_ADD = 0.15 -- *Default: `0.15` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
+Config.DAMAGE_SCALE    = 0.65 -- *Default: `0.65` — The number that the player's damage will be multiplied by when doing damage with the pin.*
+Config.VOODOO_HEAD_ADD = 0.15 -- *Default: `0.35` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
 
 
 
@@ -188,21 +188,13 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
             local scale = sprite.Scale.X
             local damage = effect.MaxHitPoints
             local enemy = effect.Parent
-            local eref = EntityRef(effect)
+            local rotation = effect:GetSprite().Rotation + 90
 
             -- Check if we have some custom effects set
             local customEffects = effect:GetData()["TearEffects"]
 
             -- Check if we are still attached to an enemy, I was having some issues before
             if not effect.Parent then goto skip end
-
-            -- Damage the enemy
-            enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, eref, 0)
-
-            -- Function that checks if the enemy would die, since the damage dealt doesn't immediately update
-            local function EnemyWouldDie()
-                return (enemy.HitPoints - damage) <= 0 and not enemy:IsDead()
-            end
 
             -- Check if we were spawned by a player
             if not effect.SpawnerEntity then goto skip end
@@ -211,9 +203,6 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
 
             -- Get the RNG
             local rng = RNG(effect.InitSeed)
-
-            -- Set the global effect duration
-            local effectDuration = 75
 
             -- Get the tear flags, preferably the custom ones
             local flags = customEffects or player:GetTearHitParams(WeaponType.WEAPON_TEARS, nil, nil, player).TearFlags
@@ -234,99 +223,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
                 flags = flags | TearFlags.TEAR_EXPLOSIVE
             end
 
-            -- Apply some effects based on each tear flag
-            if flags & TearFlags.TEAR_SLOW > 0 then
-                enemy:AddSlowing(eref, 60, 0.513, Color(2, 2, 2, 1, 0.196, 0.196, 0.196))
-            end
-            if flags & TearFlags.TEAR_POISON > 0 then
-                enemy:AddPoison(eref, 30, damage)
-            end
-            if flags & TearFlags.TEAR_FREEZE > 0 then
-                enemy:AddFreeze(eref, 30)
-            end
-            if flags & TearFlags.TEAR_MULLIGAN > 0 then
-                player:AddBlueFlies(1, player.Position, enemy)
-            end
-            if flags & TearFlags.TEAR_EXPLOSIVE > 0 then
-                Isaac.Explode(enemy.Position, enemy, damage)
-            end
-            if flags & TearFlags.TEAR_CHARM > 0 then
-                enemy:AddCharmed(eref, 150)
-            end
-            if flags & TearFlags.TEAR_CONFUSION > 0 then
-                enemy:AddConfusion(eref, 120, true)
-            end
-            if flags & TearFlags.TEAR_HP_DROP > 0 and EnemyWouldDie() then
-                if rng:RandomFloat() < 0.33 then
-                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, 0, player.Position, Vector.Zero, player)
-                end
-            end
-            if flags & TearFlags.TEAR_FEAR > 0 then
-                enemy:AddFear(eref, 150)
-            end
-            if flags & TearFlags.TEAR_BURN > 0 then
-                enemy:AddBurn(eref, 30, damage)
-            end
-            if flags & TearFlags.TEAR_MYSTERIOUS_LIQUID_CREEP > 0 then
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_GREEN, 0, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_LIGHT_FROM_HEAVEN > 0 then
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 1, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_COIN_DROP > 0 then
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_BLACK_HP_DROP > 0 and EnemyWouldDie() then
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_BLACK, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_EGG > 0 then
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_WHITE, 0, enemy.Position, Vector.Zero, player)
-                if rng:RandomFloat() <= 0.5 then
-                    player:AddBlueSpider(player.Position)
-                else
-                    player:AddBlueFlies(1, player.Position, player)
-                end
-            end
-            if flags & TearFlags.TEAR_PUNCH > 0 then
-                enemy:AddKnockback(eref, Vector.FromAngle(effect:GetSprite().Rotation + 90) * 30, effectDuration, true)
-                SFX:Play(SoundEffect.SOUND_PUNCH)
-            end
-            if flags & TearFlags.TEAR_ICE > 0 then
-                enemy:AddIce(eref, effectDuration)
-            end
-            if flags & TearFlags.TEAR_MAGNETIZE > 0 then
-                enemy:AddMagnetized(eref, effectDuration)
-            end
-            if flags & TearFlags.TEAR_BAIT > 0 then
-                enemy:AddBaited(eref, 150)
-            end
-            if flags & TearFlags.TEAR_BLOOD_BOMB > 0 then
-                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_COIN_DROP_DEATH > 0 and EnemyWouldDie() then
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
-            end
-            if flags & TearFlags.TEAR_RIFT > 0 then
-                local rift = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.RIFT, 0, enemy.Position, Vector.Zero, player):ToEffect()
-                assert(rift)
-                rift.SpriteScale = effect.SpriteScale
-                rift.CollisionDamage = damage
-                rift:SetTimeout(90)
-            end
-            if flags & TearFlags.TEAR_BACKSTAB > 0 and rng:RandomFloat() <= 0.2 then
-                enemy:SetBleedingCountdown(0)
-                enemy:AddBleeding(eref, 150)
-                enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, eref, 0)
-                SFX:Play(SoundEffect.SOUND_MEATY_DEATHS)
-            end
-            if flags & TearFlags.TEAR_CARD_DROP_DEATH > 0 and EnemyWouldDie() then
-                local card = ItemPool:GetCardEx(rng:GetSeed(), 0, 0, 0, false)
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card, enemy.Position, Vector.Zero, nil)
-            end
-            if flags & TearFlags.TEAR_RUNE_DROP_DEATH > 0 and EnemyWouldDie() then
-                local rune = ItemPool:GetCard(rng:GetSeed(), false, true, true)
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, rune, enemy.Position, Vector.Zero, nil)
-            end
+            ARAOI.MiscUtils.DamageWithTearEffects(player, enemy, damage, effect, DamageFlag.DAMAGE_IGNORE_ARMOR, flags, rotation, rng)
 
             if flags & TearFlags.TEAR_BURSTSPLIT > 0 then
                 for i = 1, rng:RandomInt(6, 11) do
@@ -434,9 +331,9 @@ ARAOI.EIDWrapper(function ()
     EID:addCollectible(
         ARAOI.CollectibleType.VOODOO_BODY,
         "#{{BlackHeart}} +1 Black Heart"..
-        "# Damaging an enemy will spawn a pin on a random enemy that deals {{Damage}} "..math.floor(Config.DAMAGE_SCALE * 100).."% of the original damage and ignores armor"..
+        "# Damaging an enemy will spawn a pin on a random enemy that deals {{Damage}} "..Config.DAMAGE_SCALE.."x the damage and ignores armor"..
         "#{{Tearsize}} Pins copy the majority of Isaac's tear effects"..
-        "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pins will deal {{Damage}} "..math.floor((Config.DAMAGE_SCALE+Config.VOODOO_HEAD_ADD) * 100).."% damage instead"
+        "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pins will deal {{Damage}} "..(Config.DAMAGE_SCALE+Config.VOODOO_HEAD_ADD).."x damage instead"
     )
     ARAOI.EIDUtils.AbyssSynergy(
         "Voodoo Body Abyss Synergy",

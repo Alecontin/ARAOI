@@ -50,8 +50,10 @@ ARAOI = {}
 ---@field RECYCLE integer
 ---@field GAMBLECORE integer
 ---@field CHOCOLATE_BIRTHDAY_CAKE integer
+---@field LUNCHBOX integer
+---@field KATANA integer
 ARAOI.CollectibleType = {}
-ARAOI.CollectibleType.NUM_COLLECTIBLES = 18
+ARAOI.CollectibleType.NUM_COLLECTIBLES = 20
 
 ---@class TrinketType
 ---@field SPARE_BATTERY integer
@@ -374,6 +376,28 @@ end
 function MiscUtils.DropCompactedCoins(pennies, position, velocityMult)
 end
 
+---@param player EntityPlayer
+---@param enemy Entity
+---@param damage? number -- Default: `player.Damage`
+---@param source? Entity -- Default: `player`
+---@param damageFlag? DamageFlag|integer -- Default: `DamageFlag.DAMAGE_COUNTDOWN`
+---@param tearFlags? TearFlags -- Default: `player:GetTearHitParams(WeaponType.WEAPON_TEARS).TearFlags`
+---@param rotation? number -- Default: `rng:PhantomInt(360)`
+---@param rng? RNG -- Default: `math.random(999999999999)`
+---@param effectDuration? integer -- Default: `75`
+function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFlag, tearFlags, rotation, rng, effectDuration)
+end
+
+---@param position Vector
+---@param damage? number -- The damage of the attack
+---@param mirrored? boolean -- Should the attack animation be mirrored
+---@param sizeMultiplier? number -- Size of the attack
+---@param rotation? number -- Rotation of the attack
+---@param spriteOffset? Vector -- The offset of the attack's sprite
+---@param playSound? boolean -- Should the attack play the sound when spawning
+function MiscUtils.SpawnMeleeWoosh(position, mirrored, damage, sizeMultiplier, rotation, spriteOffset, playSound)
+end
+
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions
 ---@return number DevilChance, number AngelChance
@@ -562,6 +586,10 @@ end
 function PlayerUtils.AddShield(player, cooldown)
 end
 
+---@param player EntityPlayer
+function PlayerUtils.HasShield(player)
+end
+
 -- Wrapper to make Car Battery synergies easier to write
 -- Calls the provided function twice:
 ---- First time calls it with the parameter being 0
@@ -576,6 +604,14 @@ end
 ---@param player EntityPlayer
 ---@param func function
 function PlayerUtils.CarBatteryWrapper(player, func)
+end
+
+---@param player EntityPlayer
+---@param sizeMultiplier? number -- The size of the attack
+---@param direction? Vector -- The direction to spawn the attack towards
+---@param mirror? boolean -- Should the attack be mirrored
+---@param playSound? boolean -- Should we play the attack sound
+function PlayerUtils.FireMelee(player, sizeMultiplier, direction, mirror, playSound)
 end
 
 ARAOI.PlayerUtils = PlayerUtils
@@ -998,8 +1034,8 @@ end
 ARAOI.Voodoo_Body = {}
 
 ARAOI.Voodoo_Body.Config = {
-    DAMAGE_SCALE    = 0.35, -- *Default: `0.35` — The number that the player's damage will be multiplied by when doing damage with the pin.*
-    VOODOO_HEAD_ADD = 0.15, -- *Default: `0.15` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
+    DAMAGE_SCALE    = 0.65, -- *Default: `0.65` — The number that the player's damage will be multiplied by when doing damage with the pin.*
+    VOODOO_HEAD_ADD = 0.35, -- *Default: `0.35` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
 }
 
 -- Spawns a curse pin on the provided attacker

@@ -37,6 +37,7 @@ local files = {
     active.."wire_cutter",
     active.."recycle",
     active.."gamblecore",
+    active.."katana",
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",
@@ -48,6 +49,7 @@ local files = {
     passive.."vampire_cloak",
     passive.."lucky_coin",
     passive.."chocolate_birthday_cake",
+    passive.."lunchbox",
 
     --[[ POCKET ITEMS ]]--
     pocket.."inverted_cards",

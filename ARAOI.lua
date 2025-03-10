@@ -62,7 +62,13 @@ ARAOI.CollectibleType = {
     CHOCOLATE_BIRTHDAY_CAKE = Isaac.GetItemIdByName("Chocolate Birthday Cake"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 18
+    LUNCHBOX = Isaac.GetItemIdByName("Lunchbox"),
+
+    ---@type integer
+    KATANA = Isaac.GetItemIdByName("Katana"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 20
 }
 
 ---@class TrinketType
