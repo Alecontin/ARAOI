@@ -387,10 +387,6 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
                         calculated_weights[i] = v + ARAOI.Gamblecore.PlayerPity(player)
                     end
                 end
-                for i,v in pairs(calculated_weights) do
-                    print(i,v)
-                end
-                print(ARAOI.Gamblecore.PlayerPity(player))
 
                 local type, weights = ARAOI.TableUtils.KeysAndValues(calculated_weights)
                 local random = ARAOI.TableUtils.Choice(type, weights, rng)
