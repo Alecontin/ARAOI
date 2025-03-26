@@ -438,9 +438,13 @@ function PlayerUtils.AddActiveCharge(player, slot, charge, force, ignore_limit, 
 
     if flashHUD == true then
         Game():GetHUD():FlashChargeBar(player, slot)
-        local battery_effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BATTERY, 1, player.Position+Vector(0,1), Vector.Zero, player):ToEffect()
-        battery_effect.SpriteOffset = Vector(0, -30)
-        SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE)
+        if item_desc.Charge < max_charge then
+            SFXManager():Play(SoundEffect.SOUND_BEEP)
+        else
+            local battery_effect = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.BATTERY, 1, player.Position+Vector(0,1), Vector.Zero, player):ToEffect()
+            battery_effect.SpriteOffset = Vector(0, -30)
+            SFXManager():Play(SoundEffect.SOUND_BATTERYCHARGE)
+        end
     end
 end
 

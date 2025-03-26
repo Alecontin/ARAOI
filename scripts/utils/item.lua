@@ -73,7 +73,7 @@ end
 -- would remove that item from the pool.
 --
 -- Basically, this function spawns the desired item, and **ONLY** the desired item.
----@param SubType CollectibleType
+---@param SubType CollectibleType|CollectibleType[]
 ---@param Position? Vector *Default: `Game():GetRoom():GetCenterPos()`*
 ---@param Velocity? Vector *Default: `Vector.Zero`*
 ---@param Spawner? Entity | nil *Default: `nil`*
@@ -92,20 +92,28 @@ function ItemUtils.SpawnCollectible(SubType, Position, Velocity, Spawner, Ignore
     ):ToPickup()
     assert(entity)
 
+    ------------------------------- Here so my code editor doesn't freak out
+    if type(SubType) == "number" or type(SubType) == "CollectibleType" then
+        SubType = {SubType}
+    end
+
     -- The sprite can be flipped so we are preventing that
     entity:GetSprite().FlipX = false
 
     entity:Morph(
         EntityType.ENTITY_PICKUP,
         PickupVariant.PICKUP_COLLECTIBLE,
-        SubType,
+        table.remove(SubType, 1),
         KeepPrice or false,
         KeepSeed or false,
         IgnoreModifiers or false
     )
+    for _,item in ipairs(SubType) do
+        entity:AddCollectibleCycle(item)
+    end
 
     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, entity.Position, Vector.Zero, nil)
-    
+
     return entity
 end
 

@@ -209,7 +209,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
     if not entity then return end
 
     local player = entity:ToPlayer()
-    if not player then return end
+    if not player or not ARAOI.Spellbook.IsPlayerWritingSpell(player) then return end
 
     -- Check if this input call is checking if the player wants to shoot
     if inputHook == InputHook.IS_ACTION_PRESSED
@@ -223,17 +223,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
         }
     )
     then
-
-        -- Check if the player is currently writing a spell
-        if ARAOI.Spellbook.IsPlayerWritingSpell(player) then
-            -- If we are writing a spell, we block the shooting input
-            if inputHook == InputHook.GET_ACTION_VALUE then
-                return 0
-            else
-                return false
-            end
+        -- If we are writing a spell, we block the shooting input
+        if inputHook == InputHook.GET_ACTION_VALUE then
+            return 0
+        else
+            return false
         end
-
     end
 end)
 
@@ -257,7 +252,6 @@ end)
 ---@param slot ActiveSlot
 ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
     local game = Game()
-    local ItemConfig = Isaac.GetItemConfig()
 
     -- This prevents us from entering the writing state from items such as Void
     -- If that were to happen, it would be a soft-lock
@@ -350,20 +344,19 @@ end, ARAOI.CollectibleType.SPELLBOOK)
 -- BOOK AND ARROWS RENDERER --
 ------------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, function ()
+ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
     -- If anyone is writing a spell, keep track of it
     local anyone_is_writing_spell = false
 
     -- Do a render pass for each player
     for _, player in ipairs(PlayerManager.GetPlayers()) do
-        -- Don't render if the player is not visible
-        if not player:IsVisible() then goto next_player end
-
-        -- Get the written spell
-        local spell = ARAOI.Spellbook.PlayerWrittenSpell(player)
-
         -- Check if the player is writing
         if ARAOI.Spellbook.IsPlayerWritingSpell(player) then
+            -- Don't render if the player is not visible
+            if not player:IsVisible() then goto next_player end
+
+            -- Get the written spell
+            local spell = ARAOI.Spellbook.PlayerWrittenSpell(player)
             -- We are writing a spell!
             anyone_is_writing_spell = true
 
@@ -433,54 +426,50 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_HUD_RENDER, function ()
                 ARAOI.Spellbook.PlayerWrittenSpell(player, "")
                 ARAOI.Spellbook.IsPlayerWritingSpell(player, false)
             end
-        end
 
-        -- For every character in the written spell
-        for i = 1, #spell do
-            -- Get the character
-            local character = spell:sub(i,i)
+            -- For every character in the written spell
+            for i = 1, #spell do
+                -- Get the character
+                local character = spell:sub(i,i)
 
-            -- Get the player's position relative to the screen
-            local position = Isaac.WorldToScreen(player.Position)
+                -- Get the player's position relative to the screen
+                local arrow_position = Isaac.WorldToScreen(player.Position)
 
-            -- Offset the arrows so they end up centered
-            -- I honestly have no idea how I ended up with this formula, it was a lot of trial and error
-            position.X = position.X - 6.3 - (string.len(spell)/2-i) * 14
-            position.Y = position.Y - 51
+                -- Offset the arrows so they end up centered
+                -- I honestly have no idea how I ended up with this formula, it was a lot of trial and error
+                arrow_position.X = arrow_position.X - 6.3 - (string.len(spell)/2-i) * 14
+                arrow_position.Y = arrow_position.Y - 51
 
-            -- Get the arrow for that character and render it to the offset position
-            arrows[tonumber(character)]:Render(position)
-        end
+                -- Get the arrow for that character and render it to the offset position
+                arrows[tonumber(character)]:Render(arrow_position)
+            end
 
-        -- Getting all the known spells
-        local known_spells = ARAOI.Spellbook.EIDRegisteredSpells()
-        -- Looping through every known spell
-        for i = 1,#known_spells do
-            -- Getting the spell and the item
-            local registered_spell, spell_item = known_spells[i][1], known_spells[i][2]
-            -- If the registered spell is the same as the spell we are currently writing
-            if registered_spell == spell then
-                -- Get the item image
-                local item_image = ItemConfig:GetCollectible(spell_item).GfxFileName
+            -- Getting all the known spells
+            local known_spells = ARAOI.Spellbook.EIDRegisteredSpells()
+            -- Looping through every known spell
+            for i = 1,#known_spells do
+                -- Getting the spell and the item
+                local registered_spell, spell_item = known_spells[i][1], known_spells[i][2]
+                -- If the registered spell is the same as the spell we are currently writing
+                if registered_spell == spell then
+                    -- Get the item image
+                    local item_image = ItemConfig:GetCollectible(spell_item).GfxFileName
 
-                -- Replace the spritesheet of the collectible sprite
-                collectible:ReplaceSpritesheet(1, item_image, true)
+                    -- Replace the spritesheet of the collectible sprite
+                    collectible:ReplaceSpritesheet(1, item_image, true)
 
-                -- Setting the position for the item to be rendered
-                local position = Isaac.WorldToScreen(player.Position)
-                position.Y = position.Y - 57
+                    -- Setting the position for the item to be rendered
+                    local position = Isaac.WorldToScreen(player.Position)
+                    position.Y = position.Y - 57
 
-                -- Render the item
-                collectible:Render(position)
+                    -- Render the item
+                    collectible:Render(position)
 
-                -- We don't need to keep checking spells, so we break out of the loop
-                break
+                    -- We don't need to keep checking spells, so we break out of the loop
+                    break
+                end
             end
         end
-
-        -- This is some left-over debug code which shows what the actual spell is
-        -- local pos = Isaac.WorldToScreen(player.Position)
-        -- Isaac.RenderText(spell, pos.X - string.len(spell) * 3, pos.Y - 50, 1, 1, 1, 1)
 
         ::next_player::
     end

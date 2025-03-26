@@ -27,14 +27,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
     -- Noone pressed anything
     if not entity then return end
 
-    -- Getting the player that pressed the active button
+    -- Getting the player that pressed the active button and checking if it has our trinket
     local player = entity:ToPlayer()
-    if not player then return end
+    if not player or not player:HasTrinket(ARAOI.TrinketType.SPARE_BATTERY) then return end
 
     if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_ITEM then return end
-
-    -- End the function prematurely if the player doesn't have the trinket
-    if not player:HasTrinket(ARAOI.TrinketType.SPARE_BATTERY) then return end
 
     -- Check if the button pressed is actually the active button
     if not Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex) then return end

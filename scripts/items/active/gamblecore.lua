@@ -2,6 +2,8 @@
 -- CONSTANTS AND INIT --
 ------------------------
 
+ARAOI.Gamblecore = {}
+
 local game = Game()
 local sfx = SFXManager()
 
@@ -26,7 +28,9 @@ REWARDS_TYPE.Luck = 5
 REWARDS_TYPE.Devil = 6
 REWARDS_TYPE.Angel = 7
 REWARDS_TYPE.Planetarium = 8
-REWARDS_TYPE.Deal = 9
+REWARDS_TYPE.Treasure = 9
+
+ARAOI.Gamblecore.REWARDS_TYPE = REWARDS_TYPE
 
 
 ---------------
@@ -45,17 +49,28 @@ local function NewReelSprite(rng)
 end
 
 ---@param player EntityPlayer
----@param type number
----@param add? number
-local function PlayerReward(player, type, add)
-    local reward = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player)..type, 0)
+---@param reward_type number -- The type of the reward. Use `ARAOI.Gamblecore.REWARDS_TYPE`
+---@param add? number -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+function ARAOI.Gamblecore.PlayerReward(player, reward_type, add)
+    local reward = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player).."/"..reward_type, 0)
     if add then
-        if type == REWARDS_TYPE.Angel then
+        if reward_type == REWARDS_TYPE.Angel then
             game:GetLevel():AddAngelRoomChance(add * 0.07)
         end
-        return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player)..type, 0, reward+add)
+        return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player).."/"..reward_type, 0, add ~= 0 and (reward+add) or add)
     else
         return reward
+    end
+end
+
+---@param player EntityPlayer
+---@param add? number -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+function ARAOI.Gamblecore.PlayerPity(player, add)
+    local pity = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetID(player), 0)
+    if add then
+        return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetID(player), 0, add ~= 0 and (pity+add) or add)
+    else
+        return pity
     end
 end
 
@@ -73,9 +88,11 @@ end
 
 local hud_reels = {}
 
+-- Starts the gambling interaction by creating reels and rolling them
 ---@param player EntityPlayer
+---@param amount integer -- Please use only odd numbers!
 ---@param rng? RNG
-local function CreateSlots(player, amount, rng)
+function ARAOI.Gamblecore.CreateSlots(player, amount, rng)
     if not IsGambling(player) then
         StartGambling(player)
         local reels = {}
@@ -87,14 +104,16 @@ local function CreateSlots(player, amount, rng)
     end
 end
 
-local function ClearGambling(player)
+-- Clears the gambling interaction, this is done automatically
+function ARAOI.Gamblecore.ClearGambling(player)
     gambling_players[ARAOI.PlayerUtils.GetID(player)] = nil
     hud_reels[ARAOI.PlayerUtils.GetID(player)] = nil
 end
 
+-- Get the current player's reels
 ---@param player EntityPlayer
 ---@return Sprite[]
-local function GetReels(player)
+function ARAOI.Gamblecore.GetReels(player)
     return ARAOI.SaveData:Key(hud_reels, ARAOI.PlayerUtils.GetID(player), {})
 end
 
@@ -118,7 +137,7 @@ local function CalculateReward(player)
     local symbols = {}
 
     -- For every reel assigned to the player
-    for i, reel in ipairs(GetReels(player)) do
+    for i, reel in ipairs(ARAOI.Gamblecore.GetReels(player)) do
         -- Get the current symbol
         local symbol = tonumber(reel:GetAnimation())
         -- Keep track of it
@@ -134,7 +153,7 @@ local function CalculateReward(player)
                 -- If this is the 3rd symbol in a row
                 if same_symbols == 3 then
                     -- Remove the symbol from our winnings and add it to out jackpots instead
-                    table.insert(jackpots, table.remove(winnings, #winnings-1))
+                    table.insert(jackpots, table.remove(winnings, #winnings))
                     -- Reset the symbols
                     same_symbols = 1
                 end
@@ -150,29 +169,37 @@ local function CalculateReward(player)
         -- Play some sounds
         sfx:Play(SFX_I_CANT_STOP_WINNING, 0.7)
         sfx:Play(SoundEffect.SOUND_POWERUP_SPEWER_AMPLIFIED)
+        ARAOI.Gamblecore.PlayerPity(player, 0)
 
     -- Else, do we have at least a win?
     elseif #winnings > 0 then
         -- Play a sound
         sfx:Play(SFX_I_CANT_STOP_WINNING, 0.7)
+        ARAOI.Gamblecore.PlayerPity(player, 0)
 
     -- If all else fails, we didn't win anything
     else
+        ARAOI.Gamblecore.PlayerPity(player, 1)
         sfx:Play(SFX_AW_DANG_IT, 0.7)
     end
 
     -- For every winning symbol
     for _,symbol in ipairs(winnings) do
         -- Add 1 level to the player's reward, based on the symbol
-        PlayerReward(player, symbol, 1)
+        ARAOI.Gamblecore.PlayerReward(player, symbol, 1)
+
+        -- If we landed the special treasure win
+        if symbol == REWARDS_TYPE.Treasure then
+            -- Spawn an item
+            ARAOI.ItemUtils.SpawnCollectible(CollectibleType.COLLECTIBLE_NULL, Isaac.GetCollectibleSpawnPosition(player.Position))
+        end
     end
 
     -- For every jackpot symbol
     for _,symbol in ipairs(jackpots) do
         -- Get everything for later
         local rng = player:GetCollectibleRNG(ARAOI.CollectibleType.GAMBLECORE)
-        local room = game:GetRoom()
-        local pos = room:FindFreePickupSpawnPosition(player.Position, 50)
+        local pos = game:GetRoom():FindFreePickupSpawnPosition(player.Position, 30)
         local pool = ItemPoolType.POOL_TREASURE
 
         -- Get a pool depending on the jackpot
@@ -203,6 +230,11 @@ local function CalculateReward(player)
         if symbol == REWARDS_TYPE.Planetarium then
             pool = ItemPoolType.POOL_PLANETARIUM
         end
+        if symbol == REWARDS_TYPE.Treasure then
+            pool = game:GetRoom():GetItemPool(0)
+            ARAOI.ItemUtils.SpawnCollectibleFromPool(pool, pos, nil, nil, nil, rng)
+            ARAOI.ItemUtils.SpawnCollectibleFromPool(pool, pos, nil, nil, nil, rng)
+        end
 
         -- Spawn a collectible from the given pool
         ARAOI.ItemUtils.SpawnCollectibleFromPool(pool, pos, nil, nil, nil, rng)
@@ -212,7 +244,7 @@ local function CalculateReward(player)
     player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 
     -- Finally, de-spawn the reels
-    ClearGambling(player)
+    ARAOI.Gamblecore.ClearGambling(player)
 end
 
 ---@param player EntityPlayer
@@ -249,7 +281,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         end
 
         -- Create slots for the player, spawning more reels if the player has car battery
-        CreateSlots(player, not player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 3 or 5, rng)
+        ARAOI.Gamblecore.CreateSlots(player, not player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 3 or 5, rng)
 
 
         ---------------------
@@ -292,7 +324,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         local reels_finished = 0
 
         -- For every reel assigned to the player
-        for _, reel in ipairs(GetReels(player)) do
+        for _, reel in ipairs(ARAOI.Gamblecore.GetReels(player)) do
             -- Get some data for later
             local rng = player:GetCollectibleRNG(ARAOI.CollectibleType.GAMBLECORE)
             local frame = reel:GetFrame()
@@ -336,21 +368,45 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
             -- If the sprite animation finished
             if reel:IsFinished(reel:GetAnimation()) then
                 -- Get a new random sprite animation
-                local random = Isaac.GetPlayer():GetCollectibleRNG(ARAOI.CollectibleType.GAMBLECORE):RandomInt(9)
+                local calculated_weights = {}
+                for i = 0,REWARDS_TYPE.Treasure do
+                    if i <= REWARDS_TYPE.Luck then
+                        calculated_weights[i] = 10 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.9
+                    elseif i <= REWARDS_TYPE.Planetarium then
+                        calculated_weights[i] = 5 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.4
+                    elseif i == REWARDS_TYPE.Treasure then
+                        calculated_weights[i] = 3 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.2
+                    end
+                end
+                for i,v in pairs(calculated_weights) do
+                    if (i == REWARDS_TYPE.Tears and player.FireDelay > player.MaxFireDelay)
+                    or i == REWARDS_TYPE.Damage
+                    or (i == REWARDS_TYPE.Luck and player.Luck < 7.77)
+                    or (i == REWARDS_TYPE.Planetarium and ARAOI.Gamblecore.PlayerReward(player, i) < 3)
+                    or (i == REWARDS_TYPE.Treasure and ARAOI.Gamblecore.PlayerReward(player, i) < 1) then
+                        calculated_weights[i] = v + ARAOI.Gamblecore.PlayerPity(player)
+                    end
+                end
+                for i,v in pairs(calculated_weights) do
+                    print(i,v)
+                end
+                print(ARAOI.Gamblecore.PlayerPity(player))
+
+                local type, weights = ARAOI.TableUtils.KeysAndValues(calculated_weights)
+                local random = ARAOI.TableUtils.Choice(type, weights, rng)
                 -- Play the new sprite animation
                 reel:Play(tostring(random), true)
-                -- Play a sound
-                sfx:Play(SFX_TICK, 0.7)
             end
-            -- If we passed through the middle
-            if frame == 19 then
+
+            -- If we passed the center
+            if reel:IsEventTriggered("Click") then
                 -- Play a sound
                 sfx:Play(SFX_TICK, 0.7)
             end
         end
 
         -- Check if the reels that finished is the same amount as the reels the player has
-        if reels_finished == #GetReels(player) then
+        if reels_finished == #ARAOI.Gamblecore.GetReels(player) then
             -- If so, calculate the reward we should give
             CalculateReward(player)
         end
@@ -364,7 +420,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
     -- For every player
     for _, player in ipairs(PlayerManager:GetPlayers()) do
         -- Get their reels
-        local reels = GetReels(player)
+        local reels = ARAOI.Gamblecore.GetReels(player)
         -- For every reel
         for i, reel in ipairs(reels) do
             -- Render it with an offset depending on their index
@@ -382,29 +438,29 @@ end)
 ---@param flag CacheFlag
 ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
     if flag == CacheFlag.CACHE_SPEED then
-        player.MoveSpeed = player.MoveSpeed + PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
+        player.MoveSpeed = player.MoveSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
     end
     if flag == CacheFlag.CACHE_FIREDELAY then
-        ARAOI.PlayerUtils.AddFireDelay(player, PlayerReward(player, REWARDS_TYPE.Tears) * -0.77, false)
+        ARAOI.PlayerUtils.AddFireDelay(player, ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Tears) * -0.77, false)
     end
     if flag == CacheFlag.CACHE_DAMAGE then
-        player.Damage = player.Damage + PlayerReward(player, REWARDS_TYPE.Damage) * (ARAOI.PlayerUtils.GetAproxDamageMultiplier(player) * 0.77)
+        player.Damage = player.Damage + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Damage) * (ARAOI.PlayerUtils.GetAproxDamageMultiplier(player) * 0.77)
     end
     if flag == CacheFlag.CACHE_RANGE then
-        player.TearRange = player.TearRange + PlayerReward(player, REWARDS_TYPE.Range) * 7
+        player.TearRange = player.TearRange + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Range) * 7
     end
     if flag == CacheFlag.CACHE_SHOTSPEED then
-        player.ShotSpeed = player.ShotSpeed + PlayerReward(player, REWARDS_TYPE.Shotspeed) * 0.21
+        player.ShotSpeed = player.ShotSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Shotspeed) * 0.21
     end
     if flag == CacheFlag.CACHE_LUCK then
-        player.Luck = player.Luck + PlayerReward(player, REWARDS_TYPE.Luck) * 2.64
+        player.Luck = player.Luck + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Luck) * 2.64
     end
 end)
 
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_DEVIL_CALCULATE, function (_, chance)
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
-        reward_chance = reward_chance + PlayerReward(player, REWARDS_TYPE.Devil) * 0.07
+        reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Devil) * 0.07
     end
     return chance + reward_chance
 end)
@@ -412,7 +468,7 @@ end)
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
-        reward_chance = reward_chance + PlayerReward(player, REWARDS_TYPE.Angel) * 0.07
+        reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Angel) * 0.07
     end
     game:GetLevel():AddAngelRoomChance(reward_chance)
 end)
@@ -420,7 +476,7 @@ end)
 ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLANETARIUM_CALCULATE, function (_, chance)
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
-        reward_chance = reward_chance + PlayerReward(player, REWARDS_TYPE.Planetarium) * 0.07
+        reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Planetarium) * 0.07
     end
     return chance + reward_chance
 end)

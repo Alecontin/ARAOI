@@ -247,7 +247,7 @@ end
 -- would remove that item from the pool.
 --
 -- Basically, this function spawns the desired item, and **ONLY** the desired item.
----@param SubType CollectibleType
+---@param SubType CollectibleType|CollectibleType[]
 ---@param Position? Vector *Default: `Game():GetRoom():GetCenterPos()`*
 ---@param Velocity? Vector *Default: `Vector.Zero`*
 ---@param Spawner? Entity | nil *Default: `nil`*
@@ -1045,6 +1045,36 @@ ARAOI.Voodoo_Body.Config = {
 ---@param spriteScale? number
 ---@param effects? TearFlags
 function ARAOI.Voodoo_Body.SpawnCursePin(attack, spawner, damage, spriteScale, effects)
+end
+
+ARAOI.Gamblecore = {}
+
+---@param player EntityPlayer
+---@param reward_type number -- The type of the reward. Use `ARAOI.Gamblecore.REWARDS_TYPE`
+---@param add? number -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+function ARAOI.Gamblecore.PlayerReward(player, reward_type, add)
+end
+
+---@param player EntityPlayer
+---@param add? number -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+function ARAOI.Gamblecore.PlayerPity(player, add)
+end
+
+-- Starts the gambling interaction by creating reels and rolling them
+---@param player EntityPlayer
+---@param amount integer -- Please use only odd numbers!
+---@param rng? RNG
+function ARAOI.Gamblecore.CreateSlots(player, amount, rng)
+end
+
+-- Clears the gambling interaction, this is done automatically
+function ARAOI.Gamblecore.ClearGambling(player)
+end
+
+-- Get the current player's reels
+---@param player EntityPlayer
+---@return Sprite[]
+function ARAOI.Gamblecore.GetReels(player)
 end
 
 ARAOI.Inverted_Spades = {}

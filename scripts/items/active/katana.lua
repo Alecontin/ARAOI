@@ -9,6 +9,8 @@ local EFFECT_SLASH = Isaac.GetEntityVariantByName("Katana Slash")
 
 local MAX_BLOCK_TIME = 36
 local PARRY_WINDOW = 4
+local PARRY_DAMAGE_MULTIPLIER = 10
+local PARRY_PATH_DAMAGE_MULTIPLIER = 3
 
 
 ---------------
@@ -57,11 +59,11 @@ local function ProcessSynergies(player, from, to, parried, enemies)
         if not enemy:IsActiveEnemy() then goto continue end
         -- If the current enemy is the parried enemy, keep track of it and add multipliers
         local is_parried_enemy = GetPtrHash(enemy) == GetPtrHash(parried)
-        local x10 = is_parried_enemy and 10 or 1
-        local x2 = is_parried_enemy and 2 or 1
+        local damage_multiplier = is_parried_enemy and PARRY_DAMAGE_MULTIPLIER or PARRY_PATH_DAMAGE_MULTIPLIER
+        local size_multiplier = is_parried_enemy and 2 or 1
 
         -- Keeping track of the final damage we should deal
-        local final_damage = player.Damage * x10
+        local final_damage = player.Damage * damage_multiplier
 
         -- Getting the current distance from our starting position
         local distance = from:Distance(enemy.Position)
@@ -70,19 +72,19 @@ local function ProcessSynergies(player, from, to, parried, enemies)
         if player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS)
         or player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS) then
             -- Create an explosion on top of the enemy
-            game:BombExplosionEffects(enemy.Position, (player.Damage/2) * x10, nil, nil, nil, 0.5 * x2)
+            game:BombExplosionEffects(enemy.Position, (player.Damage/2) * damage_multiplier, nil, nil, nil, 0.5 * size_multiplier)
         end
 
         -- Function to get a multiplier depending on distance
-        local function GetMultiplier(distance, min_distance, max_distance, min_multiplier, max_multiplier)
-            local d = distance
+        local function GetMultiplier(dist, min_distance, max_distance, min_multiplier, max_multiplier)
+            local d = dist
             local mult = 1
             if d <= min_distance then
                 mult = max_multiplier
             elseif d >= max_distance then
                 mult = min_multiplier
             else
-                t = (distance - min_distance) / (max_distance - min_distance)
+                t = (dist - min_distance) / (max_distance - min_distance)
                 mult = max_multiplier - (t * (max_multiplier - min_multiplier))
             end
 
@@ -219,7 +221,7 @@ ARAOI.Mod:AddCallback("ARAOI MELEE WOOSH ENTITY DAMAGED", function (_, effect, e
                 -- Add some charge to our item
                 ARAOI.PlayerUtils.AddActiveCharge(player, player:GetActiveItemSlot(ARAOI.CollectibleType.KATANA), 60, false, false, true)
             end
-            -- Damage the entity
+            -- Apply appropriate tear effects to the entity
             ARAOI.MiscUtils.DamageWithTearEffects(player,entity,effect.HitPoints,nil,DamageFlag.DAMAGE_FAKE,nil,nil,player:GetCollectibleRNG(ARAOI.CollectibleType.KATANA))
         end
     end
@@ -279,6 +281,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, 
             -- Give it a random rotation and offset
             slash:GetSprite().Rotation = math.random(360)
             slash:GetSprite().Offset = Vector(0, -20)
+            slash:GetSprite().PlaybackSpeed = math.random(0,1) / 2 + 0.75
         end
 
         -- Setting some data
@@ -353,7 +356,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, 
             data.VarData = 3
 
             -- Spawn an attack
-            local woosh = ARAOI.PlayerUtils.FireMelee(player, 1.2, -(player.Position - PARRIED_ENTITY.Position):Normalized(), nil, false)
+            local woosh = ARAOI.PlayerUtils.FireMelee(player, 1.5, -(player.Position - PARRIED_ENTITY.Position):Normalized(), nil, false)
 
             -- Mark the attack as our item's
             local woosh_data = woosh:GetData()
@@ -375,7 +378,7 @@ ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.KATANA,
         "# Isaac holds the sword and counters incoming damage"..
         "# Countering just before getting hit will {{ColorYellow}}Parry{{CR}} instead"..
-        "# {{ColorYellow}}Parrying{{CR}} an attack will teleport Isaac behind the attacker and deal {{Damage}} 10x Isaac's damage"..
+        "# {{ColorYellow}}Parrying{{CR}} an attack will teleport Isaac behind the attacker and deal {{Damage}} "..PARRY_DAMAGE_MULTIPLIER.."x Isaac's damage"..
         "#{{Battery}} Countering and {{ColorYellow}}Parrying{{CR}} restore some charge"..
         "#!!! Using the item while invincible {{ColorYellow}}disables parrying{{CR}}"
     )
