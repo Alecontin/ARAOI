@@ -12,6 +12,7 @@ ARAOI.Vampire_Cloak = {}
 
 local BAT_PARTICLE_ID = Isaac.GetEntityVariantByName("Bat Particle")
 local WING_FLAPS = Isaac.GetSoundIdByName("wing_flaps")
+-- local CloakSprite = Isaac.GetItemConfig():GetCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK):
 
 local SFX = SFXManager()
 
@@ -42,7 +43,6 @@ function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset, poof)
         ):ToEffect()
         assert(bat)
         bat:SetTimeout(35)
-        bat.Color.R = 1
         bat.RenderZOffset = 10000000
 
         table.insert(Bats, bat)
@@ -52,6 +52,11 @@ function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset, poof)
             assert(effect)
             effect:GetSprite().Color:SetTint(0.2, 0.2, 0.2, 1)
         end
+
+        local trail = Isaac.Spawn(1000, EffectVariant.SPRITE_TRAIL, 0, bat.Position, Vector.Zero, bat):ToEffect()
+        assert(trail)
+        trail:FollowParent(bat)
+        trail:GetSprite().Color:SetTint(0.2, 0.1, 0.1, 0.6)
     end
 end
 
@@ -62,7 +67,11 @@ local CloakInvincibility = {}
 ---@param player EntityPlayer
 ---@param set? boolean
 function ARAOI.Vampire_Cloak.PlayerHasInvincibility(player, set)
-    return ARAOI.SaveData:Key(CloakInvincibility, ARAOI.PlayerUtils.GetID(player), false, set)
+    if set ~= nil then
+        CloakInvincibility[ARAOI.PlayerUtils.GetId(player)] = set
+    end
+    return CloakInvincibility[ARAOI.PlayerUtils.GetId(player)] or false
+    -- return ARAOI.SaveDataManager:Key(CloakInvincibility, ARAOI.PlayerUtils.GetID(player), false, set)
 end
 
 
@@ -72,8 +81,12 @@ end
 function ARAOI.Vampire_Cloak.PlayerHasVampireCloakCharge(player, set)
     if not player:HasCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK) then return false end
 
-    return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "Vampire Cloak Charge", {}, ARAOI.PlayerUtils.GetID(player), true, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "Vampire Cloak Charge", {}, ARAOI.PlayerUtils.GetId(player), true, set)
 end
+function ARAOI:_OnVampireCloakRemoveInvincibility(playerId)
+    CloakInvincibility[playerId] = false
+end
+ARAOI:AddCallback("Remove Vampire Cloak Invincibility", ARAOI._OnVampireCloakRemoveInvincibility)
 
 
 
@@ -83,7 +96,7 @@ end
 
 ---@param player EntityPlayer
 ---@param damageFlags DamageFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, _, damageFlags, _)
+function ARAOI:_OnVampireCloakPrePlayerTakeDamage(player, _, damageFlags, _)
     -- If the damage was self inflicted like Dull Razor,
     -- was because of the second player like Esau,
     -- was inflicted by IV Bag,
@@ -118,15 +131,12 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, 
     ARAOI.Vampire_Cloak.PlayerHasInvincibility(player, true)
 
     -- Create a timer that will later revoke the invincibility
-    ARAOI.SaveData:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, ARAOI.PlayerUtils.GetID(player))
+    ARAOI.SaveDataManager:CreateTimerInFrames("Remove Vampire Cloak Invincibility", 45, ARAOI.PlayerUtils.GetId(player))
 
     -- This will cause the player to not take damage
     return false
-end)
-
-ARAOI.Mod:AddCallback("Remove Vampire Cloak Invincibility", function (_, playerID)
-    ARAOI.Vampire_Cloak.PlayerHasInvincibility(playerID, false)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, ARAOI._OnVampireCloakPrePlayerTakeDamage)
 
 
 -----------------------
@@ -135,7 +145,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param collider Entity
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, player, collider)
+function ARAOI:_OnVampireCloakPrePlayerCollision(player, collider)
     -- Do we have our item,
     -- the entity we collided with was a pickup,
     -- the variant was a heart,
@@ -172,14 +182,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, player,
         -- Kind of weird to return true, would make more sense to return false
         return true
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, ARAOI._OnVampireCloakPrePlayerCollision)
 
 
 -----------------
 -- BAT UPDATER --
 -----------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
+function ARAOI:_OnVampireCloakUpdate()
     -- Function to avoid copy-pasting
     local function batDistanceToSpawner(bat)
         return (bat.SpawnerEntity.Position - Vector(0, 20)):Distance(bat.Position)
@@ -248,14 +259,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         end
         ::continue::
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnVampireCloakUpdate)
 
 
 ------------------
 -- BAT RESETTER --
 ------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+function ARAOI:_OnVampireCloakNewRoom()
     -- Reset the bat list
     Bats = {}
 
@@ -267,7 +279,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
             ARAOI.Vampire_Cloak.AddBatParticles(player, 1, 0)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnVampireCloakNewRoom)
 
 
 ----------------------
@@ -275,9 +288,9 @@ end)
 ----------------------
 
 ARAOI.EIDWrapper(function ()
-    EID:addCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK, 
-        "# Negates the first hit taken once per room and will ignore enemy collision"..
+    EID:addCollectible(ARAOI.CollectibleType.VAMPIRE_CLOAK,
+        "# Negates the next hit taken"..
         "#{{Heart}} Requires Red Heart pickups to recharge"..
-        "#{{Collectible"..(CollectibleType.COLLECTIBLE_HOLY_MANTLE).."}} Holy Mantle will get used first"
+        "#{{Collectible"..(CollectibleType.COLLECTIBLE_HOLY_MANTLE).."}} Holy Mantle has priority"
     )
 end)

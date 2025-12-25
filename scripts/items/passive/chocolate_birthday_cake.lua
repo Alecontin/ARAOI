@@ -10,7 +10,7 @@ local game = Game()
 -----------------------
 
 -- Function that rerolls the item if the game is not played withing a time period
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, collectible, pool, decrease, seed)
+function ARAOI:_OnChocolateBirthdayCakeGetCollectible(collectible, pool, decrease, seed)
     -- If the collectible is our item
     if collectible == ARAOI.CollectibleType.CHOCOLATE_BIRTHDAY_CAKE then
         -- Get the current date
@@ -26,7 +26,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, collect
             return game:GetItemPool():GetCollectible(pool, decrease, seed)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, ARAOI._OnChocolateBirthdayCakeGetCollectible)
 
 
 -------------------------
@@ -36,7 +37,7 @@ end)
 -- Function that adds a Mystery Gift on the pedestals item cycle
 ---@param pickup EntityPickup
 ---@param ignoreModifiers any
-local function AddPresentToItemCycle(_, pickup, _, _, _, _, _, ignoreModifiers)
+function ARAOI:_OnChocolateBirthdayCakeAddPresentToItemCycle(pickup, _, _, _, _, _, ignoreModifiers)
     -- If no-one has our item, we end early
     if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.CHOCOLATE_BIRTHDAY_CAKE) then return end
 
@@ -59,11 +60,11 @@ local function AddPresentToItemCycle(_, pickup, _, _, _, _, _, ignoreModifiers)
         pickup:AddCollectibleCycle(CollectibleType.COLLECTIBLE_MYSTERY_GIFT)
     end
 end
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_MORPH, AddPresentToItemCycle)
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_SELECTION, AddPresentToItemCycle)
+ARAOI:AddCallback(ModCallbacks.MC_POST_PICKUP_MORPH, ARAOI._OnChocolateBirthdayCakeAddPresentToItemCycle)
+ARAOI:AddCallback(ModCallbacks.MC_POST_PICKUP_SELECTION, ARAOI._OnChocolateBirthdayCakeAddPresentToItemCycle)
 
 -- Function that tries to spawn a Mystery Gift to collectibles in a new unexplored room
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+function ARAOI:_OnChocolateBirthdayCakeNewRoom()
     -- If it's not the first visit to this room, we end early
     if not game:GetRoom():IsFirstVisit() then return end
 
@@ -74,10 +75,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
         -- If we succeeded and the pickup is a collectible
         if pickup and ARAOI.ItemUtils.IsCollectible(pickup) then
             -- Call the function to add the Mystery Gift to the cycle
-            AddPresentToItemCycle(_, pickup)
+            ARAOI:_OnChocolateBirthdayCakeAddPresentToItemCycle(pickup)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnChocolateBirthdayCakeNewRoom)
 
 
 ---------------------

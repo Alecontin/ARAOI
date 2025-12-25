@@ -122,7 +122,7 @@ end
 -- If you plan on using this function to spawn a set amount of items then set `IgnoreModifiers` to `true`.
 ---@param ItemPool? ItemPoolType
 ---@param NumCollectibles? integer *Default: `1`*
----@param IgnoreModifiers? integer *Default: `false`*
+---@param IgnoreModifiers? boolean *Default: `false`*
 ---@param Decrease? boolean *Default: `true`*
 ---@param Seed? RNG *Default: `math.random(10000000000)`*
 ---@param DefaultItem? integer *Default: `CollectibleType.COLLECTIBLE_BREAKFAST`*
@@ -158,7 +158,8 @@ function ItemUtils.GetCollectibleCycle(ItemPool, NumCollectibles, IgnoreModifier
 
     local collectibles = {}
     for _ = 1, NumCollectibles do
-        local collectible = pool:GetCollectible(ItemPool or room:GetItemPool(rng:GetSeed()), Decrease, rng:RandomInt(max), DefaultItem)
+        if ItemPool == ItemPoolType.POOL_NULL then ItemPool = rng:RandomInt(ItemPoolType.NUM_ITEMPOOLS) - 1 end
+        local collectible = pool:GetCollectible(ItemPool or room:GetItemPool(rng:GetSeed()), Decrease, rng:Next(), DefaultItem)
         table.insert(collectibles, collectible)
     end
 
@@ -198,9 +199,10 @@ function ItemUtils.SpawnCollectibleFromPool(ItemPool, Position, Velocity, Spawne
         rng:SetSeed(math.random(max))
     end
 
+    if ItemPool == ItemPoolType.POOL_NULL then ItemPool = rng:RandomInt(ItemPoolType.NUM_ITEMPOOLS) - 1 end
     if Decrease == nil then Decrease = true end
 
-    local collectibles = ItemUtils.GetCollectibleCycle(ItemPool or room:GetItemPool(rng:GetSeed()), nil, nil, Decrease, rng, DefaultItem)
+    local collectibles = ItemUtils.GetCollectibleCycle(ItemPool or room:GetItemPool(rng:Next()), nil, nil, Decrease, rng, DefaultItem)
 
     ---@type EntityPickup
     local pedestal

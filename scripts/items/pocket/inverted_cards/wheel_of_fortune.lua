@@ -11,7 +11,7 @@ local HUD = game:GetHUD()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardWheelOfFortuneUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local tarotClothModifier = player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) and 0.03 or 0
     local ItemPool = game:GetItemPool()
@@ -28,7 +28,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     if rng:RandomFloat() > 0.1 - tarotClothModifier then
         player:AddCard(card.ID)
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardWheelOfFortuneUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

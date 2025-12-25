@@ -19,23 +19,24 @@ ARAOI.Blessings_Petal = {}
 ---@return boolean
 function ARAOI.Blessings_Petal.PickupCount(add)
     if add and add == 0 then
-        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0, 0)
+        return ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.PERSISTENT, "blessingsPetalPickupCount", 0, 0)
     elseif add then
-        local count = ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0)
-        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0, math.min(2, count + add))
+        local count = ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.PERSISTENT, "blessingsPetalPickupCount", 0)
+        return ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.PERSISTENT, "blessingsPetalPickupCount", 0, math.min(2, count + add))
     else
-        return ARAOI.SaveData:Key(ARAOI.SaveData.PERSISTENT, "blessingsPetalPickupCount", 0)
+        return ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.PERSISTENT, "blessingsPetalPickupCount", 0)
     end
 end
 
 
 -- Save the fact that the item has been picked up
 ---@param firstTime boolean
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, _, _, firstTime)
+function ARAOI:_OnBlessingsPetalAddCollectible(_, _, firstTime)
     if firstTime then
         ARAOI.Blessings_Petal.PickupCount(1)
     end
-end, ARAOI.CollectibleType.BLESSINGS_PETAL)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ARAOI._OnBlessingsPetalAddCollectible, ARAOI.CollectibleType.BLESSINGS_PETAL)
 
 
 -----------------------------
@@ -43,7 +44,7 @@ end, ARAOI.CollectibleType.BLESSINGS_PETAL)
 -----------------------------
 
 ---@param isContinued boolean
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, isContinued)
+function ARAOI:_OnBlessingsPetalGameStarted(isContinued)
     local game = Game()
 
     -- Get how many times we picked up our item
@@ -66,7 +67,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, isContinue
         -- Reset the pickup count
         ARAOI.Blessings_Petal.PickupCount(0)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, ARAOI._OnBlessingsPetalGameStarted)
 
 
 ----------------
@@ -75,7 +77,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cacheFlag)
+function ARAOI:_OnBlessingsPetalEvaluateCache(player, cacheFlag)
     if not player:HasCollectible(ARAOI.CollectibleType.BLESSINGS_PETAL) then return end
 
     if cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasCollectible(CollectibleType.COLLECTIBLE_EDENS_BLESSING) then
@@ -84,7 +86,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
     if cacheFlag == CacheFlag.CACHE_LUCK then
         player.Luck = player.Luck + 1
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnBlessingsPetalEvaluateCache)
 
 
 ----------------------

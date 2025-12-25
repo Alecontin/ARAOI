@@ -12,6 +12,7 @@ Config.CHANCE_PER_LUCK = 1 -- *Default: `1` — The chance per 1 luck that will 
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 ------------------------
@@ -35,13 +36,21 @@ local double_tap_keys = {}
 ---@param player EntityPlayer
 ---@param set? integer
 local function doubleTapCountdown(player, set)
-    return ARAOI.SaveData:Key(double_tap_countdowns, ARAOI.PlayerUtils.GetID(player), 0, set)
+    if set then
+        double_tap_countdowns[ARAOI.PlayerUtils.GetId(player)] = set
+    end
+    return double_tap_countdowns[ARAOI.PlayerUtils.GetId(player)] or 0
+    -- return ARAOI.SaveDataManager:Key(double_tap_countdowns, ARAOI.PlayerUtils.GetID(player), 0, set)
 end
 
 ---@param player EntityPlayer
 ---@param set? integer
 local function doubleTapKey(player, set)
-    return ARAOI.SaveData:Key(double_tap_keys, ARAOI.PlayerUtils.GetID(player), 0, set)
+    if set then
+        double_tap_keys[ARAOI.PlayerUtils.GetId(player)] = set
+    end
+    return double_tap_keys[ARAOI.PlayerUtils.GetId(player)] or 0
+    -- return ARAOI.SaveDataManager:Key(double_tap_keys, ARAOI.PlayerUtils.GetID(player), 0, set)
 end
 
 
@@ -52,9 +61,9 @@ end
 -- Spawn a coin for the provided player
 ---@param player EntityPlayer
 function ARAOI.Lucky_Coin.SpawnCoin(player)
-    SFXManager():Play(LUCKY_COIN_SOUND)
+    SFXManager():Play(LUCKY_COIN_SOUND, 0.5)
     local shootingInput = player:GetShootingInput():Normalized()
-    local velocity = (shootingInput * 6) + (player.Velocity / 2)
+    local velocity = (shootingInput * 5) + (player.Velocity / 2)
     local particle = Isaac.Spawn(EntityType.ENTITY_EFFECT, LUCKY_COIN_ENTITY, 0, player.Position, velocity, player):ToEffect()
     assert(particle)
     particle:SetTimeout(Config.COIN_TIMEOUT)
@@ -70,7 +79,7 @@ end
 -------------------------
 
 -- I was too lazy to use `MC_INPUT_ACTION` so I used `MC_POST_RENDER` instead
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+function ARAOI._OnLuckyCoinRender()
     -- Check every player that has the item
     for _, player in ipairs(ARAOI.PlayerUtils.GetPlayersWithCollectible(ARAOI.CollectibleType.LUCKY_COIN)) do
         local fire_direction = ARAOI.PlayerUtils.TriggeredShooting(player)
@@ -104,7 +113,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             doubleTapKey(player, ARAOI.PlayerUtils.FireDirection.NONE)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._OnLuckyCoinRender)
 
 
 -------------------------------
@@ -112,7 +122,7 @@ end)
 -------------------------------
 
 ---@param effect EntityEffect
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
+function ARAOI:_OnLuckyCoinEffectUpdate(effect)
     -- Check if the entity that spawned the effect exists, else remove the effect
     local spawner = effect.SpawnerEntity
     if not spawner then
@@ -143,7 +153,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
         effect:Remove()
 
         -- Play a sound
-        SFXManager():Play(SoundEffect.SOUND_POT_BREAK, 0.4, nil, nil, 2)
+        return SFXManager():Play(SoundEffect.SOUND_POT_BREAK, 0.3, nil, nil, 2)
     end
 
     -- Check if the sprite's height offset is not 0
@@ -176,8 +186,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
                     -- Mark the tear as modified
                     data["LuckyCoin"] = true
 
-                    -- Play a sound to signal we detected / the player hit the tear
-                    SFXManager():Play(LUCKY_COIN_SOUND, 0.6)
+                    -- Play a sound to signal we detected the tear
+                    SFXManager():Play(LUCKY_COIN_SOUND, 0.3)
 
                     -- Set the tear's velocity towards the enemy, normalize it, then make it as fast as the original velocity
                     tear.Velocity = (nearest_enemy.Position - tear.Position):Normalized():Resized(tear.Velocity:Length())
@@ -202,7 +212,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
             end
         end
     end
-end, LUCKY_COIN_ENTITY)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, ARAOI._OnLuckyCoinEffectUpdate, LUCKY_COIN_ENTITY)
 
 
 ------------------
@@ -210,7 +221,7 @@ end, LUCKY_COIN_ENTITY)
 ------------------
 
 ---@param tear EntityTear
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function (_, tear)
+function ARAOI:_OnLuckyCoinTearUpdate(tear)
     -- Check if the spawner exists
     local spawner = tear.SpawnerEntity
     if not spawner then return end
@@ -228,7 +239,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, function (_, tear)
 
     -- Set the collision damage to the base damage
     tear.CollisionDamage = tear.BaseDamage
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, ARAOI._OnLuckyCoinTearUpdate)
 
 
 ----------------------
@@ -250,3 +262,24 @@ ARAOI.EIDWrapper(function ()
         "Yellow locust with a 1.5% chance per hit of spawning a coin"
     )
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Passives", "Lucky Coin")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Lucky Coin", Config, "COIN_TIMEOUT",
+    ConfigDefaults, math.floor((ConfigDefaults.COIN_TIMEOUT / 30) * 100) / 100 .. "s", 1, 300, 10, function ()
+        return "Coin Timeout: " .. math.floor((Config.COIN_TIMEOUT / 30) * 100) / 100 .. "s"
+    end, "The amount of time the coin will stay in the air")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Lucky Coin", Config, "CHANCE_PER_LUCK",
+    ConfigDefaults, ConfigDefaults.CHANCE_PER_LUCK .. "%", 1, 50, 5, function ()
+        return "Chance per Luck: " .. Config.CHANCE_PER_LUCK .. "%"
+    end, "The chance per 1 luck that will be added towards doubling the damage")
+
+    ARAOI.MCMUtils.AddReset("Passives", "Lucky Coin")
+end

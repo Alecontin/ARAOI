@@ -14,28 +14,32 @@ local frame_since_last_sound = 0
 local sound = 0
 
 ---@param player EntityPlayer
+---@return integer
 function ARAOI.Inverted_Cards.Magician.GetEffectCountdown(player)
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    return ARAOI.SaveData:Key(ActiveEffects, player_id, 0)
+    local player_id = ARAOI.PlayerUtils.GetId(player)
+    return ActiveEffects[player_id] or 0
+    -- return ARAOI.SaveDataManager:Key(ActiveEffects, player_id, 0)
 end
 
 ---@param player EntityPlayer
 ---@param set number -- Time in seconds that the effect should last
 function ARAOI.Inverted_Cards.Magician.SetEffectCountdown(player, set)
     frame_since_last_sound = 0
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    return ARAOI.SaveData:Key(ActiveEffects, player_id, 0, set * 30)
+    local player_id = ARAOI.PlayerUtils.GetId(player)
+    ActiveEffects[player_id] = set
+    -- return ARAOI.SaveDataManager:Key(ActiveEffects, player_id, 0, set * 30)
 end
 
 ---@param player EntityPlayer
 ---@param add number -- Time in seconds that should be added to the effect duration
 function ARAOI.Inverted_Cards.Magician.AddEffectCountdown(player, add)
     frame_since_last_sound = 0
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    return ARAOI.SaveData:Key(ActiveEffects, player_id, 0, ARAOI.SaveData:Key(ActiveEffects, player_id, 0) + add * 30)
+    local player_id = ARAOI.PlayerUtils.GetId(player)
+    ActiveEffects[player_id] = ARAOI.Inverted_Cards.Magician.GetEffectCountdown(player) + (add * 30)
+    -- return ARAOI.SaveDataManager:Key(ActiveEffects, player_id, 0, ARAOI.SaveDataManager:Key(ActiveEffects, player_id, 0) + add * 30)
 end
 
-function PlayUltraInstinctSound()
+local function PlayUltraInstinctSound()
     local frame_count = game:GetFrameCount()
     local count = frame_count - frame_since_last_sound
 
@@ -56,22 +60,24 @@ function PlayUltraInstinctSound()
 end
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+function ARAOI:_OnInvertedCardMagicianUse(_, player)
     ARAOI.Inverted_Cards.Magician.AddEffectCountdown(player, 15)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardMagicianUse, card.ID)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+function ARAOI:_OnInvertedCardMagicianUpdate()
     for player_id, effect_frames in pairs(ActiveEffects) do
-        ActiveEffects[player_id] = ActiveEffects[player_id] - 1
+        ActiveEffects[player_id] = effect_frames - 1
         if effect_frames <= 0 then
             ActiveEffects[player_id] = nil
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnInvertedCardMagicianUpdate)
 
 ---@param player EntityPlayer
 ---@param damageFlags DamageFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, _, damageFlags)
+function ARAOI:_OnInvertedCardMagicianPrePlayerTakeDMG(player, _, damageFlags)
     if damageFlags & DamageFlag.DAMAGE_FAKE > 0
     or damageFlags & DamageFlag.DAMAGE_CLONES > 0
     or damageFlags & DamageFlag.DAMAGE_IV_BAG > 0
@@ -107,7 +113,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, 
     PlayUltraInstinctSound()
 
     return false
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, ARAOI._OnInvertedCardMagicianPrePlayerTakeDMG)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

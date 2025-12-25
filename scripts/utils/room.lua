@@ -55,12 +55,13 @@ function RoomUtils.GetPickups()
     return pickups
 end
 
+---@param position Vector
 function RoomUtils.GetNearestEnemy(position)
     local nearest_distance = 99999999
     local nearest_enemy = nil
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
-            local distance = (position - entity.Position):Length()
+            local distance = position:Distance(entity.Position)
             if distance < nearest_distance then
                 nearest_distance = distance
                 nearest_enemy = entity
@@ -68,6 +69,20 @@ function RoomUtils.GetNearestEnemy(position)
         end
     end
     return nearest_enemy, nearest_distance
+end
+
+---@param position Vector
+function RoomUtils.GetNearestPlayer(position)
+    local nearest_distance = 99999999
+    local nearest_player = nil
+    for _, player in ipairs(PlayerManager.GetPlayers()) do
+        local distance = position:Distance(player.Position)
+        if distance < nearest_distance then
+            nearest_distance = distance
+            nearest_player = player
+        end
+    end
+    return nearest_player, nearest_distance
 end
 
 return RoomUtils

@@ -9,14 +9,15 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardHierophantUse(_, player, useFlags)
     local isTarotCloth = useFlags & UseFlag.USE_CARBATTERY ~= 0
     local room = game:GetRoom()
     for _ = 1, isTarotCloth and 1 or 2 do
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_BLACK,
                     room:FindFreePickupSpawnPosition(player.Position,50), Vector.Zero, player)
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardHierophantUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

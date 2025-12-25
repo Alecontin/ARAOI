@@ -7,10 +7,10 @@ local TableUtils = include("scripts.utils.table")
 
 ---@class FireDirection
 PlayerUtils.FireDirection = {
-    DOWN  = 7,
-    LEFT  = 4,
-    RIGHT = 5,
-    UP    = 6,
+    RIGHT = 0,
+    DOWN  = 1,
+    LEFT  = 2,
+    UP    = 3,
     NONE  = nil
 }
 
@@ -258,7 +258,7 @@ end
 ---- Will fail if other mods use the Collectible's RNG though
 ---@param player? EntityPlayer Default: Isaac.GetPlayer(0) — The `EntityPlayer` to get the ID for
 ---@param collectible? CollectibleType Default: 1 — Change this to another collectible if you want to get the ID of sub-players like Esau
-function PlayerUtils.GetID(player, collectible)
+function PlayerUtils.GetId(player, collectible)
     if type(player) == "string" then
         return player
     end
@@ -479,6 +479,7 @@ function PlayerUtils.HasShield(player)
 end
 
 -- Wrapper to make Car Battery synergies easier to write
+--
 -- Calls the provided function twice:
 ---- First time calls it with the parameter being 0
 ---- Second time it calls it with the flag UseFlag.USE_CARBATTERY as a parameter if Car Battery was used, otherwise it doesn't call the function at all
@@ -501,9 +502,8 @@ end
 ---@param player EntityPlayer
 ---@param sizeMultiplier? number -- The size of the attack
 ---@param direction? Vector -- The direction to spawn the attack towards
----@param mirror? boolean -- Should the attack be mirrored
 ---@param playSound? boolean -- Should we play the attack sound
-function PlayerUtils.FireMelee(player, sizeMultiplier, direction, mirror, playSound)
+function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound)
     direction = direction or Vector.Zero
 
     local offset = Vector(0, -6)
@@ -511,7 +511,6 @@ function PlayerUtils.FireMelee(player, sizeMultiplier, direction, mirror, playSo
 
     local woosh = ARAOI.MiscUtils.SpawnMeleeWoosh(
         player.Position + Vector(8, 0):Rotated(direction:GetAngleDegrees()) * math.max(((player.TearRange - 260) / 43.5), 1),
-        mirror,
         player.Damage,
         sizeMultiplier,
         rotation,

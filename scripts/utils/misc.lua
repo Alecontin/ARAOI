@@ -5,6 +5,9 @@ local MiscUtils = {}
 ---@type TableUtils
 local tableUtils = include("scripts.utils.table")
 
+---@type PlayerUtils
+local playerUtils = include("scripts.utils.player")
+
 local game = Game()
 
 -- This function returns true when checking for the normal item pool and its greed counterpart
@@ -147,7 +150,8 @@ end
 ---@param rotation? number -- Default: `rng:PhantomInt(360)`
 ---@param rng? RNG -- Default: `math.random(999999999999)`
 ---@param effectDuration? integer -- Default: `75`
-function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFlag, tearFlags, rotation, rng, effectDuration)
+---@param damageCountdown? integer -- Default: `0`
+function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFlag, tearFlags, rotation, rng, effectDuration, damageCountdown)
     damage = damage or player.Damage
     source = source or player
     damageFlag = damageFlag or DamageFlag.DAMAGE_COUNTDOWN
@@ -159,12 +163,7 @@ function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFl
     local reference = EntityRef(source)
 
     if not (damageFlag & DamageFlag.DAMAGE_FAKE > 0) then
-        enemy:TakeDamage(damage, damageFlag, reference, 0)
-    end
-
-    -- Function that checks if the enemy would die, since the damage dealt doesn't immediately update
-    local function EnemyWouldDie()
-        return (enemy.HitPoints - damage) <= 0 and not enemy:IsDead()
+        enemy:TakeDamage(damage, damageFlag, reference, damageCountdown or 0)
     end
 
     -- Apply some effects based on each tear flag
@@ -189,7 +188,7 @@ function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFl
     if tearFlags & TearFlags.TEAR_CONFUSION > 0 then
         enemy:AddConfusion(reference, 120, true)
     end
-    if tearFlags & TearFlags.TEAR_HP_DROP > 0 and EnemyWouldDie() then
+    if tearFlags & TearFlags.TEAR_HP_DROP > 0 and enemy:HasMortalDamage() then
         if rng:RandomFloat() < 0.33 then
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, 0, player.Position, Vector.Zero, player)
         end
@@ -209,7 +208,7 @@ function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFl
     if tearFlags & TearFlags.TEAR_COIN_DROP > 0 then
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
     end
-    if tearFlags & TearFlags.TEAR_BLACK_HP_DROP > 0 and EnemyWouldDie() then
+    if tearFlags & TearFlags.TEAR_BLACK_HP_DROP > 0 and enemy:HasMortalDamage() then
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_BLACK, enemy.Position, Vector.Zero, player)
     end
     if tearFlags & TearFlags.TEAR_EGG > 0 then
@@ -236,7 +235,7 @@ function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFl
     if tearFlags & TearFlags.TEAR_BLOOD_BOMB > 0 then
         Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.PLAYER_CREEP_RED, 0, enemy.Position, Vector.Zero, player)
     end
-    if tearFlags & TearFlags.TEAR_COIN_DROP_DEATH > 0 and EnemyWouldDie() then
+    if tearFlags & TearFlags.TEAR_COIN_DROP_DEATH > 0 and enemy:HasMortalDamage() then
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, enemy.Position, Vector.Zero, player)
     end
     if tearFlags & TearFlags.TEAR_RIFT > 0 then
@@ -252,11 +251,11 @@ function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFl
         enemy:TakeDamage(damage, DamageFlag.DAMAGE_IGNORE_ARMOR, reference, 0)
         SFXManager():Play(SoundEffect.SOUND_MEATY_DEATHS)
     end
-    if tearFlags & TearFlags.TEAR_CARD_DROP_DEATH > 0 and EnemyWouldDie() then
+    if tearFlags & TearFlags.TEAR_CARD_DROP_DEATH > 0 and enemy:HasMortalDamage() then
         local card = ItemPool:GetCardEx(rng:GetSeed(), 0, 0, 0, false)
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, card, enemy.Position, Vector.Zero, nil)
     end
-    if tearFlags & TearFlags.TEAR_RUNE_DROP_DEATH > 0 and EnemyWouldDie() then
+    if tearFlags & TearFlags.TEAR_RUNE_DROP_DEATH > 0 and enemy:HasMortalDamage() then
         local rune = ItemPool:GetCard(rng:GetSeed(), false, true, true)
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, rune, enemy.Position, Vector.Zero, nil)
     end
@@ -264,20 +263,18 @@ end
 
 ---@param position Vector
 ---@param damage? number -- The damage of the attack
----@param mirrored? boolean -- Should the attack animation be mirrored
 ---@param sizeMultiplier? number -- Size of the attack
 ---@param rotation? number -- Rotation of the attack
 ---@param spriteOffset? Vector -- The offset of the attack's sprite
 ---@param playSound? boolean -- Should the attack play the sound when spawning
-function MiscUtils.SpawnMeleeWoosh(position, mirrored, damage, sizeMultiplier, rotation, spriteOffset, playSound)
+function MiscUtils.SpawnMeleeWoosh(position, damage, sizeMultiplier, rotation, spriteOffset, playSound)
     damage = damage or 0
-    mirrored = mirrored or false
     sizeMultiplier = sizeMultiplier or 1
     rotation = rotation or 0
     spriteOffset = spriteOffset or Vector.Zero
     if playSound == nil then playSound = true end
 
-    local woosh = Isaac.Spawn(1000, 202, 0, position, Vector.Zero, nil):ToEffect()
+    local woosh = Isaac.Spawn(1000, Isaac.GetEntityVariantByName("Melee Woosh"), 0, position, Vector.Zero, nil):ToEffect()
     assert(woosh)
     woosh.HitPoints = damage or 0
 
@@ -286,7 +283,6 @@ function MiscUtils.SpawnMeleeWoosh(position, mirrored, damage, sizeMultiplier, r
 
     sprite.Scale = Vector(sizeMultiplier, sizeMultiplier) or Vector.One
     sprite.Offset = spriteOffset or Vector.Zero
-    sprite.FlipX = mirrored
 
     if playSound ~= false then
         SFXManager():Play(SoundEffect.SOUND_SHELLGAME, nil, nil, nil, 1 - (1 - sizeMultiplier) * -0.3)
@@ -296,31 +292,59 @@ function MiscUtils.SpawnMeleeWoosh(position, mirrored, damage, sizeMultiplier, r
 end
 
 ---@param effect EntityEffect
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
+function ARAOI:_OnWooshEffectUpdate(effect)
     if not effect:GetSprite():IsFinished() then
         local data = effect:GetData()
+
+        if not data["DamagedEnemies"] then
+            data["DamagedEnemies"] = {}
+        end
+        if not data["DamagedGridEntities"] then
+            data["DamagedGridEntities"] = {}
+        end
+
         local offset = Vector(0, 27 * effect:GetSprite().Scale.X):Rotated(effect:GetSprite().Rotation)
         local radius = 30 * effect:GetSprite().Scale.X
 
-        for _, enemy in ipairs(Isaac.FindInRadius(effect.Position + offset, radius)) do
-            if (enemy.Type ~= EntityType.ENTITY_PLAYER or enemy.Type ~= EntityType.ENTITY_FAMILIAR
-            or enemy:GetCharmedCountdown() < 0)
-            and enemy:IsVulnerableEnemy()
-            and not ARAOI.TableUtils.IsValueInTable(enemy.InitSeed, data) then
-                table.insert(data, enemy.InitSeed)
-                if effect.Parent.Type == EntityType.ENTITY_PLAYER then
-                    local player = effect.Parent:ToPlayer()
-                    if player then
-                        enemy:TakeDamage(effect.HitPoints, 0, EntityRef(effect), 300)
-                        Isaac.RunCallback("ARAOI MELEE WOOSH ENTITY DAMAGED", effect, enemy)
-                    end
+        for _, entity in ipairs(Isaac.FindInRadius(effect.Position + offset, radius)) do
+            if not ARAOI.TableUtils.IsValueInTable(entity.InitSeed, data["DamagedEnemies"]) then
+                table.insert(data["DamagedEnemies"], entity.InitSeed)
+                Isaac.RunCallback(ARAOI.ModCallbacks.WooshEntityCollided, effect, entity)
+                if (entity.Type == EntityType.ENTITY_FIREPLACE and (entity.Variant == 0 or entity.Variant == 1 or entity.Variant == 10))
+                or (entity.Type == EntityType.ENTITY_MOVABLE_TNT) then
+                    entity:TakeDamage(1000, 0, EntityRef(effect), 0)
                 end
+            end
+        end
+
+        for _, entity in ipairs(ARAOI.RoomUtils.GetGridEntities()) do
+            if entity.Position:Distance(effect.Position + offset) <= (radius+15) and not ARAOI.TableUtils.IsValueInTable(entity:GetGridIndex(), data["DamagedGridEntities"]) then
+                entity:Hurt(1000)
+                table.insert(data["DamagedGridEntities"], entity:GetGridIndex())
             end
         end
     else
         effect:Remove()
     end
-end, Isaac.GetEntityVariantByName("Melee Woosh"))
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, ARAOI._OnWooshEffectUpdate, Isaac.GetEntityVariantByName("Melee Woosh"))
+
+-- Turns `PlayerUtils.FireDirection` into a direction `Vector`
+---@param direction integer
+function MiscUtils.DirectionToVector(direction)
+    local fireDirection = playerUtils.FireDirection
+    if direction == fireDirection.UP then
+        return Vector(0, -1)
+    elseif direction == fireDirection.DOWN then
+        return Vector(0, 1)
+    elseif direction == fireDirection.LEFT then
+        return Vector(-1, 0)
+    elseif direction == fireDirection.RIGHT then
+        return Vector(1, 0)
+    else
+        return nil
+    end
+end
 
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
 -- I changed the anyPlayerHasCollectible and anyPlayerHasTrinket functions with the Repentogon functions

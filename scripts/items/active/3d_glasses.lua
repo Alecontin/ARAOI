@@ -37,7 +37,7 @@ local COLOR_WHITE = Color(1, 1, 1, 1)
 ---@param set? ColorEnum | integer
 ---@return ColorEnum
 function ARAOI.ThreeD_Glasses.PlayerColorData(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "3D Glasses", {}, ARAOI.PlayerUtils.GetID(player), ARAOI.ThreeD_Glasses.ColorEnum.NO_ITEM, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "3D Glasses", {}, ARAOI.PlayerUtils.GetId(player), ARAOI.ThreeD_Glasses.ColorEnum.NO_ITEM, set)
 end
 
 -- Does the player have the 20/20 effect applied from the car battery synergy?
@@ -45,7 +45,7 @@ end
 ---@param set? boolean
 ---@return boolean
 function ARAOI.ThreeD_Glasses.PlayerHas2020Effect(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.ROOM, "3D Glasses 20/20", {}, ARAOI.PlayerUtils.GetID(player), false, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.ROOM, "3D Glasses 20/20", {}, ARAOI.PlayerUtils.GetId(player), false, set)
 end
 
 
@@ -53,16 +53,14 @@ end
 -- ITEM INITIALIZATION --
 -------------------------
 
----@param collectibleType CollectibleType
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, collectibleType, _, _, _, _, player)
-    if collectibleType ~= ARAOI.CollectibleType.THREED_GLASSES then return end
-
+function ARAOI:_On3DGlassesAdded(_, _, _, _, _, player)
     -- Initialize the player's color to RED
     if ARAOI.ThreeD_Glasses.PlayerColorData(player) == ARAOI.ThreeD_Glasses.ColorEnum.NO_ITEM then
         ARAOI.ThreeD_Glasses.PlayerColorData(player, ARAOI.ThreeD_Glasses.ColorEnum.RED)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, ARAOI._On3DGlassesAdded, ARAOI.CollectibleType.THREED_GLASSES)
 
 
 -----------------
@@ -71,7 +69,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlags)
+function ARAOI:_On3DGlassesUse(_, _, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
     -- If the player's color is red, switch it to blue and viceversa
@@ -83,14 +81,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
 
     -- Show the item animation
     return true
-end, ARAOI.CollectibleType.THREED_GLASSES)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._On3DGlassesUse, ARAOI.CollectibleType.THREED_GLASSES)
 
 
 -----------------
 -- EVERY FRAME --
 -----------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+function ARAOI:_On3DGlassesRender()
     for _, player in ipairs(PlayerManager.GetPlayers()) do
         local effects = player:GetEffects()
 
@@ -127,7 +126,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             end
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._On3DGlassesRender)
 
 
 -------------------------
@@ -135,7 +135,7 @@ end)
 -------------------------
 
 ---@param projectile EntityProjectile
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, function (_, projectile)
+function ARAOI:_On3DGlassesProjectileInit(projectile)
     if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.THREED_GLASSES) then return end
 
     local rng = RNG()
@@ -153,7 +153,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, function (_, project
         projectile:SetColor(COLOR_BLUE, 999999, 1, true, true)
         projectile:GetData()["3D Glasses Color"] = ARAOI.ThreeD_Glasses.ColorEnum.BLUE
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_PROJECTILE_INIT, ARAOI._On3DGlassesProjectileInit)
 
 
 -----------------------------
@@ -162,7 +163,7 @@ end)
 
 ---@param projectile EntityProjectile
 ---@param collider Entity
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, function (_, projectile, collider)
+function ARAOI:_On3DGlassesPreProjectileCollision(projectile, collider)
     -- Check if the collider is a player
     local player = collider:ToPlayer()
     if not player then return end
@@ -179,7 +180,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, function (_, pro
     if player_color == projectile_color then
         return true
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, ARAOI._On3DGlassesPreProjectileCollision)
 
 
 -------------
@@ -187,7 +189,7 @@ end)
 -------------
 
 ---@param locust EntityFamiliar
-ARAOI.Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
+function ARAOI:_On3DGlassesFamiliarInit(locust)
     if locust.SubType == ARAOI.CollectibleType.THREED_GLASSES then
         local locusts = ARAOI.PlayerUtils.GetLocusts(locust.SpawnerEntity:ToPlayer(), ARAOI.CollectibleType.THREED_GLASSES)
         if locusts then
@@ -199,7 +201,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
             end
         end
     end
-end, FamiliarVariant.ABYSS_LOCUST)
+end
+ARAOI:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, ARAOI._On3DGlassesFamiliarInit, FamiliarVariant.ABYSS_LOCUST)
 
 
 ----------------------

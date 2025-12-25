@@ -8,7 +8,7 @@ local Config = {}
 
 Config.ITEM_DELETE_CHANCE      = 25 -- *Default: `25` — This is the same chance as the `Eternal D6`.*
 Config.MIN_ITEM_DELETE_CHANCE  = 20 -- *Default: `20` — Goes from 1/4 to 1/5 chance of deleting an item, scaling with luck.*
-Config.ITEM_DELETE_CHANCE_STEP = 5  -- *Default: `5`  — Added chance for an item to getting deleted after picking up a cursed item.*
+Config.ITEM_DELETE_CHANCE_STEP = 5  -- *Default: `5`  — Added chance for an item of getting deleted after picking up a cursed item.*
 
 Config.LUCK_DECREASE_DELETION_CHANCE = 1 -- *Default: `1` — By how much should 1 luck decrease the chance of an item being deleted?*
 
@@ -16,10 +16,10 @@ Config.MAX_WISPS          = 2  -- *Default: `2` — Maximum wisps that the item 
 Config.WISP_DELETE_CHANCE = 35 -- *Default: `35` — The chance of a wisp being deleted instead of an item.*
 
 
-
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 
@@ -29,8 +29,6 @@ Config.WISP_DELETE_CHANCE = 35 -- *Default: `35` — The chance of a wisp being 
 
 ARAOI.Eternal_Dplopia = {}
 ARAOI.Eternal_Dplopia.Config = Config
-
-local CURSE_PEDESTALS_CALLBACK = "Eternal Dplopia Curse All Pedestals"
 
 
 ---------------
@@ -44,7 +42,7 @@ local CURSE_PEDESTALS_CALLBACK = "Eternal Dplopia Curse All Pedestals"
 ---@param set? boolean
 ---@return boolean
 function ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(collectible, set)
-    local value = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "EternalDplopiaCursedObjects", {}, collectible, false, set)
+    local value = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "EternalDplopiaCursedObjects", {}, collectible, false, set)
     return value
 end
 
@@ -54,7 +52,7 @@ end
 ---@param set? integer
 ---@return integer
 function ARAOI.Eternal_Dplopia.CursedPickupCountForFloor(set)
-    local pickup_count = ARAOI.SaveData:Key(ARAOI.SaveData.LEVEL, "EternalDplopiaCursedPickupCount", 0, set)
+    local pickup_count = ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.LEVEL, "EternalDplopiaCursedPickupCount", 0, set)
     return pickup_count
 end
 
@@ -74,23 +72,18 @@ end
 -- ON ITEM USE --
 -----------------
 
----@param rng RNG
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags)
-    local game = Game()
-
+function ARAOI:_OnEternalDplopiaUse(_, _, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return false end
 
     local car_battery = player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY)
-
-    local room = game:GetRoom()
 
     -- Keeping track of option indexes
     local translated_indexes = {}
 
     -- Get all entities in the room
-    for _, entity in pairs(Isaac.GetRoomEntities()) do
+    for _, entity in pairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, nil, true)) do
         -- Check if entity is a pickup
         local collectible = entity:ToPickup()
         if not collectible then goto next_entity end
@@ -108,18 +101,16 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         if car_battery then items_to_spawn = items_to_spawn + 1 end
 
         for _ = 1, items_to_spawn do
-            local new_collectible = Isaac.Spawn(
-                EntityType.ENTITY_PICKUP,
-                PickupVariant.PICKUP_COLLECTIBLE,
-                room:GetSeededCollectible(rng:GetSeed()),
-                Isaac.GetCollectibleSpawnPosition(collectible.Position),
-                Vector.Zero,
-                nil
-            ):ToPickup()
-            assert(new_collectible)
+            -- Get a list of items to spawn
+            local items = ARAOI.ItemUtils.GetCollectibleCycle()
 
-            -- Set the new item's ID as cursed
-            ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(new_collectible.SubType, true)
+            -- Set the items we want to spawn as cursed
+            for _, id in ipairs(items) do
+                ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(id, true)
+            end
+
+            -- Spawn the item pedestal
+            local new_collectible = ARAOI.ItemUtils.SpawnCollectible(items, Isaac.GetCollectibleSpawnPosition(collectible.Position), nil, nil, true)
 
             -- Account for item choice
             if collectible.OptionsPickupIndex ~= 0 then
@@ -140,11 +131,6 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         end
         ::next_entity::
     end
-
-    -- Schedule setting all pedestals in the room to be cursed
-    -- We need to schedule it so it can curse items spawned by T. Isaac and Glitched Crown
-    -- If you later naturally get a cursed item in the pedestal cycle, only that item will get cursed
-    ARAOI.SaveData:CreateTimer(CURSE_PEDESTALS_CALLBACK, 1)
 
     ---------------------
     -- BOOK OF VIRTUES --
@@ -167,7 +153,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
 
     -- We need to return true for the item to have an animation
     return true
-end, ARAOI.CollectibleType.ETERNAL_DPLOPIA)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnEternalDplopiaUse, ARAOI.CollectibleType.ETERNAL_DPLOPIA)
 
 
 -----------------
@@ -176,8 +163,7 @@ end, ARAOI.CollectibleType.ETERNAL_DPLOPIA)
 
 ---@param collectibleType CollectibleType
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, collectibleType, _, _, _, _, player)
-
+function ARAOI:_OnEternalDplopiaPreAddCollectible(collectibleType, _, _, _, _, player)
     -- Don't do anything if the item is not cursed
     if not ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(collectibleType) then return end
 
@@ -227,14 +213,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, collecti
 
     -- Lastly, increase delete chance
     ARAOI.Eternal_Dplopia.CursedPickupCountForFloor(ARAOI.Eternal_Dplopia.CursedPickupCountForFloor() + 1)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, ARAOI._OnEternalDplopiaPreAddCollectible)
 
 
 --------------------------
 -- CURSED ITEM RENDERER --
 --------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
+function ARAOI:_OnEternalDplopiaUpdate()
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         local pickup = entity:ToPickup()
         if not pickup then goto continue end
@@ -242,37 +229,23 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         -- If the pickup is not a collectible, we skip it
         if pickup.Variant ~= PickupVariant.PICKUP_COLLECTIBLE then goto continue end
 
+        -- Setting the values for the tint
+        local tint = {1.8, 1.8, 1.8, 1.0}
+        local item_tint = pickup:GetColor():GetTint()
+
         -- Check if the item is cursed
         if ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(pickup.SubType) then
-
-            -- Setting the values for the tint
-            local tint = {1.8, 1.8, 1.8, 1.0}
-
             -- Set the pickup tint to white
             pickup:GetColor():SetTint(table.unpack(tint))
-        else
-            -- Reset the color if the item is not cursed
+        elseif item_tint.R == tint[0] and item_tint.G == tint[1] and item_tint.B == tint[2] then
+            -- If the item is not cursed, and our tint is applied, reset the tint
             pickup:GetColor():Reset()
         end
 
         ::continue::
     end
-end)
-
-ARAOI.Mod:AddCallback(CURSE_PEDESTALS_CALLBACK, function ()
-    for _, entity in ipairs(Isaac.GetRoomEntities()) do
-        local pickup = entity:ToPickup()
-        if not pickup then goto continue end
-
-        -- Curse the other items in the cycle
-        -- We make it so T. Isaac, Glitched Crown and Binge Eater can't bypass curses
-        for _, id in pairs(pickup:GetCollectibleCycle()) do
-            ARAOI.Eternal_Dplopia.IsCollectibleTypeCursed(id, true)
-        end
-
-        ::continue::
-    end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnEternalDplopiaUpdate)
 
 
 ----------------------
@@ -281,11 +254,11 @@ end)
 
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.ETERNAL_DPLOPIA,
-        "Duplicates items into random ones from the current pool"..
-        "#{{BrimstoneCurse}} Items will become cursed, having a "..Config.ITEM_DELETE_CHANCE.."% "..
-            "chance of deleting one of your items and increasing it by "..Config.ITEM_DELETE_CHANCE_STEP.."% "..
-            "for each item picked up"..
-        "#{{ArrowUp}} Chance resets each floor"..
+        "Doubles pedestals on use"..
+        "#{{BrimstoneCurse}} Items will become cursed"..
+        "# Picking up a cursed item has a "..Config.ITEM_DELETE_CHANCE.."% chance of deleting "..
+            "one of Isaac's items, which increases by "..Config.ITEM_DELETE_CHANCE_STEP.."%  with every cursed item picked up"..
+        "# Chance resets each floor"..
         "#{{Luck}} "..Config.LUCK_DECREASE_DELETION_CHANCE.."% less chance per 1 luck"
     )
 
@@ -315,8 +288,53 @@ ARAOI.EIDWrapper(function ()
         local game = Game()
         local player = game:GetNearestPlayer(descObject.Entity.Position)
         local deleteChance = ARAOI.Eternal_Dplopia.GetCollectibleDeleteChanceForPlayer(player) * 100
-        EID:appendToDescription(descObject, "#{{Collectible"..ARAOI.CollectibleType.ETERNAL_DPLOPIA.."}} "..math.floor(deleteChance).."% chance to delete one of your items")
+        EID:appendToDescription(descObject, "#{{Collectible"..ARAOI.CollectibleType.ETERNAL_DPLOPIA.."}} "..math.floor(deleteChance).."% chance to delete one of Isaac's items")
         return descObject
     end
     EID:addDescriptionModifier("Cursed Object Description", condition, modifier)
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Actives", "Eternal Dplopia")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "ITEM_DELETE_CHANCE",
+    ConfigDefaults, ConfigDefaults.ITEM_DELETE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Item Delete Chance: " .. Config.ITEM_DELETE_CHANCE .. "%"
+    end, "Chance of an item being deleted when picking up a cursed item")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "MIN_ITEM_DELETE_CHANCE",
+    ConfigDefaults, ConfigDefaults.MIN_ITEM_DELETE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Min Item Delete Chance: " .. Config.MIN_ITEM_DELETE_CHANCE .. "%"
+    end, "The minimum chance of an item being deleted when picking up a cursed item")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "ITEM_DELETE_CHANCE_STEP",
+    ConfigDefaults, ConfigDefaults.ITEM_DELETE_CHANCE_STEP .. "%", 0, 100, 10, function ()
+        return "Item Delete Chance Step: +" .. Config.ITEM_DELETE_CHANCE_STEP .. "%"
+    end, "Added chance for an item of getting deleted after picking up a cursed item")
+
+    ModConfigMenu.AddSpace("ARAOI", "Actives")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "LUCK_DECREASE_DELETION_CHANCE",
+    ConfigDefaults, ConfigDefaults.LUCK_DECREASE_DELETION_CHANCE .. "% per 1 luck", 0, 100, 10, function ()
+        return "Luck Decrease Modifier: -" .. Config.LUCK_DECREASE_DELETION_CHANCE .. "% per 1 luck"
+    end, "By how much should 1 luck decrease the chance of an item being deleted?")
+
+    ModConfigMenu.AddSpace("ARAOI", "Actives")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "WISP_DELETE_CHANCE",
+    ConfigDefaults, ConfigDefaults.WISP_DELETE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Wisp Delete Chance: " .. Config.WISP_DELETE_CHANCE .. "%"
+    end, "Chance of a wisp getting deleted instead of an item")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "MAX_WISPS",
+    ConfigDefaults, ConfigDefaults.MAX_WISPS, 0, 8, 1, function ()
+        return "Max Wisps: " .. Config.MAX_WISPS
+    end, "Maximum wisps that the item can spawn")
+
+    ARAOI.MCMUtils.AddReset("Actives", "Eternal Dplopia")
+end

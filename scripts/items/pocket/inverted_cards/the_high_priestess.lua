@@ -6,24 +6,27 @@ card.Replace = Card.CARD_REVERSE_HIGH_PRIESTESS
 ARAOI.Inverted_Cards.High_Priestess = card
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+function ARAOI:_OnInvertedCardHighPriestessUse(_, player)
     player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 
     for _ = 1, 8 do
         player:AddSmeltedTrinket(TrinketType.TRINKET_MOMS_TOENAIL, false)
+        ---@diagnostic disable-next-line: undefined-field
         player:GetHistory():RemoveHistoryItemByIndex(#player:GetHistory():GetCollectiblesHistory() - 1)
     end
 
-    ARAOI.SaveData:CreateTimerInFrames("Remove Inverted High Priestess Effect From Player", 1800, player:GetPlayerIndex())
-end, card.ID)
+    ARAOI.SaveDataManager:CreateTimerInFrames("Remove Inverted High Priestess Effect From Player", 1800, player:GetPlayerIndex())
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardHighPriestessUse, card.ID)
 
 ---@param player_index integer
-ARAOI.Mod:AddCallback("Remove Inverted High Priestess Effect From Player", function (_, player_index)
+function ARAOI:_OnInvertedCardHighPriestessRemoveEffect(_, player_index)
     local player = Isaac.GetPlayer(player_index)
     for _ = 1, 8 do
         player:TryRemoveSmeltedTrinket(TrinketType.TRINKET_MOMS_TOENAIL)
     end
-end)
+end
+ARAOI:AddCallback("Remove Inverted High Priestess Effect From Player", ARAOI._OnInvertedCardHighPriestessRemoveEffect)
 
 ARAOI.EIDWrapper(function ()
     local toenail = TrinketType.TRINKET_MOMS_TOENAIL

@@ -1,6 +1,3 @@
----@class ModReference
-local Mod = RegisterMod("ARAOI", 1)
-
 if not REPENTOGON then
     error("REPENTOGON IS MISSING! ARAOI WILL NOT WORK! PLEASE INSTALL REPENTOGON OR UNINSTALL THIS MOD!")
 end
@@ -12,11 +9,15 @@ end
 
 ]]--
 
----@class ARAOI
-ARAOI = {}
-ARAOI.Mod = Mod
+---@class ModReference
+ARAOI = RegisterMod("ARAOI", 1)
 
 include("ARAOI")
+
+if ModConfigMenu then
+    ModConfigMenu.RemoveCategory("ARAOI")
+    include("scripts.ModConfigMenu")
+end
 
 
 local item = "scripts.items."
@@ -38,6 +39,7 @@ local files = {
     active.."recycle",
     active.."gamblecore",
     active.."katana",
+    active.."soda", -- & Passive
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",
@@ -51,14 +53,14 @@ local files = {
     passive.."chocolate_birthday_cake",
     passive.."lunchbox",
 
-    --[[ POCKET ITEMS ]]--
-    pocket.."inverted_cards",
-
     --[[ TRINKETS ]]--
     trinket.."spare_battery",
     trinket.."solved_rubiks_cube",
     trinket.."inverted_spades",
     trinket.."bountiful_sack",
+
+    --[[ POCKET ITEMS ]]--
+    pocket.."inverted_cards",
 
     --[[ DEBUGGING ]]--
     "debug.code"
@@ -75,5 +77,6 @@ for _, path in ipairs(files) do
 end
 
 ARAOI.EIDReload()
+ARAOI.MCMReload()
 
 Isaac.RunCallback(ARAOI.ModCallbacks.OnReload)

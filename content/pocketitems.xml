@@ -8,7 +8,7 @@
     <card type="tarot_reverse" name="II - Inverted High Priestess" description="You sure about this?" hud="Inverted High Priestess"
     announcer="514" announcerdelay="120" mimiccharge="4" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="III - Inverted Empress" description="What a wonderful parent" hud="Inverted Empress"
+    <card type="tarot_reverse" name="III - Inverted Empress" description="Go forth, my minions" hud="Inverted Empress"
     announcer="515" announcerdelay="70" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="IV - Inverted Emperor" description="Yesterday's enemies are today's friends" hud="Inverted Emperor"
@@ -38,11 +38,11 @@
     <card type="tarot_reverse" name="XII - Inverted Hanged Man" description="Take from the rich and make yourself richer" hud="Inverted Hanged Man"
     announcer="524" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
-    <card type="tarot_reverse" name="XIII - Inverted Death" description="Death is the only salvation" hud="Inverted Death"
-    announcer="525" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
+    <card type="tarot_reverse" name="XIII - Inverted Death" description="Necromancy at its finest" hud="Inverted Death"
+    announcer="525" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XIV - Inverted Temperance" description="Blood = Power" hud="Inverted Temperance"
-    announcer="526" announcerdelay="120" mimiccharge="12" pickup="8800" achievement="759807" />
+    announcer="526" announcerdelay="120" mimiccharge="3" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XV - Inverted Devil" description="Treasure tainted in blood" hud="Inverted Devil"
     announcer="527" announcerdelay="70" mimiccharge="4" pickup="8800" achievement="759807" />
@@ -51,7 +51,7 @@
     announcer="528" announcerdelay="20" mimiccharge="6" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVII - Inverted Stars" description="May you get something useful" hud="Inverted Stars"
-    announcer="529" announcerdelay="0" mimiccharge="8" pickup="8800" achievement="759807" />
+    announcer="529" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />
 
     <card type="tarot_reverse" name="XVIII - Inverted Moon" description="May you roll a good number" hud="Inverted Moon"
     announcer="530" announcerdelay="0" mimiccharge="12" pickup="8800" achievement="759807" />

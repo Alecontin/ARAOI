@@ -25,7 +25,7 @@ local devil_chance, angel_chance = 0, 0
 ---------------
 
 -- Spawns the collectibles according to the `Devil_Angel_Chances`
----@param ignoreChances boolean -- Should we ignore the deal spawn chance?
+---@param ignoreChances? boolean -- Should we ignore the deal spawn chance?
 function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
     local room = game:GetRoom()
     local level = game:GetLevel()
@@ -62,7 +62,7 @@ function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
             local is_angel = i == 2
 
             -- We don't need to spawn a second item since our angel chance is 0
-            if is_angel and angel_chance == 0 then return end
+            if is_angel and (angel_chance == 0 and not PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_DUALITY)) then return end
 
             -- Get the item pool and offset for the spawn
             local item_pool = ItemPoolType.POOL_DEVIL
@@ -86,7 +86,7 @@ function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
                 PlayerManager.FirstCollectibleOwner(ARAOI.CollectibleType.DUALITY_HALO):GetCollectibleRNG(ARAOI.CollectibleType.DUALITY_HALO)
             )
 
-            -- Make the devil deal item to cost hearts
+            -- Make the devil deal item cost hearts
             if not is_angel then
                 item:MakeShopItem(-2)
             end
@@ -114,7 +114,7 @@ end
 -- FUNCTION TRIGGER --
 ----------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, function ()
+function ARAOI:_OnDualityHaloPreRoomTriggerClear()
     -- No point in triggering the functionality when we don't even have the item
     if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.DUALITY_HALO) then return end
 
@@ -129,7 +129,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, function ()
         -- Create a timer to trigger the item's functionality
         Isaac.CreateTimer(ARAOI.Duality_Halo.SpawnCollectibles, 3, 1, false)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, ARAOI._OnDualityHaloPreRoomTriggerClear)
 
 
 -------------
@@ -137,7 +138,7 @@ end)
 -------------
 
 ---@param locust EntityFamiliar
-ARAOI.Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
+function ARAOI:_OnDualityHaloFamiliarInit(locust)
     if locust.SubType == ARAOI.CollectibleType.DUALITY_HALO then
         local locusts = ARAOI.PlayerUtils.GetLocusts(locust.SpawnerEntity:ToPlayer(), ARAOI.CollectibleType.DUALITY_HALO)
         if locusts then
@@ -149,7 +150,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, function (_, locust)
             end
         end
     end
-end, FamiliarVariant.ABYSS_LOCUST)
+end
+ARAOI:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, ARAOI._OnDualityHaloFamiliarInit, FamiliarVariant.ABYSS_LOCUST)
 
 
 ----------------------
@@ -158,8 +160,9 @@ end, FamiliarVariant.ABYSS_LOCUST)
 
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.DUALITY_HALO,
-        "#{{AngelDevilChance}} If a Deal doesn't spawn, it will try to spawn a deal item in the boss room using the deal spawn chance"..
-        "#{{Collectible}} Taking an item spawned this way will not affect deal chance"
+        "#{{AngelDevilChance}} If a Deal doesn't spawn, has the same deal probability to spawn an item from the deal"..
+        "# Having multiple deal chances combines them and spawns a choice between deals"..
+        "#{{Collectible}} Taking an item spawned this way will not future deals"
     )
     ARAOI.EIDUtils.AbyssSynergy(
         "Duality Halo Abyss Synergy",

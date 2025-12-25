@@ -68,8 +68,16 @@ ARAOI.CollectibleType = {
     KATANA = Isaac.GetItemIdByName("Katana"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 20
+    SODA = Isaac.GetItemIdByName("Soda"),
+
+    ---@type integer
+    SODA_PASSIVE = Isaac.GetItemIdByName("Soda Passive"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 22,
 }
+---@type integer
+ARAOI.CollectibleType.STARTING_INDEX = ARAOI.CollectibleType.ETERNAL_DPLOPIA
 
 ---@class TrinketType
 ARAOI.TrinketType = {
@@ -86,8 +94,10 @@ ARAOI.TrinketType = {
     BOUNTIFUL_SACK = Isaac.GetTrinketIdByName("Bountiful Sack"),
 
     ---@type integer
-    NUM_TRINKETS = 4
+    NUM_TRINKETS = 4,
 }
+---@type integer
+ARAOI.TrinketType.STARTING_INDEX = ARAOI.TrinketType.SPARE_BATTERY
 
 ---@class CardSubType
 ARAOI.CardSubType = {
@@ -158,11 +168,13 @@ ARAOI.CardSubType = {
     INVERTED_WORLD = Isaac.GetCardIdByName("Inverted World"),
 
     ---@type integer
-    NUM_CARDS = 22
+    NUM_CARDS = 22,
 }
+---@type integer
+ARAOI.CardSubType.STARTING_INDEX = ARAOI.CardSubType.INVERTED_FOOL
 
 ---@class SaveDataManager
-ARAOI.SaveData = include("scripts.SaveDataManager"):init(ARAOI.Mod)
+ARAOI.SaveDataManager = include("scripts.SaveDataManager"):init(ARAOI)
 
 ---@class EIDUtils
 ARAOI.EIDUtils = include("scripts.utils.eidutils")
@@ -182,15 +194,20 @@ ARAOI.RoomUtils = include("scripts.utils.room")
 ---@class TableUtils
 ARAOI.TableUtils = include("scripts.utils.table")
 
+---@class MCMUtils
+ARAOI.MCMUtils = include("scripts.utils.mcmutils")
+
 ---@class ModCallbacks
 ARAOI.ModCallbacks = {}
 ARAOI.ModCallbacks.OnReload = "Reload ARAOI Mod Data"
 ARAOI.ModCallbacks.EIDReload = "Reload ARAOI EID Descriptions"
+ARAOI.ModCallbacks.MCMReload = "Reload ARAOI MCM Descriptions"
+ARAOI.ModCallbacks.WooshEntityCollided = "ARAOI MELEE WOOSH ENTITY COLLIDED"
 
 -- Wrapper for the description reloaded callback
 function ARAOI.EIDWrapper(func)
     if EID then
-        ARAOI.Mod:AddCallback(ARAOI.ModCallbacks.EIDReload, func)
+        ARAOI:AddCallback(ARAOI.ModCallbacks.EIDReload, func)
     end
 end
 
@@ -198,5 +215,19 @@ end
 function ARAOI.EIDReload()
     if EID then
         Isaac.RunCallback(ARAOI.ModCallbacks.EIDReload)
+    end
+end
+
+-- Wrapper for the configuration reloaded callback
+function ARAOI.MCMWrapper(func)
+    if EID then
+        ARAOI:AddCallback(ARAOI.ModCallbacks.MCMReload, func)
+    end
+end
+
+-- Calls the callback responsible for reloading the MCM configurations
+function ARAOI.MCMReload()
+    if EID then
+        Isaac.RunCallback(ARAOI.ModCallbacks.MCMReload)
     end
 end

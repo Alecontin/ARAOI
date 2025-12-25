@@ -9,7 +9,7 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardLoversUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local room = game:GetRoom()
     local rng = player:GetCardRNG(card.ID)
@@ -42,7 +42,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     for _ = 1, math.floor(removed_familiars / num_needed_familiars) do
         ARAOI.ItemUtils.SpawnCollectible(room:GetSeededCollectible(rng:GetSeed()), room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardLoversUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     local altar = CollectibleType.COLLECTIBLE_SACRIFICIAL_ALTAR

@@ -32,6 +32,8 @@
 ARAOI = {}
 
 ---@class CollectibleType
+---@field NUM_COLLECTIBLES integer
+---@field STARTING_INDEX integer
 ---@field THREED_GLASSES integer
 ---@field BAG_OF_HOLDING integer
 ---@field ETERNAL_DPLOPIA integer
@@ -52,18 +54,22 @@ ARAOI = {}
 ---@field CHOCOLATE_BIRTHDAY_CAKE integer
 ---@field LUNCHBOX integer
 ---@field KATANA integer
+---@field SODA integer
+---@field SODA_PASSIVE integer
 ARAOI.CollectibleType = {}
-ARAOI.CollectibleType.NUM_COLLECTIBLES = 20
 
 ---@class TrinketType
+---@field NUM_TRINKETS integer
+---@field STARTING_INDEX integer
 ---@field SPARE_BATTERY integer
 ---@field SOLVED_RUBIKS_CUBE integer
 ---@field INVERTED_SPADES integer
 ---@field BOUNTIFUL_SACK integer
 ARAOI.TrinketType = {}
-ARAOI.TrinketType.NUM_TRINKETS = 4
 
 ---@class Card
+---@field NUM_CARDS integer
+---@field STARTING_INDEX integer
 ---@field INVERTED_FOOL integer
 ---@field INVERTED_MAGICIAN integer
 ---@field INVERTED_HIGH_PRIESTESS integer
@@ -87,7 +93,6 @@ ARAOI.TrinketType.NUM_TRINKETS = 4
 ---@field INVERTED_JUDGEMENT integer
 ---@field INVERTED_WORLD integer
 ARAOI.CardSubType = {}
-ARAOI.CardSubType.NUM_CARDS = 22
 
 
 
@@ -143,7 +148,7 @@ end
 function SaveDataManager:Key(access, key, default, value)
 end
 
-ARAOI.SaveData = SaveDataManager
+ARAOI.SaveDataManager = SaveDataManager
 
 
 
@@ -162,7 +167,7 @@ local EIDUtils = {}
 function EIDUtils.DescObjIs(descObj, entityType, entityVariant, entitySubtype)
 end
 
--- Function that makes it easier to append Book Of Virtues synergies to items
+-- Function that makes it easier to append Book Of Virtues synergies to item descriptions
 --
 -- The `Book Of Virtues` icon will be automatically appended to the description string
 ---@param modifier_id string
@@ -171,7 +176,7 @@ end
 function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
 end
 
--- Function that makes it easier to append Abyss synergies to items
+-- Function that makes it easier to append Abyss synergies to item descriptions
 --
 -- The `Abyss` icon will be automatically appended to the description string
 ---@param modifier_id string
@@ -180,7 +185,7 @@ end
 function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
 end
 
--- Function that makes it easier to append Car Battery synergies to items
+-- Function that makes it easier to append Car Battery synergies to item descriptions
 --
 -- The `Car Battery` icon will be automatically appended to the description string
 ---@param modifier_id string
@@ -189,7 +194,7 @@ end
 function EIDUtils.CarBatterySynergy(modifier_id, to_this_item, description)
 end
 
--- Function that makes it easier to append a synergy description to items
+-- Function that makes it easier to append a synergy description to item descriptions
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param if_player_has_this_item CollectibleType
@@ -197,7 +202,7 @@ end
 function EIDUtils.SimpleSynergyModifier(modifier_id, to_this_item, if_player_has_this_item, append_to_description)
 end
 
--- Function that makes it easier to append some player-based information to items
+-- Function that makes it easier to append some player-based information to item descriptions
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param if_player_is PlayerType[]
@@ -263,7 +268,7 @@ end
 -- If you plan on using this function to spawn a set amount of items then set `IgnoreModifiers` to `true`.
 ---@param ItemPool? ItemPoolType
 ---@param NumCollectibles? integer *Default: `1`*
----@param IgnoreModifiers? integer *Default: `false`*
+---@param IgnoreModifiers? boolean *Default: `false`*
 ---@param Decrease? boolean *Default: `true`*
 ---@param Seed? RNG *Default: `math.random(10000000000)`*
 ---@param DefaultItem? integer *Default: `CollectibleType.COLLECTIBLE_BREAKFAST`*
@@ -385,17 +390,24 @@ end
 ---@param rotation? number -- Default: `rng:PhantomInt(360)`
 ---@param rng? RNG -- Default: `math.random(999999999999)`
 ---@param effectDuration? integer -- Default: `75`
-function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFlag, tearFlags, rotation, rng, effectDuration)
+---@param damageCountdown? integer -- Default: `0`
+function MiscUtils.DamageWithTearEffects(player, enemy, damage, source, damageFlag, tearFlags, rotation, rng, effectDuration, damageCountdown)
 end
 
 ---@param position Vector
 ---@param damage? number -- The damage of the attack
----@param mirrored? boolean -- Should the attack animation be mirrored
 ---@param sizeMultiplier? number -- Size of the attack
 ---@param rotation? number -- Rotation of the attack
 ---@param spriteOffset? Vector -- The offset of the attack's sprite
 ---@param playSound? boolean -- Should the attack play the sound when spawning
-function MiscUtils.SpawnMeleeWoosh(position, mirrored, damage, sizeMultiplier, rotation, spriteOffset, playSound)
+---@return EntityEffect
+function MiscUtils.SpawnMeleeWoosh(position, damage, sizeMultiplier, rotation, spriteOffset, playSound)
+end
+
+-- Turns `PlayerUtils.FireDirection` into a direction `Vector`
+---@param direction integer
+---@return Vector|nil
+function MiscUtils.DirectionToVector(direction)
 end
 
 -- This function was directly copied from [The Official API](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getdevilroomchance),
@@ -416,10 +428,10 @@ local PlayerUtils = {}
 
 ---@class FireDirection
 PlayerUtils.FireDirection = {
-    DOWN  = 7,
-    LEFT  = 4,
-    RIGHT = 5,
-    UP    = 6,
+    RIGHT = 0,
+    DOWN  = 1,
+    LEFT  = 2,
+    UP    = 3,
     NONE  = nil
 }
 
@@ -439,7 +451,7 @@ end
 -- Function that modifies the players range using the range formula, which means that +1 range up will be +1 range up
 ---@param player EntityPlayer
 ---@param range number
-function PlayerUtils.ModifyTearRange(player, range)
+function PlayerUtils.AddTearRange(player, range)
 end
 
 -- Gets the approximate damage multiplier for the player using the data from the wiki
@@ -513,7 +525,7 @@ end
 ---@param player? EntityPlayer Default: Isaac.GetPlayer(0) — The `EntityPlayer` to get the ID for
 ---@param collectible? CollectibleType Default: 1 — Change this to another collectible if you want to get the ID of sub-players like Esau
 ---@return integer
-function PlayerUtils.GetID(player, collectible)
+function PlayerUtils.GetId(player, collectible)
 end
 
 -- Gets all the wisps spawned by the player, index ordered from oldest to newest.
@@ -587,6 +599,7 @@ function PlayerUtils.AddShield(player, cooldown)
 end
 
 ---@param player EntityPlayer
+---@return boolean
 function PlayerUtils.HasShield(player)
 end
 
@@ -609,9 +622,8 @@ end
 ---@param player EntityPlayer
 ---@param sizeMultiplier? number -- The size of the attack
 ---@param direction? Vector -- The direction to spawn the attack towards
----@param mirror? boolean -- Should the attack be mirrored
 ---@param playSound? boolean -- Should we play the attack sound
-function PlayerUtils.FireMelee(player, sizeMultiplier, direction, mirror, playSound)
+function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound)
 end
 
 ARAOI.PlayerUtils = PlayerUtils
@@ -635,6 +647,7 @@ function RoomUtils.GetPickups()
 end
 
 -- Returns the nearest enemy to the provided position
+---@param position Vector
 ---@return Entity, number
 function RoomUtils.GetNearestEnemy(position)
 end
@@ -800,7 +813,7 @@ ARAOI.Eternal_Dplopia = {}
 ARAOI.Eternal_Dplopia.Config = {
     ITEM_DELETE_CHANCE      = 25, -- *Default: `25` — This is the same chance as the `Eternal D6`.*
     MIN_ITEM_DELETE_CHANCE  = 20, -- *Default: `20` — Goes from 1/4 to 1/5 chance of deleting an item, scaling with luck.*
-    ITEM_DELETE_CHANCE_STEP = 5,  -- *Default: `5`  — Added chance for an item to getting deleted after picking up a cursed item.*
+    ITEM_DELETE_CHANCE_STEP = 5,  -- *Default: `5`  — Added chance for an item of getting deleted after picking up a cursed item.*
 
     LUCK_DECREASE_DELETION_CHANCE = 1, -- *Default: `1` — By how much should 1 luck decrease the chance of an item being deleted?*
 
@@ -857,7 +870,7 @@ ARAOI.Spellbook.Config = {
     MAX_EID_HISTORY = 10, -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
 
     -- If we get these items, we roll again.
-    -- This can be because the game just crashes, or the item just doesn't work.
+    -- This can be because the game crashes, or the item just doesn't work.
     REROLL_ITEMS = {
         CollectibleType.COLLECTIBLE_DELIRIOUS
     },
@@ -910,8 +923,8 @@ end
 -- Returns the known spells for use with EID
 --
 -- If `spell` and `item` are passed, adds them to the known spells
----@param spell string?
----@param item CollectibleType?
+---@param spell? string
+---@param item? CollectibleType
 ---@return table table -- `{{spell: str, item: CollectibleType}, ...}`
 function ARAOI.Spellbook.EIDRegisteredSpells(spell, item)
 end
@@ -953,9 +966,9 @@ ARAOI.Gambling_Chips.Config = {
     MAX_CHANCE  = 30, -- *Default: `30` — The maximum chance for a slot to spawn.*
     BASE_CHANCE = 15, -- *Default: `15` — The base chance for a slot to spawn, scales with luck using the `LUCK_MODIFIER` up uo `MAX_CHANCE`.*
 
-    LUCK_MODIFIER = 0.75, -- *Default: `0.75` — Player's luck will be multiplied by this and added to the `BASE_CHANCE`.*
+    LUCK_MODIFIER = 75, -- *Default: `75` — Player's luck will be multiplied by this percentage and added to the `BASE_CHANCE`.*
 
-    COIN_CHANCE   = 10, -- *Default: `10` — Chance to spawn a coin on enemy kill.*
+    COIN_CHANCE   = 10 -- *Default: `10` — Chance to spawn a coin on enemy kill.*
 }
 
 -- Gets a random slot machine that is considered "gambling"
@@ -970,7 +983,7 @@ ARAOI.Lucky_Coin = {}
 ARAOI.Lucky_Coin.Config = {
     COIN_TIMEOUT = 120, -- *Default: `120` — The amount of time the coin will stay in the air, in update frames.*
 
-    CHANCE_PER_LUCK = 1, -- *Default: `1` — The chance per 1 luck that will be added towards doubling the damage.*
+    CHANCE_PER_LUCK = 1 -- *Default: `1` — The chance per 1 luck that will be added towards doubling the damage.*
 }
 
 -- Spawn a coin for the provided player
@@ -986,21 +999,23 @@ ARAOI.Rainbow_Headband.Config = {
     INCREASE_TRAIL_SIZE_EVERY = 25, -- *Default: `25` — Time it takes, in seconds, for the trail to get longer.*
     INCREASE_TRAIL_TIMEOUT_BY = 3,  -- *Default: `3` — Time added every `INCREASE_TRAIL_SIZE_EVERY`, in frames, that it takes the trail to be removed.*
 
-    CREEP_COLOR_INTERVAL_MULTIPLIER = 1, -- *Default: `1` — Multiplier for the color change of the creep, higher values means the creep will switch colors quicker.*
+    CREEP_COLOR_INTERVAL_PERCENTAGE = 100, -- *Default: `100` — Percentage of the speed at which the creep changes color, higher values means the creep will switch colors quicker.*
 
     INSTANTLY_REMOVE_CREEP = true -- *Default: `true` — Should the creep be instantly removed? The animation of the creep disappearing does not do damage to enemies.*
 }
 
 -- Gets the frame at which the player picked up the item, returns `-1` if the player hasn't picked up the item yet
 --
--- If `set` is provided 
+-- If `set` is provided, it will change the stored timestamp to the provided value
 ---@param player any
 ---@param set? any
+---@return integer
 function ARAOI.Rainbow_Headband.PickedUpTimestamp(player, set)
 end
 
 -- Calculates the creep timeout, after which it will disappear
 ---@param player EntityPlayer
+---@return integer
 function ARAOI.Rainbow_Headband.GetCreepTimeout(player)
 end
 
@@ -1016,26 +1031,29 @@ ARAOI.Vampire_Cloak = {}
 ---@param player EntityPlayer
 ---@param amount integer
 ---@param offset number
-function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset)
+---@param poof? boolean
+function ARAOI.Vampire_Cloak.AddBatParticles(player, amount, offset, poof)
 end
 
 -- Checks if the player has invincibility
 ---@param player EntityPlayer
 ---@param set? boolean
+---@return boolean
 function ARAOI.Vampire_Cloak.PlayerHasInvincibility(player, set)
 end
 
 -- Checks if the player has a Vampire Cloak charge
 ---@param player EntityPlayer
 ---@param set? boolean
+---@return boolean
 function ARAOI.Vampire_Cloak.PlayerHasVampireCloakCharge(player, set)
 end
 
 ARAOI.Voodoo_Body = {}
 
 ARAOI.Voodoo_Body.Config = {
-    DAMAGE_SCALE    = 0.65, -- *Default: `0.65` — The number that the player's damage will be multiplied by when doing damage with the pin.*
-    VOODOO_HEAD_ADD = 0.35, -- *Default: `0.35` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
+    DAMAGE_SCALE    = 65, -- *Default: `65` — The number that the player's damage will be multiplied by when doing damage with the pin.*
+    VOODOO_HEAD_ADD = 35  -- *Default: `35` — The number that will be added to the `DAMAGE_SCALE` when the player is holding Voodoo Head.*
 }
 
 -- Spawns a curse pin on the provided attacker
@@ -1044,6 +1062,7 @@ ARAOI.Voodoo_Body.Config = {
 ---@param damage number
 ---@param spriteScale? number
 ---@param effects? TearFlags
+---@return EntityEffect
 function ARAOI.Voodoo_Body.SpawnCursePin(attack, spawner, damage, spriteScale, effects)
 end
 
@@ -1051,12 +1070,14 @@ ARAOI.Gamblecore = {}
 
 ---@param player EntityPlayer
 ---@param reward_type number -- The type of the reward. Use `ARAOI.Gamblecore.REWARDS_TYPE`
----@param add? number -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+---@param add? integer -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+---@return integer
 function ARAOI.Gamblecore.PlayerReward(player, reward_type, add)
 end
 
 ---@param player EntityPlayer
----@param add? number -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+---@param add? integer -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+---@return integer
 function ARAOI.Gamblecore.PlayerPity(player, add)
 end
 
@@ -1075,6 +1096,29 @@ end
 ---@param player EntityPlayer
 ---@return Sprite[]
 function ARAOI.Gamblecore.GetReels(player)
+end
+
+ARAOI.Soda = {}
+
+ARAOI.Soda.Config = {
+    ITEM_SPEED           = 70, -- *Default: `70` — The player's speed when set by the item. This value will be divided by 100.*
+    SPEED_ADDED_PER_ROOM = 10  -- *Default: `10` — The amount added to the player's speed each new room. This value will be divided by 1000.*
+}
+
+---@param player EntityPlayer
+---@return number
+function ARAOI.Soda.GetSpeed(player)
+end
+
+---@param player EntityPlayer
+---@param set? number
+---@return number
+function ARAOI.Soda.SetSpeed(player, set)
+end
+
+---@param player EntityPlayer
+---@param add? number
+function ARAOI.Soda.AddSpeed(player, add)
 end
 
 ARAOI.Inverted_Spades = {}
@@ -1124,10 +1168,6 @@ ARAOI.Inverted_Cards.Sun = CardData
 ARAOI.Inverted_Cards.Judgement = CardData
 ARAOI.Inverted_Cards.World = CardData
 
-ARAOI.Inverted_Cards.Temperance.Config = {
-    DAMAGE_GIVEN = 0.75 -- *Default: `0.75` — Amount of damage that will be given per half a heart drained.*
-}
-
 ARAOI.Inverted_Cards.Empress.Config = {
     NUM_MINIISAAC = 10 -- *Default: `10` — The number of MiniIsaacs to spawn*
 }
@@ -1139,6 +1179,7 @@ ARAOI.Inverted_Cards.Stars.Config = {
 
 
 ---@param player EntityPlayer
+---@return integer
 function ARAOI.Inverted_Cards.Magician.GetEffectCountdown(player)
 end
 

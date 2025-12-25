@@ -6,12 +6,14 @@ local Config = {}
 
 
 Config.REPLACE_CHANCE = 15 -- *Default: `15` — The % chance that a card will be overwritten*
+Config.ALSO_REPLACE_NORMAL_CARDS = false -- *Default: `false` — Should we also replace normal cards?*
 
 
 
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 ARAOI.Inverted_Cards = {}
@@ -55,10 +57,24 @@ local inverted_cards_inline_sprite = Sprite("gfx/ui/eid_inline_cardfronts.anm2",
 ---@return integer
 function ARAOI.Inverted_Cards.GetRandomCard(rng)
     if rng == nil then rng = RNG(math.random(9999999999)) end
-    return rng:RandomInt(ARAOI.CardSubType.INVERTED_FOOL, ARAOI.CardSubType.INVERTED_FOOL + ARAOI.CardSubType.NUM_CARDS)
+    return rng:RandomInt(ARAOI.CardSubType.STARTING_INDEX, ARAOI.CardSubType.STARTING_INDEX + ARAOI.CardSubType.NUM_CARDS)
 end
 
-for _, path in ipairs(files) do
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Inv. Cards", "Inv. Cards Global")
+
+    ARAOI.MCMUtils.AddNumberSetting("Inv. Cards", "Inv. Cards Global", Config, "REPLACE_CHANCE", ConfigDefaults, ConfigDefaults.REPLACE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Replace Chance: " .. Config.REPLACE_CHANCE .. "%"
+    end, "Chance for an Inverted Card to replace the respective Reverse Card")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Inv. Cards", "Inv. Cards Global", Config, "ALSO_REPLACE_NORMAL_CARDS", ConfigDefaults, function ()
+        return "Also Replace Normal Cards: "
+    end, "Should we also replace normal cards?")
+
+    ARAOI.MCMUtils.AddReset("Inv. Cards", "Inv. Cards Global")
+end
+
+for normal_card_index, path in ipairs(files) do
     local card = include(path)
 
     if not card.Replace or not card.ID then
@@ -67,8 +83,10 @@ for _, path in ipairs(files) do
 
     ---@param rng RNG
     ---@param currentCard Card
-    ARAOI.Mod:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, currentCard)
-        if currentCard == card.Replace then
+    function ARAOI:_OnInvertedCardGetCard(rng, currentCard)
+        if currentCard == card.Replace 
+        or (currentCard == normal_card_index and Config.ALSO_REPLACE_NORMAL_CARDS == true)
+        then
             local multiplier = PlayerManager.GetTotalTrinketMultiplier(ARAOI.TrinketType.INVERTED_SPADES)
 
             local chance = card.REPLACE_CHANCE ~= nil and card.REPLACE_CHANCE or Config.REPLACE_CHANCE
@@ -77,7 +95,8 @@ for _, path in ipairs(files) do
                 return card.ID
             end
         end
-    end)
+    end
+    ARAOI:AddCallback(ModCallbacks.MC_GET_CARD, ARAOI._OnInvertedCardGetCard)
 
     ARAOI.EIDWrapper(function ()
         local card_name = ItemConfig:GetCard(card.ID).HudAnim

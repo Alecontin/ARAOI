@@ -63,4 +63,7 @@
     <sound name="gc_icantstopwinning">
         <sample weight="1" path="gamblecore/icantstopwinning.wav" />
     </sound>
+    <sound name="glass_bottle_open_sound">
+        <sample weight="1" path="soda/glass_bottle_open.wav" />
+    </sound>
 </sounds>

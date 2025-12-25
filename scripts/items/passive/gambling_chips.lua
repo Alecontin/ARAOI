@@ -8,7 +8,7 @@ local Config = {}
 Config.MAX_CHANCE  = 30 -- *Default: `30` — The maximum chance for a slot to spawn.*
 Config.BASE_CHANCE = 15 -- *Default: `15` — The base chance for a slot to spawn, scales with luck using the `LUCK_MODIFIER` up uo `MAX_CHANCE`.*
 
-Config.LUCK_MODIFIER = 0.75 -- *Default: `0.75` — Player's luck will be multiplied by this and added to the `BASE_CHANCE`.*
+Config.LUCK_MODIFIER = 75 -- *Default: `75` — Player's luck will be multiplied by this percentage and added to the `BASE_CHANCE`.*
 
 Config.COIN_CHANCE   = 10 -- *Default: `10` — Chance to spawn a coin on enemy kill.*
 
@@ -17,6 +17,7 @@ Config.COIN_CHANCE   = 10 -- *Default: `10` — Chance to spawn a coin on enemy 
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 
@@ -74,7 +75,8 @@ function ARAOI.Gambling_Chips.GetRandomGamblingSlot(rng, allowSelfDamage)
     return ARAOI.TableUtils.Choice(AVAILABLE_SLOTS)
 end
 
-local function ShouldSlotBeDoubled(slot)
+---@param slot EntitySlot
+local function ShouldSlotRewardBeDoubled(slot)
     local slots = {
         SlotVariant.BEGGAR,
         SlotVariant.BOMB_BUM,
@@ -88,7 +90,7 @@ local function ShouldSlotBeDoubled(slot)
         SlotVariant.CONFESSIONAL
     }
 
-    return ARAOI.TableUtils.IsValueInTable(slot, slots)
+    return ARAOI.TableUtils.IsValueInTable(slot.Variant, slots)
 end
 
 
@@ -96,7 +98,7 @@ end
 -- MAIN ITEM FUNCTIONALITY --
 -----------------------------
 
--- Trigger's the item's slot spawning mechanic
+-- Triggers the item's slot spawning mechanic
 function ARAOI.Gambling_Chips.TriggerSpawnSlot()
     local SFX = SFXManager()
     local room = game:GetRoom()
@@ -136,7 +138,7 @@ function ARAOI.Gambling_Chips.TriggerSpawnSlot()
     end
 end
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+function ARAOI:_OnGamblingChipsNewRoom()
     local room = game:GetRoom()
 
     -- Check if it's the first time the player loads this room
@@ -146,12 +148,14 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     if room:IsClear() then
         ARAOI.Gambling_Chips.TriggerSpawnSlot()
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnGamblingChipsNewRoom)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, function (_)
-    local room = game:GetRoom()
+function ARAOI:_OnGamblingChipsPreRoomTriggerClear()
+    -- local room = game:GetRoom()
     ARAOI.Gambling_Chips.TriggerSpawnSlot()
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, ARAOI._OnGamblingChipsPreRoomTriggerClear)
 
 
 
@@ -160,7 +164,7 @@ end)
 -------------------------------
 
 ---@param pickup EntityPickup
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, function (_, pickup)
+function ARAOI:_OnGamblingChipsPickupInit(pickup)
     -- This should only run when any player has the gambling chip
     if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.GAMBLING_CHIPS) then return end
 
@@ -174,7 +178,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, function (_, pickup)
         if not slot then goto continue end
 
         -- Check if the slot is in the available slots
-        if not ShouldSlotBeDoubled(slot) then goto continue end
+        if not ShouldSlotRewardBeDoubled(slot) then goto continue end
 
         -- Get the distance to the pickup, if it's 0 it spawned from this slot
         local distance = slot.Position:Distance(pickup.Position)
@@ -199,7 +203,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, function (_, pickup)
 
         ::continue::
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, ARAOI._OnGamblingChipsPickupInit)
 
 
 
@@ -212,7 +217,7 @@ end)
 ---@param amount number
 ---@param flags DamageFlag
 ---@param source EntityRef
-ARAOI.Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, amount, flags, source)
+function ARAOI:_OnGamblingChipsEntityTakeDamage(entity, amount, flags, source)
     -- Checking for unlethal damage, this means the enemy didn't die
     if entity.HitPoints - amount > 0
     or flags == DamageFlag.DAMAGE_NOKILL
@@ -247,7 +252,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function(_, entity, amoun
     -- Spawning the entity
     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, 0, spawn_position,
         EntityPickup.GetRandomPickupVelocity(spawn_position)/3, player)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, ARAOI._OnGamblingChipsEntityTakeDamage)
 
 
 ----------------------
@@ -261,13 +267,13 @@ ARAOI.EIDWrapper(function ()
 
     local slots = "{{Slotmachine}}{{RestockMachine}}{{CraneGame}}{{Beggar}}{{DemonBeggar}}{{KeyBeggar}}{{BombBeggar}}{{RottenBeggar}}{{ShellGame}}{{HellGame}}"
 
-    local max_luck = math.ceil((Config.MAX_CHANCE - Config.BASE_CHANCE) / Config.LUCK_MODIFIER)
+    local max_luck = math.ceil((Config.MAX_CHANCE - Config.BASE_CHANCE) / (Config.LUCK_MODIFIER / 100))
 
     EID:addCollectible(ARAOI.CollectibleType.GAMBLING_CHIPS,
         "#{{Coin}} +10 Coins"..
         "# "..Config.BASE_CHANCE.."% chance to spawn on every room one of: "..slots..
         "#{{Luck}} "..Config.MAX_CHANCE.."% at "..max_luck.." luck"..
-        "# Duplicates rewards from "..slots..
+        "# Duplicates pickups from "..slots..
         "#{{DeathMark}} "..Config.COIN_CHANCE.."% chance for enemies to spawn a coin on death"
     )
 
@@ -284,3 +290,26 @@ ARAOI.EIDWrapper(function ()
         "Yellow locust with a 5% chance per hit of spawning a coin"
     )
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Passives", "Gambling Chips")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Gambling Chips", Config, "BASE_CHANCE", ConfigDefaults, ConfigDefaults.BASE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Base Chance: " .. Config.BASE_CHANCE .. "%"
+    end, "The base chance for a slot to spawn")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Gambling Chips", Config, "MAX_CHANCE", ConfigDefaults, ConfigDefaults.MAX_CHANCE .. "%", 0, 100, 10, function ()
+        return "Max Chance: " .. Config.MAX_CHANCE .. "%"
+    end, "The maximum chance for a slot to spawn")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Gambling Chips", Config, "LUCK_MODIFIER", ConfigDefaults, ConfigDefaults.LUCK_MODIFIER/100 .. "x", 0, 1000000, 20, function ()
+        return "Luck Modifier: " .. Config.LUCK_MODIFIER/100 .. "x"
+    end, "Isaac's luck will be multiplied by this number and added to the Base Chance")
+
+    ARAOI.MCMUtils.AddReset("Passives", "Gambling Chips")
+end

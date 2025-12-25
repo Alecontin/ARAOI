@@ -7,49 +7,48 @@ local game = Game()
 
 local EFFECT_SLASH = Isaac.GetEntityVariantByName("Katana Slash")
 
-local MAX_BLOCK_TIME = 36
-local PARRY_WINDOW = 4
-local PARRY_DAMAGE_MULTIPLIER = 10
-local PARRY_PATH_DAMAGE_MULTIPLIER = 3
+local KATANA_MARK_ID = "KatanaEnemyMark"
 
+local SWING_DAMAGE_MULTIPLIER = 0.8
+local TELEPORT_DAMAGE_MULTIPLIER = 5
+local INVINCIBILITY_TIME = 30
 
 ---------------
 -- FUNCTIONS --
 ---------------
 
-local block_time = {}
-
+local TEAR_RATE = {}
 ---@param player EntityPlayer
----@param time? integer -- Time in update frames
-local function SetBlockTime(player, time)
-    ARAOI.SaveData:Key(block_time, ARAOI.PlayerUtils.GetID(player), 0, time == nil and MAX_BLOCK_TIME or time)
-end
----@param player EntityPlayer
-local function GetBlockTime(player)
-    return ARAOI.SaveData:Key(block_time, ARAOI.PlayerUtils.GetID(player), 0)
-end
----@param player EntityPlayer
-local function StopBlocking(player)
-    ARAOI.SaveData:Key(block_time, ARAOI.PlayerUtils.GetID(player), 0, 0)
-end
-
----@param player EntityPlayer
-local function GetParryWindow(player)
-    if ARAOI.PlayerUtils.HasShield(player) or player:GetDamageCooldown() > 0 then
-        return -1
-    elseif player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) then
-        return PARRY_WINDOW * 2
-    else
-        return PARRY_WINDOW
+---@param set? integer
+local function FireDelay(player, set)
+    if set then
+        TEAR_RATE[ARAOI.PlayerUtils.GetId(player)] = set
     end
+    return TEAR_RATE[ARAOI.PlayerUtils.GetId(player)] or 0
+    -- return ARAOI.SaveDataManager:Key(TEAR_RATE, ARAOI.PlayerUtils.GetID(player), 0, set)
 end
+
+local LAST_DAMAGED_ENEMY = {}
+---@param player EntityPlayer
+---@param set? Entity
+---@return Entity
+local function LastDamagedEnemy(player, set)
+    if set then
+        LAST_DAMAGED_ENEMY[ARAOI.PlayerUtils.GetId(player)] = set
+    end
+    return LAST_DAMAGED_ENEMY[ARAOI.PlayerUtils.GetId(player)]
+    -- return ARAOI.SaveDataManager:Key(LAST_DAMAGED_ENEMY, ARAOI.PlayerUtils.GetID(player), nil, set)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_NEW_ROOM, function ()
+    LAST_DAMAGED_ENEMY = {}
+end)
 
 ---@param player EntityPlayer
 ---@param from Vector
 ---@param to Vector
----@param parried Entity
+---@param target Entity
 ---@param enemies Entity[]
-local function ProcessSynergies(player, from, to, parried, enemies)
+local function ProcessSynergies(player, from, to, target, enemies)
     -- Get the direction towards our target position
     local direction = -(from - to):Normalized()
 
@@ -58,12 +57,11 @@ local function ProcessSynergies(player, from, to, parried, enemies)
         -- If the enemy is not an active enemy, skip it
         if not enemy:IsActiveEnemy() then goto continue end
         -- If the current enemy is the parried enemy, keep track of it and add multipliers
-        local is_parried_enemy = GetPtrHash(enemy) == GetPtrHash(parried)
-        local damage_multiplier = is_parried_enemy and PARRY_DAMAGE_MULTIPLIER or PARRY_PATH_DAMAGE_MULTIPLIER
+        local is_parried_enemy = GetPtrHash(enemy) == GetPtrHash(target)
         local size_multiplier = is_parried_enemy and 2 or 1
 
         -- Keeping track of the final damage we should deal
-        local final_damage = player.Damage * damage_multiplier
+        local final_damage = player.Damage * TELEPORT_DAMAGE_MULTIPLIER
 
         -- Getting the current distance from our starting position
         local distance = from:Distance(enemy.Position)
@@ -72,7 +70,7 @@ local function ProcessSynergies(player, from, to, parried, enemies)
         if player:HasCollectible(CollectibleType.COLLECTIBLE_DR_FETUS)
         or player:HasCollectible(CollectibleType.COLLECTIBLE_EPIC_FETUS) then
             -- Create an explosion on top of the enemy
-            game:BombExplosionEffects(enemy.Position, (player.Damage/2) * damage_multiplier, nil, nil, nil, 0.5 * size_multiplier)
+            game:BombExplosionEffects(enemy.Position, (player.Damage/2) * TELEPORT_DAMAGE_MULTIPLIER, nil, nil, nil, 0.5 * size_multiplier)
         end
 
         -- Function to get a multiplier depending on distance
@@ -141,7 +139,7 @@ local function ProcessSynergies(player, from, to, parried, enemies)
         local rotation = 0
         local steps = 8
         for _ = 0, steps do
-            player:FireTechLaser(parried.Position, LaserOffset.LASER_TECH1_OFFSET, Vector.FromAngle(rotation), nil, nil, player, 10)
+            player:FireTechLaser(target.Position, LaserOffset.LASER_TECH1_OFFSET, Vector.FromAngle(rotation), nil, nil, player, 10)
             rotation = rotation + 360/steps
         end
     end
@@ -159,6 +157,78 @@ local function ProcessSynergies(player, from, to, parried, enemies)
     end
 end
 
+-- Function to spawn an individual slash
+---@param position Vector
+local function SpawnSlash(position)
+    -- Spawn the slash
+    local slash = Isaac.Spawn(1000, EFFECT_SLASH, 0, position, Vector.Zero, nil):ToEffect()
+    assert(slash)
+    -- Give it a random rotation and offset
+    slash:GetSprite().Rotation = math.random(360)
+    slash:GetSprite().Offset = Vector(0, -20)
+    slash:GetSprite().PlaybackSpeed = math.random(0,1) / 2 + 0.75
+
+    return slash
+end
+
+-- Function that spawns the visible slashes after teleporting
+---@param from Vector
+---@param to Vector
+local function SpawnEffects(from, to)
+    -- Setting some data
+    local step = 30
+    local current = from
+    local offset = Vector.Zero
+    local distance = from:Distance(to)
+
+    -- While we still have distance to travel to our target
+    while distance > 0 do
+        -- Spawn 3 slashes
+        for _ = 1, 3 do
+            offset = Vector(math.random(100) - 50, math.random(100) - 50)
+            SpawnSlash(current + offset)
+        end
+        -- Decrease the current distance and keep track of the remaining distance
+        current = current - (from - to):Normalized() * step
+        distance = distance - step
+    end
+
+    -- Get a list of all enemies hit by our effect and return it
+    local enemies = Isaac.FindInCapsule(Capsule(from, to, 50))
+    return enemies
+end
+
+-- Responsible for spawning and keeping track of the Katana marks
+local function UpdateEnemyMark(player, reset)
+    local data = player:GetData()
+
+    -- Checking if we have a mark placed
+    ---@type EntityEffect
+    local slash = data[KATANA_MARK_ID]
+    if slash then
+        -- If we do and we need to get rid of it, we do just that
+        if slash.Parent == nil or slash.Parent:IsDead() or reset then
+            slash:Remove()
+            data[KATANA_MARK_ID] = nil
+        end
+    else
+        -- If we don't, and we have an active target
+        local enemy = LastDamagedEnemy(player)
+        if enemy and not enemy:IsDead() then
+            -- Spawn a mark
+            slash = SpawnSlash(enemy.Position + Vector(0, 1))
+            data[KATANA_MARK_ID] = slash
+
+            -- Make it follow the enemy
+            slash:FollowParent(enemy)
+
+            -- Making sure it doesn't despawn and does not obstruct vision
+            slash:GetSprite().PlaybackSpeed = 0
+            slash:GetSprite().Scale = Vector(0.5, 0.5)
+        end
+    end
+end
+
 
 -----------------------------
 -- MAIN ITEM FUNCTIONALITY --
@@ -166,208 +236,126 @@ end
 
 -- Starting the chain reaction
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player)
-    -- Show the item
-    player:AnimateCollectible(ARAOI.CollectibleType.KATANA)
+function ARAOI:_OnKatanaUse(_, _, player, useFlag, slot)
+    if useFlag & UseFlag.USE_CARBATTERY ~= 0 then return end
 
-    -- Set the block time so everything works
-    SetBlockTime(player)
+    -- Store our current position
+    local original_position = player.Position
 
-    -- Do not show the default item animation
-    return false
-end, ARAOI.CollectibleType.KATANA)
-
--- Decreasing the block time and updating the item's counter cooldown
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
-    -- For every player
-    for _, player in ipairs(PlayerManager:GetPlayers()) do
-        -- Get the player's block time
-        local time = GetBlockTime(player)
-        -- If they are blocking
-        if time > 0 then
-            -- Decrease the block time
-            SetBlockTime(player, time - 1)
-        end
-
-        -- If the player has our item
-        if player:HasCollectible(ARAOI.CollectibleType.KATANA) then
-            -- Get the item's data, aka the counter cooldown
-            local data = player:GetActiveItemDesc(player:GetActiveItemSlot(ARAOI.CollectibleType.KATANA))
-            -- If the counter is on cooldown
-            if data.VarData > 0 then
-                -- Decrease it
-                data.VarData = data.VarData - 1
-            end
-        end
+    -- Checking if we have a target
+    local TARGET_ENTITY = LastDamagedEnemy(player)
+    if TARGET_ENTITY == nil or TARGET_ENTITY:IsDead() then
+        -- If we don't, return the charges and stop here
+        ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
+        return false
     end
-end)
+
+    -- Add invincibility so we don't get instantly hit after teleporting
+    ARAOI.PlayerUtils.AddShield(player, INVINCIBILITY_TIME)
+
+    -- Get the direction of our teleport
+    local enemy_direction = (player.Position - TARGET_ENTITY.Position):Normalized()
+
+    -- Get the new position to teleport to
+    local offset = 30
+    local boss_multiplier = TARGET_ENTITY:IsBoss() and 2 or 1
+    local position = TARGET_ENTITY.Position - enemy_direction * offset * boss_multiplier
+
+    -- If we are flying, we can ignore obstacles
+    if player:IsFlying() then
+        player.Position = position
+
+    else
+        -- Raycasting to find the closest available position
+        ---@type boolean, Vector
+        ---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
+        _, player.Position = Game():GetRoom():CheckLine(player.Position, position, LineCheckMode.ENTITY)
+    end
+
+    -- Spawn the slash effects and get the hit enemies
+    local hit_enemies = SpawnEffects(original_position, player.Position)
+
+    -- Process the synergies, which is also where damage is done
+    ProcessSynergies(player, original_position, player.Position, TARGET_ENTITY, hit_enemies)
+
+    -- Sound effect for the item use
+    Isaac.CreateTimer(function ()
+        SFXManager():Play(SoundEffect.SOUND_TOOTH_AND_NAIL, 1, 0, nil, 2)
+    end, 1, 5, false)
+
+    return true
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnKatanaUse, ARAOI.CollectibleType.KATANA)
 
 -- Function that adds effects to the counter
 ---@param effect EntityEffect
 ---@param entity Entity
-ARAOI.Mod:AddCallback("ARAOI MELEE WOOSH ENTITY DAMAGED", function (_, effect, entity)
+function ARAOI:_OnKatanaWooshEntityCollision(effect, entity)
     -- Checking if the attack is from our item
     local data = effect:GetData()
     -- If it's not, stop right here
     if not data["IsKatanaMelee"] then return end
 
-    -- If the attacked entity is an enemy and is vulnerable
-    if entity:IsActiveEnemy() and entity:IsVulnerableEnemy() then
+    -- If the attacked entity is an active enemy
+    if entity:IsEnemy() and entity:IsActiveEnemy() then
         -- We can get the player
         local player = effect.Parent:ToPlayer()
         if player then
-            -- If the enemy would die from this attack
-            if entity.HitPoints - effect.HitPoints <= 0 then
-                -- Add some charge to our item
-                ARAOI.PlayerUtils.AddActiveCharge(player, player:GetActiveItemSlot(ARAOI.CollectibleType.KATANA), 60, false, false, true)
-            end
+            -- Set the last damaged enemy to the hit enemy
+            LastDamagedEnemy(player, entity)
+            -- Update the mark
+            UpdateEnemyMark(player, true)
             -- Apply appropriate tear effects to the entity
-            ARAOI.MiscUtils.DamageWithTearEffects(player,entity,effect.HitPoints,nil,DamageFlag.DAMAGE_FAKE,nil,nil,player:GetCollectibleRNG(ARAOI.CollectibleType.KATANA))
+            ARAOI.MiscUtils.DamageWithTearEffects(player,entity,effect.HitPoints,effect,nil,nil,nil,player:GetCollectibleRNG(ARAOI.CollectibleType.KATANA))
+        end
+    -- If the entity is a pickup that is not being sold in the shop
+    elseif (entity.Type == EntityType.ENTITY_PICKUP and not entity:ToPickup():IsShopItem()) then
+        -- If the pickup is not a collectible
+        if entity.Variant ~= 100 then
+            -- Collide with the pickup
+            effect.Parent:ForceCollide(entity, false)
         end
     end
-end)
+end
+ARAOI:AddCallback(ARAOI.ModCallbacks.WooshEntityCollided, ARAOI._OnKatanaWooshEntityCollision)
 
--- Main item functionality: countering and parrying
----@param player EntityPlayer
----@param damageFlags DamageFlag
----@param source EntityRef
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_TAKE_DMG, function (_, player, _, damageFlags, source, _)
-    -- Getting the block time for later
-    local TIME = GetBlockTime(player)
+-- Function responsible for updating the mark and spawning the slashes
+function ARAOI:_OnKatanaUpdate()
+    for _, player in ipairs(ARAOI.PlayerUtils.GetPlayersWithCollectible(ARAOI.CollectibleType.KATANA)) do
+        -- Update the enemy mark
+        UpdateEnemyMark(player)
 
-    -- If the damage was self inflicted like Dull Razor,
-    -- was because of the second player like Esau,
-    -- was inflicted by IV Bag,
-    -- bypassed the player's invincibility.
-    if damageFlags & DamageFlag.DAMAGE_FAKE > 0
-    or damageFlags & DamageFlag.DAMAGE_CLONES > 0
-    or damageFlags & DamageFlag.DAMAGE_IV_BAG > 0
-    or damageFlags & DamageFlag.DAMAGE_INVINCIBLE > 0
-    or damageFlags & DamageFlag.DAMAGE_NO_PENALTIES > 0
-    or TIME <= 0
-    or source.Entity == nil
-    -- We let the game handle the damage.
-    then return end
-
-    -- Getting the parried entity
-    local PARRIED_ENTITY = source.Entity
-    -- If the parried entity was spawned
-    if PARRIED_ENTITY.SpawnerEntity then
-        -- Target the spawner entity instead
-        PARRIED_ENTITY = PARRIED_ENTITY.SpawnerEntity
-        assert(PARRIED_ENTITY)
-    end
-
-    -- Function to stop the item hold animation
-    local function InterruptAnimation()
-        -- Make the player take fake damage
-        player:TakeDamage(0, DamageFlag.DAMAGE_FAKE | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(player), 0)
-        -- Stop the hurt sound
-        SFXManager():Stop(SoundEffect.SOUND_ISAAC_HURT_GRUNT)
-        -- Stop the hurt animation
-        player:StopExtraAnimation()
-    end
-
-    -- Function that spawns the visible slashes after parrying
-    ---@param from Vector
-    ---@param to Vector
-    local function SpawnEffects(from, to)
-        -- Function to spawn an individual slash
-        ---@param position Vector
-        local function SpawnSlash(position)
-            -- Spawn the slash
-            local slash = Isaac.Spawn(1000, EFFECT_SLASH, 0, position, Vector.Zero, nil):ToEffect()
-            assert(slash)
-            -- Give it a random rotation and offset
-            slash:GetSprite().Rotation = math.random(360)
-            slash:GetSprite().Offset = Vector(0, -20)
-            slash:GetSprite().PlaybackSpeed = math.random(0,1) / 2 + 0.75
+        -- Updating the slash cooldown
+        local playerFireDelay = FireDelay(player)
+        if playerFireDelay > 0 then
+            FireDelay(player, playerFireDelay - 1)
         end
 
-        -- Setting some data
-        local step = 30
-        local current = from
-        local offset = Vector.Zero
-        local distance = from:Distance(to)
+        -- If we are not pressing a fire button or we are dead, end here
+        if (ARAOI.PlayerUtils.GetCurrentShootingDirection(player) == ARAOI.PlayerUtils.FireDirection.NONE) or player:IsDead() then return end
 
-        -- While we still have distance to travel to our targer
-        while distance > 0 do
-            -- Spawn 3 slashes
-            for _ = 1, 3 do
-                offset = Vector(math.random(100) - 50, math.random(100) - 50)
-                SpawnSlash(current + offset)
-            end
-            -- Decrease the current distance and keep track of the remaining distance
-            current = current - (from - to):Normalized() * step
-            distance = distance - step
-        end
+        -- If the cooldown ended
+        if playerFireDelay <= 0 then
+            -- Get the shooting direction
+            local direction = Vector.FromAngle(90 * ARAOI.PlayerUtils.GetCurrentShootingDirection(player))
 
-        -- Get a list of all enemies hit by our effect and return it
-        local enemies = Isaac.FindInCapsule(Capsule(from, to, 40))
-        return enemies
-    end
+            -- Spawn a slash
+            local swing = ARAOI.PlayerUtils.FireMelee(player, player:GetTearHitParams(player:GetWeapon(1):GetWeaponType()).TearScale * 1.2, direction, false)
+            swing.HitPoints = player.Damage * SWING_DAMAGE_MULTIPLIER
 
-    -- Did we get damaged while on our parry window?
-    if TIME >= (MAX_BLOCK_TIME - GetParryWindow(player)) then
-        -- Interrupt the item animation and stop blocking
-        InterruptAnimation()
-        StopBlocking(player)
+            -- Setting it's data so we can identify it later
+            local swing_data = swing:GetData()
+            swing_data["IsKatanaMelee"] = true
 
-        -- Add invincibility so we don't get instantly hit after teleporting
-        ARAOI.PlayerUtils.AddShield(player, 30)
+            -- Play a sound
+            SFXManager():Play(SoundEffect.SOUND_TOOTH_AND_NAIL, 0.3, 3, nil, 2)
 
-        -- Store our current position
-        local original_position = player.Position
-
-        -- Get the direction of our teleport
-        local enemy_direction = (player.Position - PARRIED_ENTITY.Position):Normalized()
-
-        -- Get the new position to teleport to
-        local position = PARRIED_ENTITY.Position - enemy_direction * 50 * (PARRIED_ENTITY:IsBoss() and 2 or 1)
-
-        -- If we are flying, we can ignore obstacles
-        if player:IsFlying() then
-            player.Position = PARRIED_ENTITY.Position - position
-
-        else
-            -- Raycasting to find the closest available position
-            ---@type boolean, Vector
-            ---@diagnostic disable-next-line: assign-type-mismatch, cast-local-type
-            _, player.Position = Game():GetRoom():CheckLine(PARRIED_ENTITY.Position, position, LineCheckMode.ENTITY)
-        end
-
-        -- Spawn the slash effects and get the hit enemies
-        local hit_enemies = SpawnEffects(original_position, player.Position)
-
-        -- Play a sound for feedback and recharge our item
-        SFXManager():Play(SoundEffect.SOUND_TOOTH_AND_NAIL, nil, nil, nil, 2)
-        ARAOI.PlayerUtils.AddActiveCharge(player,  player:GetActiveItemSlot(ARAOI.CollectibleType.KATANA), 265, false, false, true)
-
-        -- Process the synergies, which is also where damage is done
-        ProcessSynergies(player, original_position, player.Position, PARRIED_ENTITY, hit_enemies)
-
-    -- We got hit outside our parry window, but we still blocked
-    else
-        -- Check our counter cooldown
-        local data = player:GetActiveItemDesc(player:GetActiveItemSlot(ARAOI.CollectibleType.KATANA))
-        -- If we're not in cooldown
-        if data.VarData <= 0 then
-            -- Reset the cooldown
-            data.VarData = 3
-
-            -- Spawn an attack
-            local woosh = ARAOI.PlayerUtils.FireMelee(player, 1.5, -(player.Position - PARRIED_ENTITY.Position):Normalized(), nil, false)
-
-            -- Mark the attack as our item's
-            local woosh_data = woosh:GetData()
-            woosh_data["IsKatanaMelee"] = true
-
-            -- Play a sound for feedback
-            SFXManager():Play(SoundEffect.SOUND_TOOTH_AND_NAIL, nil, nil, nil, 2)
+            -- Setting a cooldown
+            FireDelay(player, player.MaxFireDelay)
         end
     end
-    return false
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnKatanaUpdate)
 
 
 ---------------------
@@ -376,20 +364,13 @@ end)
 
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.KATANA,
-        "# Isaac holds the sword and counters incoming damage"..
-        "# Countering just before getting hit will {{ColorYellow}}Parry{{CR}} instead"..
-        "# {{ColorYellow}}Parrying{{CR}} an attack will teleport Isaac behind the attacker and deal {{Damage}} "..PARRY_DAMAGE_MULTIPLIER.."x Isaac's damage"..
-        "#{{Battery}} Countering and {{ColorYellow}}Parrying{{CR}} restore some charge"..
-        "#!!! Using the item while invincible {{ColorYellow}}disables parrying{{CR}}"
-    )
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "KATANA CAR BATTERY SYNERGY",
-        ARAOI.CollectibleType.KATANA,
-        "Doubles parry window"
+        "# Isaac swings the Katana in the direction he shoots, doing {{Damage}} "..SWING_DAMAGE_MULTIPLIER.."x Isaac's damage"..
+        "#{{BrimstoneCurse}} Swings mark the last enemy hit"..
+        "#{{Timer}} Using the item gives Isaac a 1 second shield and teleports him behind the marked enemy, doing {{Damage}} "..TELEPORT_DAMAGE_MULTIPLIER.."x Isaac's damage to enemies in between"
     )
     ARAOI.EIDUtils.AbyssSynergy(
         "KATANA ABYSS SYNERGY",
         ARAOI.CollectibleType.KATANA,
-        "Gray locust thad does 3x damage"
+        "Gray locust that does 3x damage"
     )
 end)

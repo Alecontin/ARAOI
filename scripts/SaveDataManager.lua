@@ -96,6 +96,7 @@ function SaveDataManager:init(Mod)
     SaveDataManager.LEVEL = {}
     SaveDataManager.ROOM = {}
     SaveDataManager.TIMERS = {}
+    SaveDataManager.MOD_CONFIG_MENU = {}
 
     SaveDataManager.LAST_ROOM_RUN = {}
     SaveDataManager.LAST_ROOM_LEVEL = {}
@@ -109,7 +110,8 @@ function SaveDataManager:init(Mod)
             SaveDataManager.RUN,
             SaveDataManager.LEVEL,
             SaveDataManager.ROOM,
-            SaveDataManager.TIMERS
+            SaveDataManager.TIMERS,
+            SaveDataManager.MOD_CONFIG_MENU
         })
         return data
     end
@@ -125,10 +127,10 @@ function SaveDataManager:init(Mod)
         if not isContinued then
             -- Clearing all the contexts
 
-            SaveDataManager.RUN    = {}
-            SaveDataManager.LEVEL  = {}
-            SaveDataManager.ROOM   = {}
-            SaveDataManager.TIMERS = {}
+            SaveDataManager.RUN             = {}
+            SaveDataManager.LEVEL           = {}
+            SaveDataManager.ROOM            = {}
+            SaveDataManager.TIMERS          = {}
         else
             -- The run is continued, try to load data
 
@@ -140,11 +142,12 @@ function SaveDataManager:init(Mod)
                 -- Decode the data
                 local data = json.decode(mod_data)
 
-                SaveDataManager.PERSISTENT = data[1] or {}
-                SaveDataManager.RUN        = data[2] or {}
-                SaveDataManager.LEVEL      = data[3] or {}
-                SaveDataManager.ROOM       = data[4] or {}
-                SaveDataManager.TIMERS     = data[5] or {}
+                SaveDataManager.PERSISTENT      = data[1] or {}
+                SaveDataManager.RUN             = data[2] or {}
+                SaveDataManager.LEVEL           = data[3] or {}
+                SaveDataManager.ROOM            = data[4] or {}
+                SaveDataManager.TIMERS          = data[5] or {}
+                SaveDataManager.MOD_CONFIG_MENU = data[6] or {}
             end
         end
     end
@@ -152,6 +155,7 @@ function SaveDataManager:init(Mod)
     ---@param isContinued boolean
     local function onGameStarted(_, isContinued)
         loadSaveData(isContinued)
+        Mod:SaveData(saveData())
     end
     Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, onGameStarted)
 
@@ -308,6 +312,17 @@ function SaveDataManager:init(Mod)
             return default
         end
     end
+
+    -- Get/Set data from/to a Mod Config Menu setting
+    ---@param item string -- The name of the item to get/set the setting
+    ---@param setting string -- The setting name/identifier
+    ---@param default any -- What should the default value of the setting be? Set to the item's Config values
+    ---@param value? any -- The value to set the key to, leave blank to not set the value
+    function SaveDataManager:MCM(item, setting, default, value)
+        return self:Data(self.MOD_CONFIG_MENU, item, {}, setting, default, value)
+    end
+
+
 
     loadSaveData(true)
 

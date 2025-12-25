@@ -54,7 +54,7 @@ local SFX = SFXManager()
 ---@param removeInstead? boolean -- Default: `false`
 ---@return CollectibleType[]
 function ARAOI.Bag_of_Holding.StoredItems(player, add, removeInstead)
-    local data = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "BagOfHoldingStoredItems", {}, ARAOI.PlayerUtils.GetID(player), {})
+    local data = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingStoredItems", {}, ARAOI.PlayerUtils.GetId(player), {})
     if add then
         if removeInstead == true then
             local index = ARAOI.TableUtils.FindFirstInstanceInTable(add, data)
@@ -65,46 +65,55 @@ function ARAOI.Bag_of_Holding.StoredItems(player, add, removeInstead)
             table.insert(data, add)
         end
 
-        ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "BagOfHoldingStoredItems", {}, ARAOI.PlayerUtils.GetID(player), {}, data)
+        ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingStoredItems", {}, ARAOI.PlayerUtils.GetId(player), {}, data)
     end
     return data
+end
+
+-- Gets the index of the selected item
+---@param player EntityPlayer
+function ARAOI.Bag_of_Holding.GetSelectedIndex(player)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingSelectedItemIndex", {}, ARAOI.PlayerUtils.GetId(player), 0)
 end
 
 -- Cycles to the next item from the player's stored items. If we reached the end, it automatically wraps around
 ---@param player EntityPlayer
 ---@return integer
 function ARAOI.Bag_of_Holding.CycleItem(player)
-    local slot = player:GetActiveItemSlot(ARAOI.CollectibleType.BAG_OF_HOLDING)
-    local desc = player:GetActiveItemDesc(slot)
+    local desc = player:GetActiveItemDesc(player:GetActiveItemSlot(ARAOI.CollectibleType.BAG_OF_HOLDING))
+    local data = desc.VarData
+    ARAOI.Bag_of_Holding.SelectedVarData(player, data)
 
-    local stored_items = ARAOI.Bag_of_Holding.StoredItems(player)
+    local cycled_item = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingSelectedItemIndex", {}, ARAOI.PlayerUtils.GetId(player), 0,
+        (ARAOI.Bag_of_Holding.GetSelectedIndex(player) + 1) % (#ARAOI.Bag_of_Holding.StoredItems(player) + 1)
+    )
 
-    desc.VarData = (desc.VarData + 1) % (#stored_items + 1)
+    desc.VarData = ARAOI.Bag_of_Holding.SelectedVarData(player)
 
-    return desc.VarData
+    return cycled_item
 end
 
 -- Gets the currently selected item, returns `nil` if no item is selected
 ---@param player EntityPlayer
 ---@return CollectibleType | nil
 function ARAOI.Bag_of_Holding.GetSelectedItem(player)
-    local slot = player:GetActiveItemSlot(ARAOI.CollectibleType.BAG_OF_HOLDING)
-    local desc = player:GetActiveItemDesc(slot)
+    local selected_item = ARAOI.Bag_of_Holding.GetSelectedIndex(player)
+    return (selected_item == 0) and nil or ARAOI.Bag_of_Holding.StoredItems(player)[selected_item]
+end
 
-    local stored_items = ARAOI.Bag_of_Holding.StoredItems(player)
-
-    if stored_items[desc.VarData] == nil then
-        desc.VarData = 0
-    end
-
-    return tonumber(stored_items[desc.VarData]) or nil
+-- Gets the currently selected item's VarData
+---@param player EntityPlayer
+---@param set? any
+---@return any
+function ARAOI.Bag_of_Holding.SelectedVarData(player, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingVarData", {}, ARAOI.Bag_of_Holding.GetSelectedItem(player) or ARAOI.CollectibleType.BAG_OF_HOLDING, 0, set)
 end
 
 ---@param player EntityPlayer
 ---@param set? CollectibleType
 ---@return CollectibleType
 function ARAOI.Bag_of_Holding.LastItemUsed(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "BagOfHoldingLastItemUse", {}, ARAOI.PlayerUtils.GetID(player), ARAOI.CollectibleType.BAG_OF_HOLDING, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingLastItemUse", {}, ARAOI.PlayerUtils.GetId(player), ARAOI.CollectibleType.BAG_OF_HOLDING, set)
 end
 
 
@@ -115,8 +124,9 @@ end
 ---@param entity Entity
 ---@param inputHook InputHook
 ---@param buttonAction ButtonAction
-ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
+function ARAOI:_OnBagOfHoldingInputAction(entity, inputHook, buttonAction)
     if not entity then return end
+    if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.BAG_OF_HOLDING) then return end
 
     local player = entity:ToPlayer()
     if not player then return end
@@ -145,7 +155,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
             return false
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_INPUT_ACTION, ARAOI._OnBagOfHoldingInputAction)
 
 
 --------------
@@ -154,7 +165,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlags)
+function ARAOI:_OnBagOfHoldingUse(_, _, player, useFlags, slot)
     -- Don't do anything if it's a car battery use
     -- if we WERE to just ignore this, items would be used 4 times!
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
@@ -192,7 +203,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
 
                 -- Is the item an active, is the charge is not special, is not a quest item and is not for sale?
                 if config.Type == ItemType.ITEM_ACTIVE
-                and config.ChargeType ~= ChargeType.Special
+                and (config.ChargeType == ChargeType.Normal)
                 and not config:HasTags(ItemTag.TAG_QUEST)
                 and not pickup:IsShopItem() then
                     -- If the item is part of an options index
@@ -247,7 +258,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
         -- Otherwise, it will run just once
         ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
             -- Use the active item
-            player:UseActiveItem(selected, car_battery_flag)
+            player:UseActiveItem(selected, car_battery_flag, slot)
 
             -- If we have book of virtues, we artificially spawn wisps
             if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
@@ -264,7 +275,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
     end
 
     return true
-end, ARAOI.CollectibleType.BAG_OF_HOLDING)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnBagOfHoldingUse, ARAOI.CollectibleType.BAG_OF_HOLDING)
 
 
 ---------------------------------
@@ -273,17 +285,18 @@ end, ARAOI.CollectibleType.BAG_OF_HOLDING)
 
 ---@param collectibleType CollectibleType
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, function (_, collectibleType, player, _)
+function ARAOI:_OnBagOfHoldingGetActiveMaxCharge(collectibleType, player, _)
     if collectibleType ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
 
     -- Get and return the last item's max charge
     local config = ItemConfig:GetCollectible(ARAOI.Bag_of_Holding.LastItemUsed(player))
     return config.MaxCharges
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, ARAOI._OnBagOfHoldingGetActiveMaxCharge)
 
 ---@param collectibleType CollectibleType
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, function (_, player, collectibleType)
+function ARAOI:_OnBagOfHoldingTriggerCollectibleRemoved(player, collectibleType)
     -- Don't do anything if we don't have our item equipped
     if player:GetActiveItem() ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
 
@@ -299,7 +312,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, function
         -- Remove the stored item
         ARAOI.Bag_of_Holding.StoredItems(player, collectibleType, true)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, ARAOI._OnBagOfHoldingTriggerCollectibleRemoved)
 
 
 ---------------------------
@@ -311,7 +325,7 @@ end)
 ---@param offset Vector
 ---@param alpha number
 ---@param scale number
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)-- Do not render if the game JUST started
+function ARAOI:_OnBagOfHoldingRenderActiveItem(player, slot, offset, alpha, scale)-- Do not render if the game JUST started
     -- Don't render if the item is not ours
     local collectible_id = player:GetActiveItem(slot)
     if collectible_id ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
@@ -335,7 +349,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, functio
 
     -- Render the sprite to the screen
     BAG_OF_HOLDING_SPRITE:Render(offset)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, ARAOI._OnBagOfHoldingRenderActiveItem)
 
 
 ----------------------
@@ -344,7 +359,7 @@ end)
 
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.BAG_OF_HOLDING,
-        "#{{Collectible"..CollectibleType.COLLECTIBLE_VOID.."}} Absorbs Active Items that don't have a special charge"..
+        "#{{Collectible"..CollectibleType.COLLECTIBLE_VOID.."}} Absorbs Active Items with normal charges"..
         "#{{Collectible"..CollectibleType.COLLECTIBLE_RESTOCK.."}} Isaac can cycle between absorbed items with the drop button ({{ButtonRT}})"..
         "# Using Bag of Holding while an item is selected will use that item instead"..
         "#{{Battery}} Charge time varies depending on the last item used and updates with every use"

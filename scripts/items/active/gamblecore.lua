@@ -29,6 +29,7 @@ REWARDS_TYPE.Devil = 6
 REWARDS_TYPE.Angel = 7
 REWARDS_TYPE.Planetarium = 8
 REWARDS_TYPE.Treasure = 9
+local num_rewards = 10
 
 ARAOI.Gamblecore.REWARDS_TYPE = REWARDS_TYPE
 
@@ -42,7 +43,7 @@ local function NewReelSprite(rng)
     if rng == nil then rng = GLOBAL_RNG end
 
     local slot = Sprite("gfx/ui/hud_gambling.anm2", true)
-    slot:Play(tostring(rng:RandomInt(9)))
+    slot:Play(tostring(rng:RandomInt(num_rewards)))
     slot.PlaybackSpeed = 30
 
     return slot
@@ -50,25 +51,27 @@ end
 
 ---@param player EntityPlayer
 ---@param reward_type number -- The type of the reward. Use `ARAOI.Gamblecore.REWARDS_TYPE`
----@param add? number -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+---@param add? integer -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
+---@return integer
 function ARAOI.Gamblecore.PlayerReward(player, reward_type, add)
-    local reward = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player).."/"..reward_type, 0)
+    local reward = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0)
     if add then
         if reward_type == REWARDS_TYPE.Angel then
             game:GetLevel():AddAngelRoomChance(add * 0.07)
         end
-        return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetID(player).."/"..reward_type, 0, add ~= 0 and (reward+add) or add)
+        return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0, add ~= 0 and (reward+add) or add)
     else
         return reward
     end
 end
 
 ---@param player EntityPlayer
----@param add? number -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+---@param add? integer -- How much to add. Leave at `nil` to get the current pity level. `0` to reset
+---@return integer
 function ARAOI.Gamblecore.PlayerPity(player, add)
-    local pity = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetID(player), 0)
+    local pity = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetId(player), 0)
     if add then
-        return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetID(player), 0, add ~= 0 and (pity+add) or add)
+        return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreFailurePity", {}, ARAOI.PlayerUtils.GetId(player), 0, add ~= 0 and (pity+add) or add)
     else
         return pity
     end
@@ -78,12 +81,14 @@ local gambling_players = {}
 
 ---@param player EntityPlayer
 local function StartGambling(player)
-    ARAOI.SaveData:Key(gambling_players, ARAOI.PlayerUtils.GetID(player), false, true)
+    gambling_players[ARAOI.PlayerUtils.GetId(player)] = true
+    -- ARAOI.SaveDataManager:Key(gambling_players, ARAOI.PlayerUtils.GetID(player), false, true)
 end
 
 ---@param player EntityPlayer
 local function IsGambling(player)
-    return ARAOI.SaveData:Key(gambling_players, ARAOI.PlayerUtils.GetID(player), false)
+    return gambling_players[ARAOI.PlayerUtils.GetId(player)] or false
+    -- return ARAOI.SaveDataManager:Key(gambling_players, ARAOI.PlayerUtils.GetID(player), false)
 end
 
 local hud_reels = {}
@@ -96,25 +101,26 @@ function ARAOI.Gamblecore.CreateSlots(player, amount, rng)
     if not IsGambling(player) then
         StartGambling(player)
         local reels = {}
-        for _ = 1,amount do
+        for _ = 1, amount do
             local reel = NewReelSprite(rng)
             table.insert(reels, reel)
         end
-        ARAOI.SaveData:Key(hud_reels, ARAOI.PlayerUtils.GetID(player), {}, reels)
+        ARAOI.SaveDataManager:Key(hud_reels, ARAOI.PlayerUtils.GetId(player), {}, reels)
     end
 end
 
 -- Clears the gambling interaction, this is done automatically
 function ARAOI.Gamblecore.ClearGambling(player)
-    gambling_players[ARAOI.PlayerUtils.GetID(player)] = nil
-    hud_reels[ARAOI.PlayerUtils.GetID(player)] = nil
+    gambling_players[ARAOI.PlayerUtils.GetId(player)] = nil
+    hud_reels[ARAOI.PlayerUtils.GetId(player)] = nil
 end
 
 -- Get the current player's reels
 ---@param player EntityPlayer
 ---@return Sprite[]
 function ARAOI.Gamblecore.GetReels(player)
-    return ARAOI.SaveData:Key(hud_reels, ARAOI.PlayerUtils.GetID(player), {})
+    return hud_reels[ARAOI.PlayerUtils.GetId(player)] or {}
+    -- return ARAOI.SaveDataManager:Key(hud_reels, ARAOI.PlayerUtils.GetID(player), {})
 end
 
 
@@ -167,20 +173,20 @@ local function CalculateReward(player)
     -- If we have at least a jackpot
     if #jackpots > 0 then
         -- Play some sounds
-        sfx:Play(SFX_I_CANT_STOP_WINNING, 0.7)
+        sfx:Play(SFX_I_CANT_STOP_WINNING, 0.5)
         sfx:Play(SoundEffect.SOUND_POWERUP_SPEWER_AMPLIFIED)
         ARAOI.Gamblecore.PlayerPity(player, 0)
 
     -- Else, do we have at least a win?
     elseif #winnings > 0 then
         -- Play a sound
-        sfx:Play(SFX_I_CANT_STOP_WINNING, 0.7)
+        sfx:Play(SFX_I_CANT_STOP_WINNING, 0.5)
         ARAOI.Gamblecore.PlayerPity(player, 0)
 
     -- If all else fails, we didn't win anything
     else
         ARAOI.Gamblecore.PlayerPity(player, 1)
-        sfx:Play(SFX_AW_DANG_IT, 0.7)
+        sfx:Play(SFX_AW_DANG_IT, 0.5)
     end
 
     -- For every winning symbol
@@ -248,18 +254,19 @@ local function CalculateReward(player)
 end
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function (_, _, player)
+function ARAOI:_OnGamblecoreGetActiveMinUsableCharge(_, player)
     if player:GetNumCoins() >= 7 then
         return 0
     end
-end, ARAOI.CollectibleType.GAMBLECORE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, ARAOI._OnGamblecoreGetActiveMinUsableCharge, ARAOI.CollectibleType.GAMBLECORE)
 
 -- Takes care of initializing everything
 ---@param rng RNG
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
 ---@param slot ActiveSlot
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags, slot)
+function ARAOI:_OnGamblecoreUse(_, rng, player, useFlags, slot)
     -- If this is a car battery use, nothing should happen
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
@@ -268,7 +275,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         -- If the timeout for the sound effect is over
         if SFX_LETS_GO_GAMBLING_TIMEOUT == 0 then
             -- Play the sound effect
-            sfx:Play(SFX_LETS_GO_GAMBLING, 0.7)
+            sfx:Play(SFX_LETS_GO_GAMBLING, 0.5)
         end
         -- Reset the timeout
         SFX_LETS_GO_GAMBLING_TIMEOUT = SFX_LETS_GO_GAMBLING_COOLDOWN
@@ -308,10 +315,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
     end
 
     return true
-end, ARAOI.CollectibleType.GAMBLECORE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnGamblecoreUse, ARAOI.CollectibleType.GAMBLECORE)
 
 -- Function that takes care of the reel animations and detecting when they are finished
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
+function ARAOI:_OnGamblecoreUpdate()
     -- If the sfx is in timeout, decrease it
     if SFX_LETS_GO_GAMBLING_TIMEOUT > 0 then SFX_LETS_GO_GAMBLING_TIMEOUT = SFX_LETS_GO_GAMBLING_TIMEOUT - 1 end
 
@@ -324,7 +332,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         local reels_finished = 0
 
         -- For every reel assigned to the player
-        for _, reel in ipairs(ARAOI.Gamblecore.GetReels(player)) do
+        for i, reel in ipairs(ARAOI.Gamblecore.GetReels(player)) do
             -- Get some data for later
             local rng = player:GetCollectibleRNG(ARAOI.CollectibleType.GAMBLECORE)
             local frame = reel:GetFrame()
@@ -334,15 +342,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
 
             -- We decrease the speed of the animation depending on how much time has passed
             if reel.PlaybackSpeed > 10 then
-                reel.PlaybackSpeed = reel.PlaybackSpeed - rng:RandomFloat()
+                reel.PlaybackSpeed = reel.PlaybackSpeed - 1
             elseif reel.PlaybackSpeed > 7 then
-                reel.PlaybackSpeed = reel.PlaybackSpeed - rng:RandomFloat()*2
+                reel.PlaybackSpeed = reel.PlaybackSpeed - 2
             elseif reel.PlaybackSpeed > 5 then
-                reel.PlaybackSpeed = reel.PlaybackSpeed - rng:RandomFloat()*4
-            elseif reel.PlaybackSpeed > 4 then
-                reel.PlaybackSpeed = reel.PlaybackSpeed - rng:RandomFloat()*2
+                reel.PlaybackSpeed = reel.PlaybackSpeed - 3
+            elseif reel.PlaybackSpeed > 3 then
+                reel.PlaybackSpeed = reel.PlaybackSpeed - 2
             elseif reel.PlaybackSpeed >= 0.3 then
-                reel.PlaybackSpeed = reel.PlaybackSpeed - rng:RandomFloat()
+                reel.PlaybackSpeed = reel.PlaybackSpeed - 1
 
             -- We reached the end of the animation
             elseif reel.PlaybackSpeed ~= -10 then
@@ -368,36 +376,23 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
             -- If the sprite animation finished
             if reel:IsFinished(reel:GetAnimation()) then
                 -- Get a new random sprite animation
-                local calculated_weights = {}
-                for i = 0,REWARDS_TYPE.Treasure do
-                    if i <= REWARDS_TYPE.Luck then
-                        calculated_weights[i] = 10 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.9
-                    elseif i <= REWARDS_TYPE.Planetarium then
-                        calculated_weights[i] = 5 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.4
-                    elseif i == REWARDS_TYPE.Treasure then
-                        calculated_weights[i] = 3 - math.min(10, ARAOI.Gamblecore.PlayerReward(player, i)) * 0.2
-                    end
-                end
-                for i,v in pairs(calculated_weights) do
-                    if (i == REWARDS_TYPE.Tears and player.FireDelay > player.MaxFireDelay)
-                    or i == REWARDS_TYPE.Damage
-                    or (i == REWARDS_TYPE.Luck and player.Luck < 7.77)
-                    or (i == REWARDS_TYPE.Planetarium and ARAOI.Gamblecore.PlayerReward(player, i) < 3)
-                    or (i == REWARDS_TYPE.Treasure and ARAOI.Gamblecore.PlayerReward(player, i) < 1) then
-                        calculated_weights[i] = v + ARAOI.Gamblecore.PlayerPity(player)
-                    end
+                local set_same = rng:RandomFloat() < (0.0264 * ARAOI.Gamblecore.PlayerPity(player))
+
+                local choice = nil
+                if set_same and i > 1 then
+                    choice = ARAOI.Gamblecore.GetReels(player)[i-1]:GetAnimation()
+                else
+                    choice = rng:RandomInt(num_rewards - 1)
                 end
 
-                local type, weights = ARAOI.TableUtils.KeysAndValues(calculated_weights)
-                local random = ARAOI.TableUtils.Choice(type, weights, rng)
                 -- Play the new sprite animation
-                reel:Play(tostring(random), true)
+                reel:Play(tostring(choice), true)
             end
 
             -- If we passed the center
             if reel:IsEventTriggered("Click") then
                 -- Play a sound
-                sfx:Play(SFX_TICK, 0.7)
+                sfx:Play(SFX_TICK, 0.4)
             end
         end
 
@@ -409,10 +404,11 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
 
         ::continue::
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnGamblecoreUpdate)
 
 -- Rendering of the slots
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+function ARAOI:_OnGamblecoreRender()
     -- For every player
     for _, player in ipairs(PlayerManager:GetPlayers()) do
         -- Get their reels
@@ -423,7 +419,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             reel:Render(Isaac.WorldToScreen(player.Position) - Vector(-28 * (i-math.ceil(#reels/2)), 57))
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._OnGamblecoreRender)
 
 
 -----------------
@@ -432,7 +429,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param flag CacheFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
+function ARAOI:_OnGamblecoreEvaluateCache(player, flag)
     if flag == CacheFlag.CACHE_SPEED then
         player.MoveSpeed = player.MoveSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
     end
@@ -451,31 +448,35 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, flag)
     if flag == CacheFlag.CACHE_LUCK then
         player.Luck = player.Luck + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Luck) * 2.64
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnGamblecoreEvaluateCache)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_DEVIL_CALCULATE, function (_, chance)
+function ARAOI:_OnGamblecoreDevilCalculate(chance)
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Devil) * 0.07
     end
     return chance + reward_chance
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_DEVIL_CALCULATE, ARAOI._OnGamblecoreDevilCalculate)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
+function ARAOI:_OnGamblecoreNewLevel()
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Angel) * 0.07
     end
     game:GetLevel():AddAngelRoomChance(reward_chance)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnGamblecoreNewLevel)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLANETARIUM_CALCULATE, function (_, chance)
+function ARAOI:_OnGamblecorePlanetariumCalculate(chance)
     local reward_chance = 0
     for _,player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Planetarium) * 0.07
     end
     return chance + reward_chance
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_PLANETARIUM_CALCULATE, ARAOI._OnGamblecorePlanetariumCalculate)
 
 
 ---------------------
@@ -486,9 +487,9 @@ ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.GAMBLECORE,
         "#{{Coin}} +7 Coins"..
         "# Spawns 3 reels above Isaac"..
-        "#{{ArrowUp}} Getting a line of 2 symbols gives Isaac a respective stat up"..
-        "#{{Collectible}} Getting a line of 3 symbols spawns an item related to the respective stat"..
-        "#{{Coin}} Costs 7 coins to use if it's not charged"
+        "#{{ArrowUp}} Getting a 2 symbols in a row gives Isaac a respective stat up"..
+        "#{{Collectible}} Getting a 3 symbols in a row spawns an item related to the respective stat"..
+        "#{{Coin}} Costs 7 coins to use if it's not fully charged"
     )
     ARAOI.EIDUtils.CarBatterySynergy(
         "gamblecore car battery synergy",

@@ -3,7 +3,7 @@
 -- MAIN TRINKET FUNCTIONALITY --
 --------------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+function ARAOI:_OnBountifulSackNewRoom()
     -- Getting the room we just entered
     local room = Game():GetRoom()
 
@@ -12,7 +12,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         -- Try to spawn a clear award
         room:SpawnClearAward()
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnBountifulSackNewRoom)
 
 
 ----------------------

@@ -10,7 +10,7 @@ local sfx = SFXManager()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardHangedManUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local rng = player:GetCardRNG(Card.CARD_HANGED_MAN)
     local room = game:GetRoom()
@@ -40,7 +40,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
             Isaac.Spawn(EntityType.ENTITY_SHOPKEEPER, 1, 0, room:GetRandomPosition(0), Vector.Zero, player)
         end
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardHangedManUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

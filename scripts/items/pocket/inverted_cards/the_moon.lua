@@ -9,7 +9,7 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardMoonUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
 
     local rng = player:GetCardRNG(card.ID)
@@ -59,7 +59,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     level:TryPlaceRoom(dice_room, location, Dimension.NORMAL)
     level:TryPlaceRoom(dice_room, location, Dimension.MIRROR)
     game:StartRoomTransition(location, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT, player)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardMoonUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

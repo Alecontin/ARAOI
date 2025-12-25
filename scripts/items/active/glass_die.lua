@@ -29,7 +29,7 @@ local Modded_Sprite_Data = {}
 ---@param do_initial_setup? boolean -- Default: `true` — Sets some initial sprite variables just in case. Set this to `false` if it's giving errors
 function ARAOI.Glass_Die.RegisterPoolSprite(sprite, pool_id, sprite_frame, sprite_offset, sprite_scale, do_initial_setup)
     if Modded_Sprite_Data[pool_id] ~= nil then
-        Isaac.ConsoleOutput("ARAOI - The pool: "..pool_id..", is already registered. This might cause problems.")
+        print("ARAOI - The pool \""..pool_id.."\" is already registered. This might cause problems.")
     end
     if do_initial_setup ~= false then
         sprite:LoadGraphics()
@@ -50,11 +50,12 @@ end
 ---@param firstTime boolean
 ---@param slot ActiveSlot
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, _, _, firstTime, slot, _, player)
+function ARAOI:_OnGlassDieAddCollectible(_, _, firstTime, slot, _, player)
     if firstTime then
-        player:GetActiveItemDesc(slot).VarData = -1
+        player:GetActiveItemDesc(slot).VarData = -1 -- game:GetRoom():GetItemPool(1)
     end
-end, ARAOI.CollectibleType.GLASS_DIE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ARAOI._OnGlassDieAddCollectible, ARAOI.CollectibleType.GLASS_DIE)
 
 
 --------------
@@ -62,7 +63,7 @@ end, ARAOI.CollectibleType.GLASS_DIE)
 --------------
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
+function ARAOI:_OnGlassDieUse(_, _, player, useFlag, slot)
     if useFlag & UseFlag.USE_CARBATTERY > 0 then return end
 
     -- Getting our item's ItemDesc
@@ -80,7 +81,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
     -- The item has a pool stored
     else
         -- Check all room entities
-        for _, entity in ipairs(Isaac.GetRoomEntities()) do
+        for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
 
             -- Try to convert the entity into a pickup
             local pickup = entity:ToPickup()
@@ -115,7 +116,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
 
     -- Play the item animation
     return true
-end, ARAOI.CollectibleType.GLASS_DIE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnGlassDieUse, ARAOI.CollectibleType.GLASS_DIE)
 
 
 ---------------------------
@@ -127,7 +129,7 @@ end, ARAOI.CollectibleType.GLASS_DIE)
 ---@param offset Vector
 ---@param alpha number
 ---@param scale number
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, function (_, player, slot, offset, alpha, scale)-- Do not render if the game JUST started
+function ARAOI:_OnGlassDieRenderActiveItem(player, slot, offset, alpha, scale)-- Do not render if the game JUST started
     -- Don't render if the item is not ours
     local collectible_id = player:GetActiveItem(slot)
     if collectible_id ~= ARAOI.CollectibleType.GLASS_DIE then return end
@@ -170,7 +172,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, functio
 
     -- Render the sprite to the screen
     GLASS_DIE_SPRITE:Render(offset)
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, ARAOI._OnGlassDieRenderActiveItem)
 
 
 ----------------------

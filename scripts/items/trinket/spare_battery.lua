@@ -1,18 +1,3 @@
------------------------------
--- NO CONFIG FOR THIS ITEM --
------------------------------
-
-
-
-------------------------
--- CONSTANTS AND INIT --
-------------------------
-
-
-
--------------------------
--- ITEM INITIALIZATION --
--------------------------
 
 --------------------------------
 -- MAIN TRINKET FUNCTIONALITY --
@@ -21,11 +6,12 @@
 ---@param entity Entity
 ---@param inputHook any
 ---@param buttonAction any
-ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
-    local game = Game()
-
-    -- Noone pressed anything
+function ARAOI:_OnSpareBatteryInputAction(entity, inputHook, buttonAction)
+    -- No-one pressed anything
     if not entity then return end
+
+    -- If no-one has our trinket we don't need to do anything
+    if not PlayerManager.AnyoneHasTrinket(ARAOI.TrinketType.SPARE_BATTERY) then return end
 
     -- Getting the player that pressed the active button and checking if it has our trinket
     local player = entity:ToPlayer()
@@ -66,6 +52,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
         if player:IsHoldingItem() then return end
 
         -- Getting the room so we can later find a free space to spawn the pickups
+        local game = Game()
         local room = game:GetRoom()
 
         -- How many batteries should we spawn?
@@ -98,7 +85,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
         spawnBatteries()
     end
 
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_INPUT_ACTION, ARAOI._OnSpareBatteryInputAction)
 
 
 ----------------------

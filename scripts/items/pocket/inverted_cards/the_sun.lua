@@ -22,7 +22,7 @@ end
 ---@param player EntityPlayer
 ---@param set? boolean
 local function CardEffect(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "CardEffectInvertedSun", {}, ARAOI.PlayerUtils.GetID(player), false, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "CardEffectInvertedSun", {}, ARAOI.PlayerUtils.GetId(player), false, set)
 end
 
 
@@ -30,7 +30,7 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardSunUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
 
     local level = game:GetLevel()
@@ -61,9 +61,10 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     for _, curse in ipairs(CursesToAdd) do
         level:AddCurse(curse, false)
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardSunUse, card.ID)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
+function ARAOI:_OnInvertedCardSunNewLevel()
     for _, player in ipairs(PlayerManager.GetPlayers()) do
         if CardEffect(player) then
             player:RemoveCollectible(CollectibleType.COLLECTIBLE_DAMOCLES_PASSIVE)
@@ -71,9 +72,10 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
             CardEffect(player, false)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnInvertedCardSunNewLevel)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, selectedCollectible, poolType, decrease, seed)
+function ARAOI:_OnInvertedCardSunGetCollectible(selectedCollectible, poolType, decrease, seed)
     if selectedCollectible ~= CollectibleType.COLLECTIBLE_BLACK_CANDLE then return end
 
     for _, player in ipairs(PlayerManager.GetPlayers()) do
@@ -81,7 +83,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, function (_, selecte
             return game:GetItemPool():GetCollectible(poolType, decrease, seed)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_GET_COLLECTIBLE, ARAOI._OnInvertedCardSunGetCollectible)
 
 ARAOI.EIDWrapper(function ()
     local damocles = CollectibleType.COLLECTIBLE_DAMOCLES

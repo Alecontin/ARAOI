@@ -2,4 +2,7 @@
     <costume id="0" anm2path="duality_halo.anm2" type="passive" />
     <costume id="2" anm2path="3d_glasses.anm2" type="active" priority="5"/>
     <costume id="3" anm2path="rainbow_headband.anm2" type="passive" />
+    <costume id="7" anm2path="vampire_cloak.anm2" type="passive" />
+    <costume id="10" anm2path="sacrificial_heart.anm2" type="passive" />
+    <costume id="21" anm2path="soda.anm2" type="passive" />
 </costumes>

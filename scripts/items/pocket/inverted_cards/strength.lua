@@ -7,14 +7,15 @@ ARAOI.Inverted_Cards.Strength = card
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardStrengthUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity:IsActiveEnemy() then
             entity:ToNPC():MakeChampion(entity.InitSeed)
         end
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardStrengthUse, card.ID)
 
 
 ARAOI.EIDWrapper(function ()

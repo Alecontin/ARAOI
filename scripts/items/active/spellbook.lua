@@ -10,7 +10,7 @@ Config.ENABLE_EID_HISTORY = true -- *Default: `true` — Enables the External It
 Config.MAX_EID_HISTORY = 10 -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
 
 -- If we get these items, we roll again.
--- This can be because the game just crashes, or the item just doesn't work.
+-- This can be because the game crashes, or the item just doesn't work.
 Config.REROLL_ITEMS = {
     CollectibleType.COLLECTIBLE_DELIRIOUS
 }
@@ -33,6 +33,7 @@ Config.SPELL_OVERWRITE = {
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 ------------------------
@@ -95,7 +96,11 @@ local Writing_Spell_Data = {}
 ---@param is_writing? boolean
 ---@return boolean
 function ARAOI.Spellbook.IsPlayerWritingSpell(player, is_writing)
-    return ARAOI.SaveData:Key(Writing_Spell_Data, ARAOI.PlayerUtils.GetID(player), false, is_writing)
+    if is_writing ~= nil then
+        Writing_Spell_Data[ARAOI.PlayerUtils.GetId(player)] = is_writing
+    end
+    return Writing_Spell_Data[ARAOI.PlayerUtils.GetId(player)] or false
+    -- return ARAOI.SaveDataManager:Key(Writing_Spell_Data, ARAOI.PlayerUtils.GetID(player), false, is_writing)
 end
 
 local Written_Spells = {}
@@ -108,7 +113,11 @@ local Written_Spells = {}
 ---@param spell? string
 ---@return string
 function ARAOI.Spellbook.PlayerWrittenSpell(player, spell)
-    return ARAOI.SaveData:Key(Written_Spells, ARAOI.PlayerUtils.GetID(player), "", spell)
+    if spell then
+        Written_Spells[ARAOI.PlayerUtils.GetId(player)] = spell
+    end
+    return Written_Spells[ARAOI.PlayerUtils.GetId(player)] or ""
+    -- return ARAOI.SaveDataManager:Key(Written_Spells, ARAOI.PlayerUtils.GetID(player), "", spell)
 end
 
 
@@ -117,20 +126,20 @@ end
 ---@param item CollectibleType
 ---@return nil
 function ARAOI.Spellbook.AddTemporaryItemToPlayer(player, item)
-    local temporary_items = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetID(player), {})
+    local temporary_items = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetId(player), {})
 
     player:AddCollectible(item)
     local history = player:GetHistory():GetCollectiblesHistory()
     table.insert(temporary_items, history[#history]:GetTime())
 
-    ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetID(player), {}, temporary_items)
+    ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetId(player), {}, temporary_items)
 end
 
 -- Removes the temporary items from the player
 ---@param player EntityPlayer
 ---@return nil
 function ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
-    local temporary_items = ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetID(player), {})
+    local temporary_items = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetId(player), {})
 
     for _, item in ipairs(player:GetHistory():GetCollectiblesHistory()) do
         if ARAOI.TableUtils.IsValueInTable(item:GetTime(), temporary_items) then
@@ -138,7 +147,7 @@ function ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
         end
     end
 
-    ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetID(player), {}, {})
+    ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "SpellbookTemporaryItems", {}, ARAOI.PlayerUtils.GetId(player), {}, {})
 end
 
 -- Returns the known spells for use with EID
@@ -148,7 +157,7 @@ end
 ---@param item CollectibleType?
 ---@return table table -- `{{spell: str, item: CollectibleType}, ...}`
 function ARAOI.Spellbook.EIDRegisteredSpells(spell, item)
-    local data = ARAOI.SaveData:Key(ARAOI.SaveData.RUN, "SpellbookRegisteredSpells", {})
+    local data = ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.RUN, "SpellbookRegisteredSpells", {})
     if spell and item then
         for i, v in ipairs(data) do
             local stored_spell = v[1]
@@ -160,7 +169,7 @@ function ARAOI.Spellbook.EIDRegisteredSpells(spell, item)
         table.insert(data, {spell, item})
     end
 
-    ARAOI.SaveData:Key(ARAOI.SaveData.RUN, "SpellbookRegisteredSpells", {}, data)
+    ARAOI.SaveDataManager:Key(ARAOI.SaveDataManager.RUN, "SpellbookRegisteredSpells", {}, data)
 
     return ARAOI.TableUtils.ReverseList(data)
 end
@@ -201,12 +210,12 @@ end
 -- INPUT BLOCKER --
 -------------------
 
----@param _ any
 ---@param entity Entity
 ---@param inputHook InputHook
 ---@param buttonAction ButtonAction
-ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHook, buttonAction)
+function ARAOI:_OnSpellbookInputAction(entity, inputHook, buttonAction)
     if not entity then return end
+    if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.SPELLBOOK) then return end
 
     local player = entity:ToPlayer()
     if not player or not ARAOI.Spellbook.IsPlayerWritingSpell(player) then return end
@@ -230,18 +239,20 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_INPUT_ACTION, function (_, entity, inputHo
             return false
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_INPUT_ACTION, ARAOI._OnSpellbookInputAction)
 
 
 --------------------
 -- MISC FUNCTIONS --
 --------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function ()
+function ARAOI:_OnSpellbookNewLevel()
     for _, player in pairs(PlayerManager.GetPlayers()) do
         ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnSpellbookNewLevel)
 
 
 ----------------------------
@@ -250,7 +261,7 @@ end)
 
 ---@param player EntityPlayer
 ---@param slot ActiveSlot
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFlag, slot)
+function ARAOI:_OnSpellbookUse(_, _, player, useFlag, slot)
     local game = Game()
 
     -- This prevents us from entering the writing state from items such as Void
@@ -294,7 +305,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
         -- If the item is a passive item or a familiar
         if config.Type == ItemType.ITEM_PASSIVE or config.Type == ItemType.ITEM_FAMILIAR then
             -- We add the item to the list of temporary items for them to get deleted later, keeping in mind Car Battery
-            ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_use)
+            ARAOI.PlayerUtils.CarBatteryWrapper(player, function ()
                 ARAOI.Spellbook.AddTemporaryItemToPlayer(player, spell_item)
             end)
 
@@ -302,7 +313,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
             -- Use the active item, and twice if we have Car Battery
             ARAOI.PlayerUtils.CarBatteryWrapper(player, function (car_battery_flag)
                 -- Use the active item, adding the necessary UseFlags
-                player:UseActiveItem(spell_item, car_battery_flag)
+                player:UseActiveItem(spell_item, car_battery_flag, slot)
 
                 -- If we have book of virtues, we artificially spawn wisps
                 if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
@@ -337,14 +348,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, _, player, useFl
         SFX:Play(SoundEffect.SOUND_MENU_RIP, 3)
         return true
     end
-end, ARAOI.CollectibleType.SPELLBOOK)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnSpellbookUse, ARAOI.CollectibleType.SPELLBOOK)
 
 
 ------------------------------
 -- BOOK AND ARROWS RENDERER --
 ------------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+function ARAOI:_OnSpellbookRender()
     -- If anyone is writing a spell, keep track of it
     local anyone_is_writing_spell = false
 
@@ -496,7 +508,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
             )
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._OnSpellbookRender)
 
 
 ----------------------
@@ -514,8 +527,8 @@ ARAOI.EIDWrapper(function ()
         "#{{Collectible"..ARAOI.CollectibleType.SPELLBOOK.."}} On use, spawns an open Spellbook above Isaac"..
         "#{{Tearsize}} Shooting in any direction will write to the Spellbook"..
         "#{{Collectible}} Casting the spell will mimic the use of a random item"..
-        "#{{Collectible"..(CollectibleType.COLLECTIBLE_RESTOCK).."}} Writing the same spell will use the same item"..
-        "#{{TreasureRoom}} If the used item was a passive item, it will instead give it to Isaac for the rest of the floor"
+        "#{{Collectible"..(CollectibleType.COLLECTIBLE_RESTOCK).."}} Writing the same spell will mimic the same item"..
+        "#{{TreasureRoom}} If the used item was a passive item, it will instead be given to Isaac for the rest of the floor"
     )
 
     ARAOI.EIDUtils.CarBatterySynergy(
@@ -529,3 +542,22 @@ ARAOI.EIDWrapper(function ()
         "Casting an active item spell will also spawn its wisp"
     )
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Actives", "Spellbook")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "ENABLE_EID_HISTORY", ConfigDefaults, function ()
+        return "Enable EID History: "
+    end, "Enables the EID history for the Spellbook")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Spellbook", Config, "MAX_EID_HISTORY", ConfigDefaults, ConfigDefaults.MAX_EID_HISTORY .. "%", 1, 20, 5, function ()
+        return "Max EID History: " .. Config.MAX_EID_HISTORY
+    end, "Maximum number of spells displayed on the EID history")
+
+    ARAOI.MCMUtils.AddReset("Actives", "Spellbook")
+end

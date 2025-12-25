@@ -6,7 +6,7 @@
 ---@param collectible CollectibleType
 ---@param firstTime boolean
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, collectible, _, firstTime, _, _, player)
+function ARAOI:_OnLuckboxAddCollectible(collectible, _, firstTime, _, _, player)
     local ItemConfig = Isaac.GetItemConfig()
     local item = ItemConfig:GetCollectible(collectible)
     if item:HasTags(ItemTag.TAG_FOOD) and firstTime and player:HasCollectible(ARAOI.CollectibleType.LUNCHBOX) then
@@ -15,7 +15,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, function (_, collect
         end
         player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, UseFlag.USE_NOANIM | UseFlag.USE_MIMIC)
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ARAOI._OnLuckboxAddCollectible)
 
 
 ---------------------

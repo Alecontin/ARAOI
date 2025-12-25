@@ -17,11 +17,13 @@
   <active id="15" name="Recycle" achievement="298" quality="2" maxcharges="4" gfx="recycle.png" description="Reduce, Reuse, Recycle" tags="offensive nocantrip" />
   <!-- Earn all Hard Mode Completion Marks as Cain -->
   <active id="16" name="Gamblecore" achievement="261" quality="4" maxcharges="7" devilprice="2" coins="7" gfx="gamblecore.png" description="Let's go gambling!" tags="offensive nocantrip" />
-  <!-- Beat Chapter 1 without taking damage -->
-  <active id="19" name="Katana" achievement="37" quality="4" maxcharges="310" chargetype="timed" devilprice="2" gfx="katana.png" description="Bringing a sword to a tear fight" tags="offensive nocantrip" />
+  <!-- Beat Delirium as Tainted Lost -->
+  <active id="19" name="Katana" achievement="594" quality="4" maxcharges="600" chargetype="timed" devilprice="2" gfx="katana.png" description="Bringing a sword to a tear fight" tags="offensive nocantrip" />
+  <!-- Complete the Boss Rush as Maggie -->
+  <active id="20" name="Soda" achievement="109" quality="3" maxcharges="0" devilprice="2" gfx="soda.png" description="Highly concentrated caffeine!" tags="offensive nocantrip" />
 
   <!-- Beat Greedier Mode with Lilith -->
-  <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed" />
+  <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed lazarussharedglobal" />
   <!-- Destroy 5 rainbow poops -->
   <passive id="3" name="Rainbow Headband" achievement="353" quality="2" gfx="rainbow_headband.png" description="Rainbow sweat" tags="offensive summonable" />
   <!-- Donate 879 Coins to the Greed Donation Machine -->
@@ -29,7 +31,7 @@
   <!-- Defeat Mega Satan as Tainted Samson -->
   <passive id="9" name="Gambling Chips" achievement="294" quality="3" coins="10" devilprice="2" gfx="gambling_chips.png" description="Never stop gambling!" tags="offensive summonable" />
   <!-- Beat Mega Satan with Maggie -->
-  <passive id="10" name="Sacrificial Heart" achievement="206" quality="2" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarusshared nolostbr summonable" />
+  <passive id="10" name="Sacrificial Heart" achievement="206" quality="2" gfx="sacrificial_heart.png" description="May the angels reward your sacrifice" tags="lazarussharedglobal nolostbr summonable" />
   <!-- Defeat Hush as Eden -->
   <passive id="11" name="Blessing's Petal" achievement="188" quality="2" gfx="blessings_petal.png" description="Your future feels hopeful" cache="firedelay luck" tags="offensive nocantrip"/>
   <!-- Beat the "Cursed!" challenge -->
@@ -37,9 +39,11 @@
   <!-- Defeat Mother as Tainted Cain -->
   <passive id="14" name="Lucky Coin" achievement="553" quality="3" gfx="lucky_coin.png" description="It's all about luck" tags="offensive summonable"/>
   <!-- Only available between March 7th and March 14th -->
-  <passive id="17" name="Chocolate Birthday Cake" quality="3" devilprice="2" gfx="chocolate_birthday_cake.png" description="Happy birthday to me..." tags="offensive"/>
+  <passive id="17" name="Chocolate Birthday Cake" quality="3" devilprice="2" gfx="chocolate_birthday_cake.png" description="Happy birthday to me..." tags="offensive lazarussharedglobal" hidden="true" />
   <!-- Use 5 Gulp! pills in one run -->
   <passive id="18" name="Lunchbox" achievement="386" quality="2" gfx="lunchbox.png" description="Who put this in here?" tags="offensive summonable"/>
+  <!-- Only obtainable when using the Active counterpart -->
+  <passive id="21" name="Soda Passive" achievement="109" quality="3" devilprice="2" gfx="soda_opened.png" description="Highly concentrated caffeine and sugar!" cache="speed damage" tags="offensive lazarussharedglobal" hidden="true" />
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />

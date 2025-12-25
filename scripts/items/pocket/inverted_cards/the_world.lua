@@ -9,7 +9,7 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardWorldUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local level = game:GetLevel()
     local crawlspace = level:GetRoomByIdx(-4)
@@ -20,7 +20,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 
     Isaac.GridSpawn(GridEntityType.GRID_STAIRS, 0, player.Position)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardWorldUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

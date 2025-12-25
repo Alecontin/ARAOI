@@ -12,6 +12,7 @@ Config.SOLVE_CHANCE = 10 -- *Default: `10` — Chance for the item to be solved 
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 ------------------------
@@ -29,7 +30,7 @@ ARAOI.Rubiks_Cube.Config = Config
 ---@param set? boolean
 ---@return boolean
 local function ScheduleReplaceNormalWisp(player, set)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.RUN, "RubiksCubeDelete", {}, ARAOI.PlayerUtils.GetID(player), false, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "RubiksCubeDelete", {}, ARAOI.PlayerUtils.GetId(player), false, set)
 end
 
 
@@ -39,7 +40,7 @@ end
 
 ---@param rng RNG
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
+function ARAOI:_OnRubiksCubeUse(_, rng, player)
     -- Reevaluate cache
     player:AddCacheFlags(CacheFlag.CACHE_ALL, true)
 
@@ -90,14 +91,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player)
 
     -- Play the item animation
     return true
-end, ARAOI.CollectibleType.RUBIKS_CUBE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnRubiksCubeUse, ARAOI.CollectibleType.RUBIKS_CUBE)
 
 
 -------------------
 -- UPDATE METHOD --
 -------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
+function ARAOI:_OnRubiksCubeUpdate()
     for _, player in ipairs(PlayerManager.GetPlayers()) do
         -- If the player has the item wisps, reevaluate the cache every update in case a wisp dies
         local locusts = ARAOI.PlayerUtils.GetLocusts(player, ARAOI.CollectibleType.RUBIKS_CUBE)
@@ -154,7 +156,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
             changeColor(v)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_UPDATE, ARAOI._OnRubiksCubeUpdate)
 
 
 ------------------
@@ -174,3 +177,18 @@ ARAOI.EIDWrapper(function ()
         "Color-changing locust that deals 1.2x Isaac's damage"
     )
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Actives", "Rubik's Cube")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Rubik's Cube", Config, "SOLVE_CHANCE", ConfigDefaults, ConfigDefaults.SOLVE_CHANCE .. "%", 0, 100, 10, function ()
+        return "Solve Chance: " .. Config.SOLVE_CHANCE .. "%"
+    end, "Chance for the item to be solved and give you the Rubik's Cube trinket")
+
+    ARAOI.MCMUtils.AddReset("Actives", "Rubik's Cube")
+end

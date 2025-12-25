@@ -9,7 +9,7 @@ local game = Game()
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardDevilUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
 
     local level = game:GetLevel()
@@ -24,7 +24,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     end
 
     game:StartRoomTransition(treasure_room_idx, Direction.NO_DIRECTION, RoomTransitionAnim.TELEPORT)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardDevilUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     local devils_crown = TrinketType.TRINKET_DEVILS_CROWN

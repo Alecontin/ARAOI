@@ -6,9 +6,10 @@ card.Replace = Card.CARD_REVERSE_EMPEROR
 ARAOI.Inverted_Cards.Emperor = card
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+function ARAOI:_OnInvertedCardEmperorUse(_, player)
     player:UseActiveItem(CollectibleType.COLLECTIBLE_DELIRIOUS)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardEmperorUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     local delirious = CollectibleType.COLLECTIBLE_DELIRIOUS

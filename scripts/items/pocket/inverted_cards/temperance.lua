@@ -1,22 +1,4 @@
-local Config = {}
-----------------------------
--- START OF CONFIGURATION --
-----------------------------
-
-
-
-Config.DAMAGE_GIVEN = 0.75 -- *Default: `0.75` — Amount of damage that will be given per half a heart drained.*
-
-
-
---------------------------
--- END OF CONFIGURATION --
---------------------------
-
-
-
 local card = {}
-card.Config = Config
 
 card.ID = ARAOI.CardSubType.INVERTED_TEMPERANCE
 card.Replace = Card.CARD_REVERSE_TEMPERANCE
@@ -24,13 +6,13 @@ card.Replace = Card.CARD_REVERSE_TEMPERANCE
 ARAOI.Inverted_Cards.Temperance = card
 
 local function HeartsLost(player, add)
-    local lost = ARAOI.SaveData:Data(ARAOI.SaveData.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetID(player), 0)
-    return ARAOI.SaveData:Data(ARAOI.SaveData.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetID(player), 0, lost + (add or 0))
+    local lost = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetId(player), 0)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.LEVEL, "InvertedTemperanceHeartsLost", {}, ARAOI.PlayerUtils.GetId(player), 0, lost + (add or 0))
 end
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardTemperanceUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local tarotClothModifier = player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) and 2 or 1
     if player:GetHealthType() ~= HealthType.RED and player:GetHealthType() ~= HealthType.BONE then return end
@@ -55,15 +37,17 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
     player:SetMinDamageCooldown(60)
 
     HeartsLost(player, hearts_lost)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardTemperanceUse, card.ID)
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+function ARAOI:_OnInvertedCardTemperanceNewRoom()
     for _, player in ipairs(PlayerManager:GetPlayers()) do
         for _ = 1, HeartsLost(player) do
             player:AddNullItemEffect(NullItemID.ID_BLOOD_OATH, true)
         end
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnInvertedCardTemperanceNewRoom)
 
 ARAOI.EIDWrapper(function ()
     EID:addCard(card.ID,

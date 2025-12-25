@@ -18,9 +18,10 @@ local BREAK_SOUND = Isaac.GetSoundIdByName("tool_break")
 -- ITEM MIN CHARGES --
 ----------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, function (_)
+function ARAOI:_OnWireCutterGetActiveMinUsableCharge()
     return 1
-end, ARAOI.CollectibleType.WIRE_CUTTER)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE, ARAOI._OnWireCutterGetActiveMinUsableCharge, ARAOI.CollectibleType.WIRE_CUTTER)
 
 
 ------------------------
@@ -29,10 +30,9 @@ end, ARAOI.CollectibleType.WIRE_CUTTER)
 
 ---@param player EntityPlayer
 ---@param rng RNG
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags)
+function ARAOI:_OnWireCutterUse(_, rng, player, useFlags, slot)
     local game = Game()
     local SFX = SFXManager()
-    local ItemConfig = Isaac.GetItemConfig()
 
     -- Disabling car battery
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
@@ -40,11 +40,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
     -- Getting the current room
     local room = game:GetRoom()
 
-    -- Getting the max charges for later
-    local max_charge = ItemConfig:GetCollectible(ARAOI.CollectibleType.WIRE_CUTTER).MaxCharges
-
     -- Getting how many uses the item has left
-    local uses = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
+    local uses = player:GetTotalActiveCharge(slot)
 
     -- Getting the pickups in the room, shuffled
     local pickups = ARAOI.RoomUtils.GetPickups()
@@ -53,7 +50,7 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
     -- Function to avoid copy-pasting
     local function breakAndRemoveItem()
         -- Remove the item from the player
-        player:RemoveCollectible(ARAOI.CollectibleType.WIRE_CUTTER)
+        player:RemoveCollectible(ARAOI.CollectibleType.WIRE_CUTTER, false, slot)
 
         -- Play a sound to notify the player
         SFX:Play(BREAK_SOUND, 2)
@@ -77,6 +74,9 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         return true
     end
 
+    -- Storing if we broke a connection or not
+    local we_broke_a_connection = false
+
     -- Go through every pickup
     for _, pickup in ipairs(pickups) do
         -- If the player that used the item is The Lost
@@ -90,7 +90,10 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         end
 
         -- If we still have uses left
-        if uses > 0 and pickup.OptionsPickupIndex > 0 then
+        if uses >= 0 and pickup.OptionsPickupIndex > 0 and pickup.SubType ~= 0 then
+            -- We broke a connection!
+            we_broke_a_connection = true
+
             -- Decrease the uses left by 1
             uses = uses - 1
 
@@ -104,15 +107,23 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         end
     end
 
+    if we_broke_a_connection then
+        -- Adding 1 use since we're breaking the "connection" between the items
+        -- Think of it as counting the cuts instead of the items
+        uses = uses + 1
+    end
+
     -- If we don't have any uses left
     if uses <= 0 then
         -- Remove the item
         breakAndRemoveItem()
 
     else
-        -- Custom item discharge, which sets the item's charge to the max charge + the uses left
+        -- Custom item discharge, which sets the item's charge to the uses we have left
         -- then, when the item gets discharged, it will get rid of the max charge and leave the uses
-        player:SetActiveCharge(max_charge + uses, ActiveSlot.SLOT_PRIMARY)
+        player:SetActiveCharge(0, slot)
+        ARAOI.PlayerUtils.AddActiveCharge(player, slot, uses, true, true)
+        ARAOI.PlayerUtils.FreezeActiveCharge(player, slot)
 
         -- Play a sound
         SFX:Play(CUT_SOUND, 2)
@@ -120,7 +131,21 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
 
     -- Play the item animation
     return true
-end, ARAOI.CollectibleType.WIRE_CUTTER)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnWireCutterUse, ARAOI.CollectibleType.WIRE_CUTTER)
+
+---@param firstTime boolean
+---@param player EntityPlayer
+function ARAOI:_OnWireCutterAddCollectible(collectible, charge, firstTime, slot, _, player)
+    if collectible == ARAOI.CollectibleType.WIRE_CUTTER and firstTime and player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) then
+        ARAOI.PlayerUtils.AddActiveCharge(player, slot, 8, true, true)
+    end
+    if collectible == CollectibleType.COLLECTIBLE_CAR_BATTERY and firstTime and player:HasCollectible(ARAOI.CollectibleType.WIRE_CUTTER) then
+        ARAOI.PlayerUtils.AddActiveCharge(player, player:GetActiveItemSlot(ARAOI.CollectibleType.WIRE_CUTTER),
+        Isaac.GetItemConfig():GetCollectible(ARAOI.CollectibleType.WIRE_CUTTER).MaxCharges, true, true, true)
+    end
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ARAOI._OnWireCutterAddCollectible)
 
 
 ----------------------
@@ -130,7 +155,8 @@ end, ARAOI.CollectibleType.WIRE_CUTTER)
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.WIRE_CUTTER,
         "# Allows Isaac to collect all pickups instead of choosing between them"..
-        "#{{Battery}} Each pickup consumes 1 charge"..
+        "#{{Battery}} Each pair of pickups consumes 1 charge"..
+        "# Running out of charges destroys the item"..
         "#!!! Can't be recharged !!!"
     )
 
@@ -140,6 +166,11 @@ ARAOI.EIDWrapper(function ()
         {PlayerType.PLAYER_THELOST, PlayerType.PLAYER_THELOST_B, PlayerType.PLAYER_JACOB2_B},
         PlayerType.PLAYER_THELOST,
         "When used within a {{DevilRoom}} Devil Deal or Black Market, consumes all charges and makes all items free"
+    )
+    ARAOI.EIDUtils.CarBatterySynergy(
+        "Wire Cutter Car Battery Synergy",
+        ARAOI.CollectibleType.WIRE_CUTTER,
+        "Has double the charges"
     )
     ARAOI.EIDUtils.AbyssSynergy(
         "Wire Cutter Abyss Synergy",

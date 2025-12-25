@@ -7,7 +7,7 @@ ARAOI.Inverted_Cards.Hermit = card
 
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags)
+function ARAOI:_OnInvertedCardHermitUse(_, player, useFlags)
     if useFlags & UseFlag.USE_CARBATTERY ~= 0 then return end
     local collectibles = player:GetHistory():GetCollectiblesHistory()
 
@@ -47,7 +47,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player, useFlags
 
         ARAOI.MiscUtils.DropCompactedCoins(coins, player.Position, 0.5)
     end
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardHermitUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     local restock = CollectibleType.COLLECTIBLE_RESTOCK

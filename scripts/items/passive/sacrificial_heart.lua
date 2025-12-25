@@ -12,6 +12,7 @@ Config.BROKEN_HEARTS = 2 -- *Default: `2` — The amount of broken hearts the pl
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 
@@ -30,7 +31,7 @@ local game = Game()
 ---------------------
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, _, _, firstTime, _, _, player)
+function ARAOI:_OnSacrificialHeartPreAddCollectible(_, _, firstTime, _, _, player)
     -- Check if the health was already applied, we shouldn't re-apply the broken hearts if T. Isaac juggles the item around
     if firstTime then
 
@@ -41,14 +42,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, function (_, _, _, fi
             player:AddBrokenHearts(Config.BROKEN_HEARTS)
         end
     end
-end, ARAOI.CollectibleType.SACRIFICIAL_HEART)
+end
+ARAOI:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, ARAOI._OnSacrificialHeartPreAddCollectible, ARAOI.CollectibleType.SACRIFICIAL_HEART)
 
 
 -----------------------------
 -- MAIN ITEM FUNCTIONALITY --
 -----------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
+function ARAOI:_OnSacrificialHeartNewLevel()
     -- Shouldn't change curse rooms if we don't have the item
     if not PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.SACRIFICIAL_HEART) then return end
 
@@ -114,7 +116,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
     else
         level:UpdateVisibility()
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnSacrificialHeartNewLevel)
 
 
 
@@ -122,7 +125,7 @@ end)
 -- VOODOO HEAD INTERACTION --
 -----------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+function ARAOI:_OnSacrificialHeartNewRoom()
     -- Check if we have the synergy
     if not (PlayerManager.AnyoneHasCollectible(ARAOI.CollectibleType.SACRIFICIAL_HEART) and
             PlayerManager.AnyoneHasCollectible(CollectibleType.COLLECTIBLE_VOODOO_HEAD))
@@ -166,7 +169,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         Vector.Zero,
         nil
     )
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, ARAOI._OnSacrificialHeartNewRoom)
 
 ----------------------
 -- ITEM DESCRIPTION --
@@ -175,8 +179,8 @@ end)
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(ARAOI.CollectibleType.SACRIFICIAL_HEART,
         "#{{BrokenHeart}} +"..Config.BROKEN_HEARTS.." Broken Hearts"..
-        "# Changes all curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
-        "# Change triggers on new floor"
+        "# Turns {{CursedRoom}} Curse rooms into {{SacrificeRoom}} Sacrifice rooms"..
+        "# Triggers on new floor"
     )
 
     ARAOI.EIDUtils.PlayerBasedModifier(
@@ -199,9 +203,23 @@ ARAOI.EIDWrapper(function ()
         else
             id = ARAOI.CollectibleType.SACRIFICIAL_HEART
         end
-        EID:appendToDescription(descObj, "#{{Collectible"..id.."}} Will turn both curse rooms {{CursedRoom}} into sacrifice rooms {{SacrificeRoom}}"..
-                                            "# 2 red chests {{RedChest}} and a coin {{Coin}} will now spawn inside sacrifice rooms {{SacrificeRoom}}")
+        EID:appendToDescription(descObj, "#{{Collectible"..id.."}} {{RedChest}} Red Chests and a {{Coin}} Coin will now spawn inside Sacrifice rooms")
         return descObj
     end
     EID:addDescriptionModifier("Sacrificial Heart Voodoo Head Synergy", condition, modifier)
 end)
+
+
+---------------------
+-- MOD CONFIG MENU --
+---------------------
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Passives", "Sacrificial Heart")
+
+    ARAOI.MCMUtils.AddNumberSetting("Passives", "Sacrificial Heart", Config, "BROKEN_HEARTS", ConfigDefaults, ConfigDefaults.BROKEN_HEARTS, 0, 18, 5, function ()
+        return "Broken Hearts: " .. Config.BROKEN_HEARTS
+    end, "The base chance for a slot to spawn", "T. Magdalene will multiply this by 2")
+
+    ARAOI.MCMUtils.AddReset("Passives", "Sacrificial Heart")
+end

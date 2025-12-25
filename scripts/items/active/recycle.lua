@@ -25,14 +25,12 @@ local players_recycling = {}
 
 ---@param player EntityPlayer
 local function IsRecycling(player)
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    return players_recycling[player_id] or false
+    return players_recycling[ARAOI.PlayerUtils.GetId(player)] or false
 end
 
 ---@param player EntityPlayer
 local function ToggleRecycling(player)
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    players_recycling[player_id] = not IsRecycling(player)
+    players_recycling[ARAOI.PlayerUtils.GetId(player)] = not IsRecycling(player)
 end
 
 local currently_selected_item = {}
@@ -40,8 +38,11 @@ local currently_selected_item = {}
 ---@param player EntityPlayer
 ---@param set? integer
 local function CurrentSelection(player, set)
-    local player_id = ARAOI.PlayerUtils.GetID(player)
-    return ARAOI.SaveData:Key(currently_selected_item, player_id, 1, set)
+    if set then
+        currently_selected_item[ARAOI.PlayerUtils.GetId(player)] = set
+    end
+    return currently_selected_item[ARAOI.PlayerUtils.GetId(player)] or 1
+    -- return ARAOI.SaveDataManager:Key(currently_selected_item, ARAOI.PlayerUtils.GetID(player), 1, set)
 end
 
 ---@param player EntityPlayer
@@ -60,7 +61,7 @@ end
 ---@param player EntityPlayer
 ---@param useFlags UseFlag
 ---@param slot ActiveSlot
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, useFlags, slot)
+function ARAOI:_OnRecycleUse(_, rng, player, useFlags, slot)
     -- Car battery would mess things up!
     if useFlags & UseFlag.USE_CARBATTERY > 0 then return end
 
@@ -102,7 +103,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
         -- Did we hit the 1 in 5 chance?
         if rng:RandomInt(1, 5) == 1 then
             -- Spawn an item
-            Isaac.Spawn(5, 100, game:GetRoom():GetSeededCollectible(rng:Next()), game:GetRoom():FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
+            ARAOI.ItemUtils.SpawnCollectibleFromPool(ItemPoolType.POOL_NULL, game:GetRoom():FindFreePickupSpawnPosition(player.Position, 50), nil, nil, nil, rng)
+            -- Isaac.Spawn(5, 100, game:GetRoom():GetSeededCollectible(rng:Next()), game:GetRoom():FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player)
 
         -- We didn't get lucky, act normally
         else
@@ -124,14 +126,15 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, _, rng, player, use
             0, player.Position, EntityPickup.GetRandomPickupVelocity(player.Position, rng) / 2, player)
         end
     end
-end, ARAOI.CollectibleType.RECYCLE)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnRecycleUse, ARAOI.CollectibleType.RECYCLE)
 
 
 --------------------------------
 -- RENDERING OF THE SELECTION --
 --------------------------------
 
-ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
+function ARAOI:_OnRecycleRender()
     -- For every player
     for _, player in ipairs(PlayerManager:GetPlayers()) do
         -- Don't render if the player is not visible
@@ -205,7 +208,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function ()
         end
         ::next_player::
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._OnRecycleRender)
 
 
 ----------------------
@@ -215,9 +219,9 @@ end)
 ARAOI.EIDWrapper(function ()
     EID:addCollectible(
         ARAOI.CollectibleType.RECYCLE,
-        "#{{GrabBag}} Turns a selected collectible into random {{Bomb}}{{Key}}{{Coin}} pickups"..
-        "#{{Luck}} 1 in 5 chance of spawning a collectible instead"..
-        "#{{Collectible"..ARAOI.CollectibleType.RECYCLE.."}} Recycling this item will yield no rewards !!!"
+        "# Allows Isaac to select one of his collectibles to turn into 1{{Bomb}} 1{{Key}} & 1{{Coin}}"..
+        "#{{Luck}} 1 in 5 chance of spawning a collectible from a random pool instead"..
+        "#!!! Recycling this item will yield no rewards !!!"
     )
     ARAOI.EIDUtils.CarBatterySynergy(
         "Recycle Book of Virtues synergy",

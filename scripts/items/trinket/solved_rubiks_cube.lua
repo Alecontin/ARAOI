@@ -12,7 +12,7 @@ Config.STAT_BOOST_PER_WISP = 10 -- *Default: `10` — Percentage of the stat boo
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
-
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 ------------------------
@@ -31,7 +31,7 @@ ARAOI.TrinketType.SOLVED_RUBIKS_CUBE = Isaac.GetTrinketIdByName("Solved Rubik's 
 
 ---@param player EntityPlayer
 ---@param cacheFlag CacheFlag
-ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cacheFlag)
+function ARAOI:_OnSolvedRubiksCubeEvaluateCache(player, cacheFlag)
     -- Don't do any of this if the player doesn't have the trinket
     if not player:HasTrinket(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE) then return end
 
@@ -58,7 +58,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, function (_, player, cache
     if cacheFlag == CacheFlag.CACHE_LUCK then
         player.Luck = player.Luck + 3 * effect_multiplier
     end
-end)
+end
+ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnSolvedRubiksCubeEvaluateCache)
 
 ARAOI.EIDWrapper(function ()
     EID:addTrinket(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE,
@@ -66,3 +67,14 @@ ARAOI.EIDWrapper(function ()
     )
     EID:addGoldenTrinketMetadata(ARAOI.TrinketType.SOLVED_RUBIKS_CUBE, {"Effect doubled", "Effect tripled"})
 end)
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Trinkets", "Solved Rubik's Cube")
+
+    ARAOI.MCMUtils.AddNumberSetting("Trinkets", "Solved Rubik's Cube", Config, "STAT_BOOST_PER_WISP",
+    ConfigDefaults, ConfigDefaults.STAT_BOOST_PER_WISP .. "%", 0, 10000, 20, function ()
+        return "Stat Boost Per Wisp: " .. Config.STAT_BOOST_PER_WISP .. "%"
+    end, "The percentage of the stat boost provided per wisp")
+
+    ARAOI.MCMUtils.AddReset("Trinkets", "Solved Rubik's Cube")
+end

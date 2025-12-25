@@ -12,6 +12,7 @@ Config.NUM_RANDOM_EFFECTS = 5 -- *Default: `5` — The number of random effects 
 --------------------------
 -- END OF CONFIGURATION --
 --------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
 
 
 
@@ -26,7 +27,7 @@ ARAOI.Inverted_Cards.Stars = card
 local game = Game()
 
 ---@param player EntityPlayer
-ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
+function ARAOI:_OnInvertedCardStarsUse(_, player)
     local room = game:GetRoom()
 
     local rng = player:GetCardRNG(card.ID)
@@ -35,7 +36,8 @@ ARAOI.Mod:AddCallback(ModCallbacks.MC_USE_CARD, function (_, _, player)
     local item = ProceduralItemManager.CreateProceduralItem(rng:GetSeed(), Config.NUM_RANDOM_EFFECTS)
 
     ARAOI.ItemUtils.SpawnCollectible(item, room:FindFreePickupSpawnPosition(player.Position, 50), Vector.Zero, player, true)
-end, card.ID)
+end
+ARAOI:AddCallback(ModCallbacks.MC_USE_CARD, ARAOI._OnInvertedCardStarsUse, card.ID)
 
 ARAOI.EIDWrapper(function ()
     local tmt = CollectibleType.COLLECTIBLE_TMTRAINER
@@ -44,5 +46,16 @@ ARAOI.EIDWrapper(function ()
     )
     ARAOI.EIDUtils.TarotClothMetadata(card.ID, {" a glitched item ", " two glitched items "})
 end)
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Inv. Cards", "Inverted Stars")
+
+    ARAOI.MCMUtils.AddNumberSetting("Inv. Cards", "Inverted Stars", Config, "NUM_RANDOM_EFFECTS",
+    ConfigDefaults, ConfigDefaults.NUM_RANDOM_EFFECTS, 1, 100, 10, function ()
+        return "Num Random Effects: " .. Config.NUM_RANDOM_EFFECTS
+    end, "The number of random effects the glitched item will have")
+
+    ARAOI.MCMUtils.AddReset("Inv. Cards", "Inverted Stars")
+end
 
 return card
