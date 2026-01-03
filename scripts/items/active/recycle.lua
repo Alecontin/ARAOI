@@ -99,6 +99,11 @@ function ARAOI:_OnRecycleUse(_, rng, player, useFlags, slot)
 
         -- The player recycled! Yay!
         player:AnimateHappy()
+        SFX:Play(SoundEffect.SOUND_PAPER_OUT, 1.3, 0, false, 1.2)
+        SFX:Play(SoundEffect.SOUND_PAPER_IN, 1.3, 15, false, 1.2)
+        SFX:Play(SoundEffect.SOUND_PAPER_OUT, 1.3, 15, false, 0.85)
+        SFX:Play(SoundEffect.SOUND_PAPER_IN, 1.3, 0, false, 0.85)
+        SFX:Play(SoundEffect.SOUND_MENU_RIP, 10, 0, false, 1)
 
         -- Did we hit the 1 in 5 chance?
         if rng:RandomInt(1, 5) == 1 then

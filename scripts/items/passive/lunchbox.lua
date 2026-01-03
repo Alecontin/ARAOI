@@ -13,6 +13,7 @@ function ARAOI:_OnLuckboxAddCollectible(collectible, _, firstTime, _, _, player)
         if player:GetTrinket(0) ~= 0 then
             SFXManager():Play(SoundEffect.SOUND_VAMP_GULP)
         end
+        ---@diagnostic disable-next-line: param-type-mismatch
         player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, UseFlag.USE_NOANIM | UseFlag.USE_MIMIC)
     end
 end

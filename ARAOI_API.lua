@@ -652,6 +652,17 @@ end
 function RoomUtils.GetNearestEnemy(position)
 end
 
+-- Returns the nearest player to the provided position
+---@param position Vector
+---@return Entity, number
+function RoomUtils.GetNearestPlayer(position)
+end
+
+-- Returns the room's item pool, returning 0 for default room types
+---@return ItemPoolType
+function RoomUtils.GetItemPool()
+end
+
 ARAOI.RoomUtils = RoomUtils
 
 
@@ -868,6 +879,12 @@ ARAOI.Spellbook = {}
 ARAOI.Spellbook.Config = {
     ENABLE_EID_HISTORY = true, -- *Default: `true` — Enables the External Item Descriptions history.*
     MAX_EID_HISTORY = 10, -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
+
+    KEEP_ITEMS = false, -- *Default: `false` — Remove items on new floor?*
+
+    ENABLE_ACTIVES  = true, -- *Default: `true` — Should we be able to roll for active items?*
+    ENABLE_PASSIVES = true, -- *Default: `true` — Should we be able to roll for passive items?*
+    ENABLE_FAMILIAR = true, -- *Default: `true` — Should we be able to roll for familiars?*
 
     -- If we get these items, we roll again.
     -- This can be because the game crashes, or the item just doesn't work.

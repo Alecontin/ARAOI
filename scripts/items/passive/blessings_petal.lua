@@ -10,6 +10,7 @@
 
 ARAOI.Blessings_Petal = {}
 
+local TEARS_EFFECT = Isaac.GetNullItemIdByName("Blessing's Petal Tears")
 
 ---------------
 -- FUNCTIONS --
@@ -30,13 +31,23 @@ end
 
 
 -- Save the fact that the item has been picked up
+---@param player EntityPlayer
 ---@param firstTime boolean
-function ARAOI:_OnBlessingsPetalAddCollectible(_, _, firstTime)
+function ARAOI:_OnBlessingsPetalAddCollectible(player, _, firstTime)
     if firstTime then
         ARAOI.Blessings_Petal.PickupCount(1)
+        player:GetEffects():AddNullEffect(TEARS_EFFECT, false, 1)
     end
 end
 ARAOI:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, ARAOI._OnBlessingsPetalAddCollectible, ARAOI.CollectibleType.BLESSINGS_PETAL)
+
+
+-- Remove stats from the player
+---@param player EntityPlayer
+function ARAOI:_OnBlessingsPetalRemoveCollectible(player)
+    player:GetEffects():RemoveNullEffect(TEARS_EFFECT)
+end
+ARAOI:AddCallback(ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED, ARAOI._OnBlessingsPetalAddCollectible, ARAOI.CollectibleType.BLESSINGS_PETAL)
 
 
 -----------------------------
@@ -69,25 +80,6 @@ function ARAOI:_OnBlessingsPetalGameStarted(isContinued)
     end
 end
 ARAOI:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, ARAOI._OnBlessingsPetalGameStarted)
-
-
-----------------
--- ITEM STATS --
-----------------
-
----@param player EntityPlayer
----@param cacheFlag CacheFlag
-function ARAOI:_OnBlessingsPetalEvaluateCache(player, cacheFlag)
-    if not player:HasCollectible(ARAOI.CollectibleType.BLESSINGS_PETAL) then return end
-
-    if cacheFlag == CacheFlag.CACHE_FIREDELAY and not player:HasCollectible(CollectibleType.COLLECTIBLE_EDENS_BLESSING) then
-        ARAOI.PlayerUtils.AddFireDelay(player, -0.35 * ARAOI.PlayerUtils.GetAproxTearRateMultiplier(player), true)
-    end
-    if cacheFlag == CacheFlag.CACHE_LUCK then
-        player.Luck = player.Luck + 1
-    end
-end
-ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnBlessingsPetalEvaluateCache)
 
 
 ----------------------

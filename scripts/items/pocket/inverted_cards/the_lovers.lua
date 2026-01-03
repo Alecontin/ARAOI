@@ -27,6 +27,7 @@ function ARAOI:_OnInvertedCardLoversUse(_, player, useFlags)
     end
 
     if num_familiars < num_needed_familiars then
+        ---@diagnostic disable-next-line: param-type-mismatch
         player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         return
     end

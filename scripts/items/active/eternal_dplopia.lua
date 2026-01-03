@@ -151,6 +151,12 @@ function ARAOI:_OnEternalDplopiaUse(_, _, player, useFlags)
         wisps[excess_wisps]:Remove()
     end
 
+    -- Play sound for using the item
+    ---@diagnostic disable-next-line: param-type-mismatch
+    SFXManager():Play(910) -- D6 sound
+    SFXManager():Play(SoundEffect.SOUND_BLACK_POOF, 0.3, nil, nil, 2.5)
+    SFXManager():Play(SoundEffect.SOUND_MENU_FLIP_LIGHT, 0.3, nil, nil, 2.5)
+
     -- We need to return true for the item to have an animation
     return true
 end

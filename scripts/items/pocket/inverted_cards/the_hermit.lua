@@ -13,6 +13,7 @@ function ARAOI:_OnInvertedCardHermitUse(_, player, useFlags)
 
     local collectible = collectibles[#collectibles]
     if collectible == nil then
+        ---@diagnostic disable-next-line: param-type-mismatch
         player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         return
     end

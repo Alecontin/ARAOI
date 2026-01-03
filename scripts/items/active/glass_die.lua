@@ -29,7 +29,7 @@ local Modded_Sprite_Data = {}
 ---@param do_initial_setup? boolean -- Default: `true` — Sets some initial sprite variables just in case. Set this to `false` if it's giving errors
 function ARAOI.Glass_Die.RegisterPoolSprite(sprite, pool_id, sprite_frame, sprite_offset, sprite_scale, do_initial_setup)
     if Modded_Sprite_Data[pool_id] ~= nil then
-        print("ARAOI - The pool \""..pool_id.."\" is already registered. This might cause problems.")
+        Isaac.ConsoleOutput("ARAOI - The pool \""..pool_id.."\" is already registered. This might cause problems.")
     end
     if do_initial_setup ~= false then
         sprite:LoadGraphics()
@@ -75,7 +75,7 @@ function ARAOI:_OnGlassDieUse(_, _, player, useFlag, slot)
     -- Is the item empty?
     if desc.VarData == -1 then
         -- Set the item's var data to the room's pool
-        desc.VarData = room:GetItemPool(1)
+        desc.VarData = ARAOI.RoomUtils.GetItemPool()
 
 
     -- The item has a pool stored
@@ -114,6 +114,11 @@ function ARAOI:_OnGlassDieUse(_, _, player, useFlag, slot)
         desc.VarData = -1
     end
 
+    -- Play some sounds
+    ---@diagnostic disable-next-line: param-type-mismatch
+    SFXManager():Play(910, 0.6, nil, nil, 1.3) -- D6
+    SFXManager():Play(SoundEffect.SOUND_GLASS_BREAK, 0.6, nil, nil, 2)
+
     -- Play the item animation
     return true
 end
@@ -129,7 +134,7 @@ ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnGlassDieUse, ARAOI.Collecti
 ---@param offset Vector
 ---@param alpha number
 ---@param scale number
-function ARAOI:_OnGlassDieRenderActiveItem(player, slot, offset, alpha, scale)-- Do not render if the game JUST started
+function ARAOI:_OnGlassDiePreRenderActiveItem(player, slot, offset, alpha, scale)-- Do not render if the game JUST started
     -- Don't render if the item is not ours
     local collectible_id = player:GetActiveItem(slot)
     if collectible_id ~= ARAOI.CollectibleType.GLASS_DIE then return end
@@ -138,7 +143,8 @@ function ARAOI:_OnGlassDieRenderActiveItem(player, slot, offset, alpha, scale)--
     local selected_pool = player:GetActiveItemDesc(slot).VarData
 
     -- The selected pool is -1, which means we don't need to do anything
-    if selected_pool == -1 then return end
+    -- We do, however, hide the outline because it's quite ugly
+    if selected_pool == -1 then return {["HideOutline"] = true} end
 
     -- Setting some render options to be the same as what the game wants
     GLASS_DIE_SPRITE.Scale = Vector(scale, scale)
@@ -172,8 +178,11 @@ function ARAOI:_OnGlassDieRenderActiveItem(player, slot, offset, alpha, scale)--
 
     -- Render the sprite to the screen
     GLASS_DIE_SPRITE:Render(offset)
+
+    -- Hide the default sprite
+    return {["HideItem"] = true, ["HideOutline"] = true}
 end
-ARAOI:AddCallback(ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM, ARAOI._OnGlassDieRenderActiveItem)
+ARAOI:AddCallback(ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM, ARAOI._OnGlassDiePreRenderActiveItem)
 
 
 ----------------------

@@ -64,6 +64,7 @@ function ARAOI:_OnWireCutterUse(_, rng, player, useFlags, slot)
             pickup.OptionsPickupIndex = 0
 
             -- Make it free
+            ---@diagnostic disable-next-line: assign-type-mismatch
             pickup.Price = 0
         end
 

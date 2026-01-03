@@ -94,7 +94,6 @@ function ARAOI.Duality_Halo.SpawnCollectibles(ignoreChances)
             -- Remember to make the collectible cost money for T. Keeper
             if ARAOI.PlayerUtils.AnyPlayerIs(PlayerType.PLAYER_KEEPER, PlayerType.PLAYER_KEEPER_B) then
                 item:MakeShopItem(-1)
-                item.Price = 1
             end
 
             -- Finally we use the option variable

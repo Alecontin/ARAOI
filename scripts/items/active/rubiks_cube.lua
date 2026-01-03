@@ -55,7 +55,7 @@ function ARAOI:_OnRubiksCubeUse(_, rng, player)
 
     -- Check the chance against the rolled number
     -- If it's the 10th attempt, give the trinket to the player
-    if chance <= Config.SOLVE_CHANCE / 100 or tries >= 10 then
+    if chance <= Config.SOLVE_CHANCE / 100 or tries >= 9 then
         -- Remove the active item
         player:RemoveCollectible(ARAOI.CollectibleType.RUBIKS_CUBE)
 

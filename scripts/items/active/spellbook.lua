@@ -9,6 +9,12 @@ local Config = {}
 Config.ENABLE_EID_HISTORY = true -- *Default: `true` — Enables the External Item Descriptions history.*
 Config.MAX_EID_HISTORY = 10 -- *Default: `10` — Maximum number of items displayed on the External Item Descriptions history.*
 
+Config.KEEP_ITEMS = false -- *Default: `false` — Remove items on new floor?*
+
+Config.ENABLE_ACTIVES  = true -- *Default: `true` — Should we be able to roll for active items?*
+Config.ENABLE_PASSIVES = true -- *Default: `true` — Should we be able to roll for passive items?*
+Config.ENABLE_FAMILIAR = true -- *Default: `true` — Should we be able to roll for familiars?*
+
 -- If we get these items, we roll again.
 -- This can be because the game crashes, or the item just doesn't work.
 Config.REROLL_ITEMS = {
@@ -248,8 +254,10 @@ ARAOI:AddCallback(ModCallbacks.MC_INPUT_ACTION, ARAOI._OnSpellbookInputAction)
 --------------------
 
 function ARAOI:_OnSpellbookNewLevel()
-    for _, player in pairs(PlayerManager.GetPlayers()) do
-        ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
+    if not Config.KEEP_ITEMS then
+        for _, player in pairs(PlayerManager.GetPlayers()) do
+            ARAOI.Spellbook.RemoveTemporaryItemsFromPlayer(player)
+        end
     end
 end
 ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnSpellbookNewLevel)
@@ -272,6 +280,15 @@ function ARAOI:_OnSpellbookUse(_, _, player, useFlag, slot)
     -- The second use casts the spell, but there is no time to write one
     -- so Car Battery makes the item useless
     if useFlag & UseFlag.USE_CARBATTERY > 0 then return end
+
+    -- If every item type is disabled
+    if not Config.ENABLE_PASSIVES and not Config.ENABLE_ACTIVES and not Config.ENABLE_FAMILIAR then
+        -- Special interaction where we remove the book and simultaneously spawn a mama mega explosion and a dogma black hole
+        player:RemoveCollectible(ARAOI.CollectibleType.SPELLBOOK)
+        game:GetRoom():MamaMegaExplosion(player.Position)
+        Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DOGMA_BLACKHOLE, 0, player.Position, Vector.Zero, nil)
+        return
+    end
 
     -- Toggle the player's writing ability, which locks and unlocks shooting
     local writing = ARAOI.Spellbook.IsPlayerWritingSpell(player, not ARAOI.Spellbook.IsPlayerWritingSpell(player))
@@ -300,6 +317,14 @@ function ARAOI:_OnSpellbookUse(_, _, player, useFlag, slot)
             ---@diagnostic disable-next-line: undefined-field
             spell_item = Config.SPELL_OVERWRITE[spell] or rng:RandomInt(ItemConfig:GetCollectibles().Size - 1)
             config = ItemConfig:GetCollectible(spell_item)
+
+            -- If we got a disabled item type, we get rid of the config to roll again
+            if (config.Type == ItemType.ITEM_PASSIVE and not Config.ENABLE_PASSIVES)
+            or (config.Type == ItemType.ITEM_ACTIVE and not Config.ENABLE_ACTIVES)
+            or (config.Type == ItemType.ITEM_FAMILIAR and not Config.ENABLE_FAMILIAR)
+            then
+                config = nil
+            end
         end
 
         -- If the item is a passive item or a familiar
@@ -558,6 +583,26 @@ if ModConfigMenu then
     ARAOI.MCMUtils.AddNumberSetting("Actives", "Spellbook", Config, "MAX_EID_HISTORY", ConfigDefaults, ConfigDefaults.MAX_EID_HISTORY .. "%", 1, 20, 5, function ()
         return "Max EID History: " .. Config.MAX_EID_HISTORY
     end, "Maximum number of spells displayed on the EID history")
+
+    ModConfigMenu.AddSpace("ARAOI", "Actives")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "KEEP_ITEMS", ConfigDefaults, function ()
+        return "Keep Items: "
+    end, "Remove items on new floor?")
+
+    ModConfigMenu.AddSpace("ARAOI", "Actives")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "ENABLE_ACTIVES", ConfigDefaults, function ()
+        return "Enable Active Items: "
+    end, "Should we be able to roll for active items?")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "ENABLE_PASSIVES", ConfigDefaults, function ()
+        return "Enable Passive Items: "
+    end, "Should we be able to roll for passive items?")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "ENABLE_FAMILIAR", ConfigDefaults, function ()
+        return "Enable Familiars: "
+    end, "Should we be able to roll for familiars?")
 
     ARAOI.MCMUtils.AddReset("Actives", "Spellbook")
 end

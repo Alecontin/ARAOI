@@ -79,6 +79,10 @@ function ARAOI:_On3DGlassesUse(_, _, player, useFlags)
         ARAOI.ThreeD_Glasses.PlayerColorData(player, ARAOI.ThreeD_Glasses.ColorEnum.RED)
     end
 
+    -- Play a sound
+    SFXManager():Play(SoundEffect.SOUND_LAZARUS_FLIP_ALIVE, 0.2, nil, nil, 3)
+    SFXManager():Play(SoundEffect.SOUND_HOLY, 0.3, nil, nil, 2)
+
     -- Show the item animation
     return true
 end

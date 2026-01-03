@@ -135,7 +135,12 @@ function ARAOI:_OnBagOfHoldingInputAction(entity, inputHook, buttonAction)
     if inputHook ~= InputHook.IS_ACTION_TRIGGERED or buttonAction ~= ButtonAction.ACTION_DROP then return end
 
     -- Only cycle if the player is holding the bag of crafting
-    if (player:GetActiveItem() == ARAOI.CollectibleType.BAG_OF_HOLDING or player:GetActiveItem(ActiveSlot.SLOT_POCKET) == ARAOI.CollectibleType.BAG_OF_HOLDING)
+    if (
+    player:GetActiveItem() == ARAOI.CollectibleType.BAG_OF_HOLDING
+    or (player:GetActiveItem(ActiveSlot.SLOT_POCKET) == ARAOI.CollectibleType.BAG_OF_HOLDING
+        and player:GetPocketItem(PillCardSlot.PRIMARY):GetSlot() == ActiveSlot.SLOT_POCKET2
+        and player:GetPocketItem(PillCardSlot.PRIMARY):GetType() == PocketItemType.ACTIVE_ITEM)
+    )
     -- And if the player is pressing the drop key
     and Input.IsActionTriggered(buttonAction, player.ControllerIndex) then
 
@@ -148,11 +153,24 @@ function ARAOI:_OnBagOfHoldingInputAction(entity, inputHook, buttonAction)
             return
         end
 
-        -- This makes the game think we didn't press anything
-        if inputHook == InputHook.GET_ACTION_VALUE then
-            return 0
-        else
-            return false
+        -- This makes the game think we didn't press anything if Bag of Holding is our pocket item
+        -- otherwise we would be skipping over items
+        if player:GetActiveItem(ActiveSlot.SLOT_POCKET) == ARAOI.CollectibleType.BAG_OF_HOLDING
+        and player:GetPocketItem(PillCardSlot.PRIMARY):GetSlot() == ActiveSlot.SLOT_POCKET2 --! BUGGED ! :GetSlot() returns +1 than it should
+        and player:GetPocketItem(PillCardSlot.PRIMARY):GetType() == PocketItemType.ACTIVE_ITEM
+        and player:GetActiveCharge(ActiveSlot.SLOT_POCKET) >= player:GetActiveMinUsableCharge(ActiveSlot.SLOT_POCKET) then
+            player:SwapActiveItems()
+            if inputHook == InputHook.GET_ACTION_VALUE then
+                return 0
+            else
+                return false
+            end
+        end
+
+        -- Swapping the active items, that way we can still cycle the pocket items
+        -- Unless we have selected D Infinity, otherwise it has a weird interaction... Oh well.
+        if not (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == CollectibleType.COLLECTIBLE_D_INFINITY) then
+            player:SwapActiveItems()
         end
     end
 end
@@ -271,8 +289,18 @@ function ARAOI:_OnBagOfHoldingUse(_, _, player, useFlags, slot)
         -- Store the last item used to set the new charges
         ARAOI.Bag_of_Holding.LastItemUsed(player, selected)
 
+        -- Play sound for using items
+        -- SFX:Play(SoundEffect.SOUND_PORTAL_OPEN, 0.4, nil, nil, 5)
+        SFX:Play(SoundEffect.SOUND_BIRD_FLAP, 1, 2, nil, 0.7)
+        SFX:Play(SoundEffect.SOUND_HELL_PORTAL2, 0.2, 2, nil, 0.7)
+
         return false
     end
+
+    -- Play sound for storing items
+    SFX:Play(SoundEffect.SOUND_PORTAL_OPEN, 0.4, nil, nil, 5)
+    SFX:Play(SoundEffect.SOUND_BIRD_FLAP, 1, 2, nil, 0.7)
+    SFX:Play(SoundEffect.SOUND_HELL_PORTAL2, 0.2, 2, nil, 0.7)
 
     return true
 end

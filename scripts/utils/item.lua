@@ -159,6 +159,7 @@ function ItemUtils.GetCollectibleCycle(ItemPool, NumCollectibles, IgnoreModifier
     local collectibles = {}
     for _ = 1, NumCollectibles do
         if ItemPool == ItemPoolType.POOL_NULL then ItemPool = rng:RandomInt(ItemPoolType.NUM_ITEMPOOLS) - 1 end
+        if ItemPool == nil then ItemPool = ARAOI.RoomUtils.GetItemPool() end
         local collectible = pool:GetCollectible(ItemPool or room:GetItemPool(rng:GetSeed()), Decrease, rng:Next(), DefaultItem)
         table.insert(collectibles, collectible)
     end
@@ -272,7 +273,7 @@ function ItemUtils.GetRandomPickup(rng, allowHearts, allowCoins, allowKeys, allo
     }
 
     -- Separate the pickups and weights
-    local keys, values = tableUtils.KeysAndValues(pickups)
+    keys, values = tableUtils.KeysAndValues(pickups)
     return tableUtils.Choice(keys, values, rng)
 end
 

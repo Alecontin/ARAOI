@@ -31,6 +31,15 @@ REWARDS_TYPE.Planetarium = 8
 REWARDS_TYPE.Treasure = 9
 local num_rewards = 10
 
+local NULL_EFFECTS = {
+    Isaac.GetNullItemIdByName("Gamblecore Speed"),
+    Isaac.GetNullItemIdByName("Gamblecore Tears"),
+    Isaac.GetNullItemIdByName("Gamblecore Damage"),
+    Isaac.GetNullItemIdByName("Gamblecore Range"),
+    Isaac.GetNullItemIdByName("Gamblecore Shotspeed"),
+    Isaac.GetNullItemIdByName("Gamblecore Luck")
+}
+
 ARAOI.Gamblecore.REWARDS_TYPE = REWARDS_TYPE
 
 
@@ -54,14 +63,27 @@ end
 ---@param add? integer -- How many to add. Leave at `nil` to get the current reward level. `0` to reset
 ---@return integer
 function ARAOI.Gamblecore.PlayerReward(player, reward_type, add)
-    local reward = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0)
-    if add then
-        if reward_type == REWARDS_TYPE.Angel then
-            game:GetLevel():AddAngelRoomChance(add * 0.07)
+    if reward_type <= 5 then -- We can manage stats up to luck with null effects
+        local effects = player:GetEffects()
+        local null_id = NULL_EFFECTS[reward_type+1]
+        if add then
+            if add <= 0 then
+                effects:RemoveNullEffect(null_id, add == 0 and -1 or -add)
+            else
+                effects:AddNullEffect(null_id, false, add)
+            end
         end
-        return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0, add ~= 0 and (reward+add) or add)
-    else
-        return reward
+        return effects:GetNullEffectNum(null_id)
+    else -- Other stats we need to change on the fly and can not be set through null effects
+        local reward = ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0)
+        if add then
+            if reward_type == REWARDS_TYPE.Angel then
+                game:GetLevel():AddAngelRoomChance(add * 0.07)
+            end
+            return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "gamblecoreStatAdditions", {}, ARAOI.PlayerUtils.GetId(player).."/"..reward_type, 0, add ~= 0 and (reward+add) or add)
+        else
+            return reward
+        end
     end
 end
 
@@ -237,7 +259,8 @@ local function CalculateReward(player)
             pool = ItemPoolType.POOL_PLANETARIUM
         end
         if symbol == REWARDS_TYPE.Treasure then
-            pool = game:GetRoom():GetItemPool(0)
+            local room = game:GetRoom()
+            pool = (room:GetItemPool(1) == -1 and room:GetType() == RoomType.ROOM_DEFAULT) and 0 or room:GetItemPool(1) -- ! BAND AID FIX !
             ARAOI.ItemUtils.SpawnCollectibleFromPool(pool, pos, nil, nil, nil, rng)
             ARAOI.ItemUtils.SpawnCollectibleFromPool(pool, pos, nil, nil, nil, rng)
         end
@@ -427,33 +450,33 @@ ARAOI:AddCallback(ModCallbacks.MC_POST_RENDER, ARAOI._OnGamblecoreRender)
 -- CACHE MAGIC --
 -----------------
 
----@param player EntityPlayer
----@param flag CacheFlag
-function ARAOI:_OnGamblecoreEvaluateCache(player, flag)
-    if flag == CacheFlag.CACHE_SPEED then
-        player.MoveSpeed = player.MoveSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
-    end
-    if flag == CacheFlag.CACHE_FIREDELAY then
-        ARAOI.PlayerUtils.AddFireDelay(player, ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Tears) * -0.77, false)
-    end
-    if flag == CacheFlag.CACHE_DAMAGE then
-        player.Damage = player.Damage + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Damage) * (ARAOI.PlayerUtils.GetAproxDamageMultiplier(player) * 0.77)
-    end
-    if flag == CacheFlag.CACHE_RANGE then
-        player.TearRange = player.TearRange + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Range) * 7
-    end
-    if flag == CacheFlag.CACHE_SHOTSPEED then
-        player.ShotSpeed = player.ShotSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Shotspeed) * 0.21
-    end
-    if flag == CacheFlag.CACHE_LUCK then
-        player.Luck = player.Luck + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Luck) * 2.64
-    end
-end
-ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnGamblecoreEvaluateCache)
+-- ---@param player EntityPlayer
+-- ---@param flag CacheFlag
+-- function ARAOI:_OnGamblecoreEvaluateCache(player, flag)
+--     if flag == CacheFlag.CACHE_SPEED then
+--         player.MoveSpeed = player.MoveSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Speed) * 0.21
+--     end
+--     if flag == CacheFlag.CACHE_FIREDELAY then
+--         player.FireDelay = ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Tears) * -0.77 * player:GetStatMultiplier()
+--     end
+--     if flag == CacheFlag.CACHE_DAMAGE then
+--         player.Damage = player.Damage + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Damage) * (ARAOI.PlayerUtils.GetAproxDamageMultiplier(player) * 0.77)
+--     end
+--     if flag == CacheFlag.CACHE_RANGE then
+--         player.TearRange = player.TearRange + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Range) * 7
+--     end
+--     if flag == CacheFlag.CACHE_SHOTSPEED then
+--         player.ShotSpeed = player.ShotSpeed + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Shotspeed) * 0.21
+--     end
+--     if flag == CacheFlag.CACHE_LUCK then
+--         player.Luck = player.Luck + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Luck) * 2.64
+--     end
+-- end
+-- ARAOI:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, ARAOI._OnGamblecoreEvaluateCache)
 
 function ARAOI:_OnGamblecoreDevilCalculate(chance)
     local reward_chance = 0
-    for _,player in ipairs(PlayerManager.GetPlayers()) do
+    for _, player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Devil) * 0.07
     end
     return chance + reward_chance
@@ -462,7 +485,7 @@ ARAOI:AddCallback(ModCallbacks.MC_POST_DEVIL_CALCULATE, ARAOI._OnGamblecoreDevil
 
 function ARAOI:_OnGamblecoreNewLevel()
     local reward_chance = 0
-    for _,player in ipairs(PlayerManager.GetPlayers()) do
+    for _, player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Angel) * 0.07
     end
     game:GetLevel():AddAngelRoomChance(reward_chance)
@@ -471,7 +494,7 @@ ARAOI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, ARAOI._OnGamblecoreNewLevel)
 
 function ARAOI:_OnGamblecorePlanetariumCalculate(chance)
     local reward_chance = 0
-    for _,player in ipairs(PlayerManager.GetPlayers()) do
+    for _, player in ipairs(PlayerManager.GetPlayers()) do
         reward_chance = reward_chance + ARAOI.Gamblecore.PlayerReward(player, REWARDS_TYPE.Planetarium) * 0.07
     end
     return chance + reward_chance

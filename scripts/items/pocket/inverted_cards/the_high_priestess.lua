@@ -7,6 +7,7 @@ ARAOI.Inverted_Cards.High_Priestess = card
 
 ---@param player EntityPlayer
 function ARAOI:_OnInvertedCardHighPriestessUse(_, player)
+    ---@diagnostic disable-next-line: param-type-mismatch
     player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
 
     for _ = 1, 8 do

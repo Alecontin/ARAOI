@@ -25,8 +25,8 @@ function PlayerUtils.AddFireDelay(player, delay, respectTearCap)
     -- Calculate the target TearDelay
     local targetTearDelay = currentTearDelay - delay
 
-    if targetTearDelay > 5 and not respectTearCap then
-        targetTearDelay = math.max(5, currentTearDelay)
+    if targetTearDelay > player:GetTearsCap() and not respectTearCap then
+        targetTearDelay = math.max(player:GetTearsCap(), currentTearDelay)
     end
 
     -- Calculate the target MaxFireDelay

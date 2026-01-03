@@ -49,6 +49,7 @@ function ARAOI:_OnInvertedCardSunUse(_, player, useFlags)
     end
 
     if numRoomsVisited() ~= 1 then
+        ---@diagnostic disable-next-line: param-type-mismatch
         player:UseCard(card.Replace, UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER)
         return
     end
