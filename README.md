@@ -1,5 +1,7 @@
 [![Steam Downloads](https://img.shields.io/steam/downloads/3265264784?style=flat&logo=steam&label=Downloads&color=%230179AE)](https://steamcommunity.com/sharedfiles/filedetails/?id=3265264784)
 
+## The Repentance version is no longer being maintained. Use only if you have Repentogon v1.0.12e for Repentance, with mods that were also made for that version.
+
 # Alecontín's Random Assortment Of Items
 This is a [The Binding Of Isaac: Repentance](https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/) mod made using the [REPENTOGON](https://github.com/TeamREPENTOGON/REPENTOGON) LUA script extension that adds items I thought would be cool to make.
 
