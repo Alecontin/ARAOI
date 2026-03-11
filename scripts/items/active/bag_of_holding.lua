@@ -9,6 +9,7 @@
 ------------------------
 
 ARAOI.Bag_of_Holding = {}
+ARAOI.Bag_of_Holding.GET_LAST_ITEM_CHARGES_CALLBACK = "ARAOI BAG OF HOLDING GET LAST ITEM CHARGES CALLBACK"
 
 local BAG_OF_HOLDING_SPRITE = Sprite("gfx/ui/hud_bag_of_holding.anm2")
 BAG_OF_HOLDING_SPRITE:SetOverlayRenderPriority(true)
@@ -38,6 +39,7 @@ ARAOI.Bag_of_Holding.SingleUseItems = {
 }
 
 local ItemConfig = Isaac.GetItemConfig()
+local ItemPool = Game():GetItemPool()
 local SFX = SFXManager()
 
 ---------------
@@ -109,11 +111,12 @@ function ARAOI.Bag_of_Holding.SelectedVarData(player, set)
     return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingVarData", {}, ARAOI.Bag_of_Holding.GetSelectedItem(player) or ARAOI.CollectibleType.BAG_OF_HOLDING, 0, set)
 end
 
+-- Sets the item's charges according to the last item used
 ---@param player EntityPlayer
----@param set? CollectibleType
----@return CollectibleType
-function ARAOI.Bag_of_Holding.LastItemUsed(player, set)
-    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingLastItemUse", {}, ARAOI.PlayerUtils.GetId(player), ARAOI.CollectibleType.BAG_OF_HOLDING, set)
+---@param set? integer
+---@return integer
+function ARAOI.Bag_of_Holding.LastItemCharge(player, set)
+    return ARAOI.SaveDataManager:Data(ARAOI.SaveDataManager.RUN, "BagOfHoldingLastItemCharge", {}, ARAOI.PlayerUtils.GetId(player), ARAOI.CollectibleType.BAG_OF_HOLDING, set)
 end
 
 
@@ -193,8 +196,8 @@ function ARAOI:_OnBagOfHoldingUse(_, _, player, useFlags, slot)
 
     -- We don't have an item selected
     if selected == nil then
-        -- Make the last item used be our item
-        ARAOI.Bag_of_Holding.LastItemUsed(player, ARAOI.CollectibleType.BAG_OF_HOLDING)
+        -- Make the last item charge be our item's charge
+        ARAOI.Bag_of_Holding.LastItemCharge(player, ItemConfig:GetCollectible(ARAOI.CollectibleType.BAG_OF_HOLDING).MaxCharges)
 
         local options_voided = {}
 
@@ -286,8 +289,9 @@ function ARAOI:_OnBagOfHoldingUse(_, _, player, useFlags, slot)
             end
         end)
 
-        -- Store the last item used to set the new charges
-        ARAOI.Bag_of_Holding.LastItemUsed(player, selected)
+        -- Store the last item's charge to set our item's charge later
+        -- We use the callback in case other items/mods modify the item's charge dynamically
+        ARAOI.Bag_of_Holding.LastItemCharge(player, Isaac.RunCallback(ARAOI.Bag_of_Holding.GET_LAST_ITEM_CHARGES_CALLBACK, player, selected))
 
         -- Play sound for using items
         -- SFX:Play(SoundEffect.SOUND_PORTAL_OPEN, 0.4, nil, nil, 5)
@@ -307,6 +311,28 @@ end
 ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnBagOfHoldingUse, ARAOI.CollectibleType.BAG_OF_HOLDING)
 
 
+---@param player EntityPlayer
+---@param collectible_id CollectibleType
+function ARAOI:_OnBagOfHoldingGetLastItemCharges(player, collectible_id)
+    local config = ItemConfig:GetCollectible(collectible_id)
+    local pocket_item = player:GetPocketItem(PillCardSlot.PRIMARY)
+    local pocket_item_type = pocket_item:GetType()
+    local pocket_item_variant = pocket_item:GetSlot()
+
+    if (collectible_id == CollectibleType.COLLECTIBLE_BLANK_CARD or collectible_id == CollectibleType.COLLECTIBLE_CLEAR_RUNE)
+    and (pocket_item_type == PocketItemType.CARD and pocket_item_variant ~= 0)
+    then
+        return ItemConfig:GetCard(pocket_item_variant).MimicCharge
+    end
+
+    if collectible_id == CollectibleType.COLLECTIBLE_PLACEBO and player:GetPocketItem(PillCardSlot.PRIMARY):GetType() == PocketItemType.PILL then
+        return ItemConfig:GetPillEffect(ItemPool:GetPillEffect(pocket_item_variant, player)).MimicCharge
+    end
+    return config.MaxCharges
+end
+ARAOI:AddCallback(ARAOI.Bag_of_Holding.GET_LAST_ITEM_CHARGES_CALLBACK, ARAOI._OnBagOfHoldingGetLastItemCharges)
+
+
 ---------------------------------
 -- CHARGING AND REMOVING ITEMS --
 ---------------------------------
@@ -315,10 +341,7 @@ ARAOI:AddCallback(ModCallbacks.MC_USE_ITEM, ARAOI._OnBagOfHoldingUse, ARAOI.Coll
 ---@param player EntityPlayer
 function ARAOI:_OnBagOfHoldingGetActiveMaxCharge(collectibleType, player, _)
     if collectibleType ~= ARAOI.CollectibleType.BAG_OF_HOLDING then return end
-
-    -- Get and return the last item's max charge
-    local config = ItemConfig:GetCollectible(ARAOI.Bag_of_Holding.LastItemUsed(player))
-    return config.MaxCharges
+    return ARAOI.Bag_of_Holding.LastItemCharge(player)
 end
 ARAOI:AddCallback(ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE, ARAOI._OnBagOfHoldingGetActiveMaxCharge)
 

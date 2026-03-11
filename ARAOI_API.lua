@@ -782,7 +782,24 @@ end
 function ARAOI.ThreeD_Glasses.PlayerHas2020Effect(player, set)
 end
 
+---@class Bag_of_Holding
 ARAOI.Bag_of_Holding = {}
+
+--[[
+This is a quick how-to for the callback
+
+Check the Bag of Holding script for a real example if needed
+```
+function ProcessBagOfHoldingCharges(player, collectible_id)
+    if collectible_id ~= YOUR_COLLECTIBLE_ID_HERE then
+        -- Do stuff here
+        return integer
+    end
+end
+YOUR_MOD_REFERENCE:AddCallback(ARAOI.Bag_of_Holding.GET_LAST_ITEM_CHARGES_CALLBACK, ProcessBagOfHoldingCharges)
+```
+]]
+ARAOI.Bag_of_Holding.GET_LAST_ITEM_CHARGES_CALLBACK = "string"
 
 -- Single use items. Modded items do not need to be added as they trigger
 -- the RemoveCollectible function, which will be detected automatically
@@ -814,9 +831,9 @@ function ARAOI.Bag_of_Holding.GetSelectedItem(player)
 end
 
 ---@param player EntityPlayer
----@param set? CollectibleType
----@return CollectibleType
-function ARAOI.Bag_of_Holding.LastItemUsed(player, set)
+---@param set? integer
+---@return integer
+function ARAOI.Bag_of_Holding.LastItemCharge(player, set)
 end
 
 ARAOI.Eternal_Dplopia = {}
@@ -1084,6 +1101,12 @@ function ARAOI.Voodoo_Body.SpawnCursePin(attack, spawner, damage, spriteScale, e
 end
 
 ARAOI.Gamblecore = {}
+
+ARAOI.Gamblecore.Config = {
+    ALL_REELS_AT_ONCE     = false, -- *Default: `false` — Should all reels be animated and stopped at the same time?*
+    DIFFERENT_REEL_SOUNDS = true,  -- *Default: `false` — Use different sounds when rolling and stopping reels?*
+    ARTIFICIAL_PITY       = 0      -- *Default: `0` — Pity added before the calculation. Increases chance of payout.*
+}
 
 ---@param player EntityPlayer
 ---@param reward_type number -- The type of the reward. Use `ARAOI.Gamblecore.REWARDS_TYPE`

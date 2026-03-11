@@ -90,7 +90,7 @@ end
 
 function RoomUtils.GetItemPool()
     local room = Game():GetRoom()
-    return (room:GetItemPool(1) == -1 and room:GetType() == RoomType.ROOM_DEFAULT) and 0 or room:GetItemPool(1)
+    return room:GetItemPool(1) == -1 and 0 or room:GetItemPool(1)
 end
 
 return RoomUtils

@@ -12,8 +12,6 @@ ARAOI.Glass_Die = {}
 local GLASS_DIE_SPRITE = Sprite("gfx/ui/hud_glass_die.anm2", true)
 GLASS_DIE_SPRITE:SetAnimation(GLASS_DIE_SPRITE:GetDefaultAnimation())
 
-local game = Game()
-
 -- Variable containing sprite data for modded pools: [PoolID] = {ANM2, Frame, Offset, Scale}
 local Modded_Sprite_Data = {}
 
@@ -68,9 +66,6 @@ function ARAOI:_OnGlassDieUse(_, _, player, useFlag, slot)
 
     -- Getting our item's ItemDesc
     local desc = player:GetActiveItemDesc(slot)
-
-    -- Getting the current room
-    local room = game:GetRoom()
 
     -- Is the item empty?
     if desc.VarData == -1 then

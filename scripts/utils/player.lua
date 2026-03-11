@@ -503,14 +503,16 @@ end
 ---@param sizeMultiplier? number -- The size of the attack
 ---@param direction? Vector -- The direction to spawn the attack towards
 ---@param playSound? boolean -- Should we play the attack sound
-function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound)
+---@param affectedByRange? boolean -- Default: `true` Should the attack be affected by range?
+function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound, affectedByRange)
     direction = direction or Vector.Zero
+    if affectedByRange == nil then affectedByRange = true end
 
     local offset = Vector(0, -6)
     local rotation = direction:GetAngleDegrees()-90
 
     local woosh = ARAOI.MiscUtils.SpawnMeleeWoosh(
-        player.Position + Vector(8, 0):Rotated(direction:GetAngleDegrees()) * math.max(((player.TearRange - 260) / 43.5), 1),
+        player.Position + Vector(8, 0):Rotated(direction:GetAngleDegrees()) * (affectedByRange and math.max(((player.TearRange - 260) / 43.5), 1) or 1),
         player.Damage,
         sizeMultiplier,
         rotation,

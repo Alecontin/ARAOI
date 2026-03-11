@@ -340,7 +340,7 @@ function ARAOI:_OnKatanaUpdate()
             local direction = Vector.FromAngle(90 * ARAOI.PlayerUtils.GetCurrentShootingDirection(player))
 
             -- Spawn a slash
-            local swing = ARAOI.PlayerUtils.FireMelee(player, player:GetTearHitParams(player:GetWeapon(1):GetWeaponType()).TearScale * 1.2, direction, false)
+            local swing = ARAOI.PlayerUtils.FireMelee(player, player:GetTearHitParams(player:GetWeapon(1):GetWeaponType()).TearScale + player.TearRange / 1000, direction, false, false)
             swing.HitPoints = player.Damage * SWING_DAMAGE_MULTIPLIER
 
             -- Setting it's data so we can identify it later

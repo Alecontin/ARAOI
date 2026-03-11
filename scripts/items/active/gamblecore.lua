@@ -1,3 +1,24 @@
+local Config = {}
+
+----------------------------
+-- START OF CONFIGURATION --
+----------------------------
+
+
+
+Config.ALL_REELS_AT_ONCE     = false -- *Default: `false` — Should all reels be animated and stopped at the same time?*
+Config.DIFFERENT_REEL_SOUNDS = true  -- *Default: `true`  — Use different sounds when rolling and stopping reels?*
+Config.ARTIFICIAL_PITY       = 0     -- *Default: `0`     — Pity added before the calculation. Increases chance of payout.*
+
+
+
+--------------------------
+-- END OF CONFIGURATION --
+--------------------------
+local ConfigDefaults = ARAOI.TableUtils.ShallowCopy(Config)
+
+
+
 ------------------------
 -- CONSTANTS AND INIT --
 ------------------------
@@ -120,11 +141,15 @@ local hud_reels = {}
 ---@param amount integer -- Please use only odd numbers!
 ---@param rng? RNG
 function ARAOI.Gamblecore.CreateSlots(player, amount, rng)
+    if rng == nil then rng = GLOBAL_RNG end
     if not IsGambling(player) then
         StartGambling(player)
         local reels = {}
-        for _ = 1, amount do
+        for i = 1, amount do
             local reel = NewReelSprite(rng)
+            if Config.ALL_REELS_AT_ONCE == false then
+                reel.PlaybackSpeed = reel.PlaybackSpeed + (i - 1) * 6
+            end
             table.insert(reels, reel)
         end
         ARAOI.SaveDataManager:Key(hud_reels, ARAOI.PlayerUtils.GetId(player), {}, reels)
@@ -399,7 +424,7 @@ function ARAOI:_OnGamblecoreUpdate()
             -- If the sprite animation finished
             if reel:IsFinished(reel:GetAnimation()) then
                 -- Get a new random sprite animation
-                local set_same = rng:RandomFloat() < (0.0264 * ARAOI.Gamblecore.PlayerPity(player))
+                local set_same = rng:RandomFloat() < (0.0264 * (ARAOI.Gamblecore.PlayerPity(player) + Config.ARTIFICIAL_PITY))
 
                 local choice = nil
                 if set_same and i > 1 then
@@ -415,8 +440,14 @@ function ARAOI:_OnGamblecoreUpdate()
             -- If we passed the center
             if reel:IsEventTriggered("Click") then
                 -- Play a sound
-                sfx:Play(SFX_TICK, 0.4)
+                if reel.PlaybackSpeed == 0 or Config.DIFFERENT_REEL_SOUNDS == false then
+                    sfx:Play(SFX_TICK, 0.5)
+                else
+                    sfx:Play(SFX_TICK, 0.3, 0, false, 0.9, 0)
+                end
             end
+
+            ::next_reel::
         end
 
         -- Check if the reels that finished is the same amount as the reels the player has
@@ -530,3 +561,25 @@ ARAOI.EIDWrapper(function ()
         "21% chance to spawn 7 wisps"
     )
 end)
+
+
+if ModConfigMenu then
+    ARAOI.MCMUtils.AddItemTitle("Actives", "Gamblecore")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Gamblecore", Config, "ALL_REELS_AT_ONCE",
+    ConfigDefaults, function ()
+        return "All Reels At Once: "
+    end, "Should all reels be animated and stopped at the same time?")
+
+    ARAOI.MCMUtils.AddBooleanSetting("Actives", "Gamblecore", Config, "DIFFERENT_REEL_SOUNDS",
+    ConfigDefaults, function ()
+        return "Different Reel Sounds: "
+    end, "Use different sounds when rolling and stopping reels?")
+
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Gamblecore", Config, "ARTIFICIAL_PITY",
+    ConfigDefaults, ConfigDefaults.ARTIFICIAL_PITY, 0, 38, 5, function ()
+        return "Artificial Pity: " .. (Config.ARTIFICIAL_PITY == 0 and "" or "aprox. ") .. math.floor((Config.ARTIFICIAL_PITY / 38) * 100) ..  "%"
+    end, "Pity added before the calculation", "Increases chance of payout")
+
+    ARAOI.MCMUtils.AddReset("Actives", "Gamblecore")
+end
