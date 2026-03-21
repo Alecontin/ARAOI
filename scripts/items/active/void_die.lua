@@ -9,7 +9,7 @@ Config.PERMANENT_QUALITY = false -- *Default: `false` — Should the stored qual
 Config.AFFECTS_ALL_ITEMS = false -- *Default: `false` — Should we affect all items? Stores the highest quality and rerolls all items into that quality*
 Config.CHAOS_MODE = false -- *Default: `false` — Reroll into any pool?*
 
-Config.CAR_BATTERY_CHANCE = 25 -- *Default: `25` — Chance of the Car Battery synergy to take effect*
+Config.CAR_BATTERY_CHANCE = 15 -- *Default: `15` — Chance of the Car Battery synergy to take effect*
 
 
 
