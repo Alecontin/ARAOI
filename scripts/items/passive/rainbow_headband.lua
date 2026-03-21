@@ -180,11 +180,7 @@ ARAOI.EIDWrapper(function ()
         "#{{Damage}} The creep deals 66% of Isaac's damage per tick and inherits his tear effects"..
         "#{{Timer}} The trail gets longer by "..Config.INCREASE_TRAIL_TIMEOUT_BY.." frames every "..Config.INCREASE_TRAIL_SIZE_EVERY.." seconds"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Rainbow Headband Abyss Synergy",
-        ARAOI.CollectibleType.RAINBOW_HEADBAND,
-        "Rainbow locust that leaves behind rainbow creep"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.RAINBOW_HEADBAND, "1 locust, leaves creep (1x Isaac's Damage)")
 end)
 
 

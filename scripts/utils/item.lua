@@ -277,4 +277,60 @@ function ItemUtils.GetRandomPickup(rng, allowHearts, allowCoins, allowKeys, allo
     return tableUtils.Choice(keys, values, rng)
 end
 
+
+
+
+local ItemQualityList = {}
+-- Updates the Item Quality List, this is done automatically when calling `ItemUtils.GetItemFromQuality()`
+function ItemUtils.UpdateItemQualityList()
+    local ItemPool = game:GetItemPool()
+    ItemQualityList = {
+        ["0"] = {},
+        ["1"] = {},
+        ["2"] = {},
+        ["3"] = {},
+        ["4"] = {}
+    }
+    for collectible_id, _ in ipairs(Isaac.GetPlayer():GetCollectiblesList()) do
+        local item = Isaac.GetItemConfig():GetCollectible(collectible_id)
+        if item then
+            if ItemPool:HasCollectible(item.ID) then
+                table.insert(ItemQualityList[tostring(item.Quality)], item.ID)
+            end
+        end
+    end
+end
+
+
+-- Returns an item of the given quality
+---@param quality integer
+---@param seed integer
+---@param pool? ItemPoolType
+function ItemUtils.GetItemFromQuality(quality, seed, pool)
+    ItemUtils.UpdateItemQualityList()
+    local ItemPool = game:GetItemPool()
+    local quality_list = ItemQualityList[tostring(quality)]
+
+    if (pool ~= nil) and (pool ~= ItemPoolType.POOL_NULL) then
+        local curated_list = {}
+        local possible_collectibles = {}
+        for _, reg in ipairs(ItemPool:GetCollectiblesFromPool(pool)) do
+            table.insert(possible_collectibles, reg.itemID)
+        end
+        for _, collectible_id in ipairs(quality_list) do
+            if ARAOI.TableUtils.IsValueInTable(collectible_id, possible_collectibles) then
+                table.insert(curated_list, collectible_id)
+            end
+        end
+        quality_list = curated_list
+    end
+
+    local collectible = ItemPool:GetCollectibleFromList(quality_list, seed)
+    ItemPool:RemoveCollectible(collectible)
+    return collectible
+end
+
+
+
+
 return ItemUtils

@@ -74,7 +74,10 @@ ARAOI.CollectibleType = {
     SODA_PASSIVE = Isaac.GetItemIdByName("Soda Passive"),
 
     ---@type integer
-    NUM_COLLECTIBLES = 22,
+    VOID_DIE = Isaac.GetItemIdByName("Void Die"),
+
+    ---@type integer
+    NUM_COLLECTIBLES = 23,
 }
 ---@type integer
 ARAOI.CollectibleType.STARTING_INDEX = ARAOI.CollectibleType.ETERNAL_DPLOPIA

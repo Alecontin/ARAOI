@@ -368,9 +368,5 @@ ARAOI.EIDWrapper(function ()
         "#{{BrimstoneCurse}} Swings mark the last enemy hit"..
         "#{{Timer}} Using the item gives Isaac a 1 second shield and teleports him behind the marked enemy, doing {{Damage}} "..TELEPORT_DAMAGE_MULTIPLIER.."x Isaac's damage to enemies in between"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "KATANA ABYSS SYNERGY",
-        ARAOI.CollectibleType.KATANA,
-        "Gray locust that does 3x damage"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.KATANA, "1 locust (3x Isaac's damage)")
 end)

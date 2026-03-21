@@ -189,9 +189,5 @@ ARAOI.EIDWrapper(function ()
         "#{{Mirror}} Copies the current room's item pool on use"..
         "# If there is an item pool copied, it will reroll items into the copied pool and will empty the die"
     )
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "Glass Die Car Battery Synergy",
-        ARAOI.CollectibleType.GLASS_DIE,
-        "Adds an extra item to the pedestals item cycle"
-    )
+    EID:addCarBatteryCondition(ARAOI.CollectibleType.GLASS_DIE, "Adds an extra item to the pedestal's item cycle")
 end)

@@ -171,11 +171,7 @@ ARAOI.EIDWrapper(function ()
 
     ARAOI.EIDUtils.BookOfVirtuesSynergy("Rubik's Cube Book Of Virtues", ARAOI.CollectibleType.RUBIKS_CUBE, "Each wisp will enhance the Solved Rubik's Cube stats by 10%")
 
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Rubik's Cube Abyss Synergy",
-        ARAOI.CollectibleType.RUBIKS_CUBE,
-        "Color-changing locust that deals 1.2x Isaac's damage"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.RUBIKS_CUBE, "1 locust (1.2x Isaac's damage)")
 end)
 
 

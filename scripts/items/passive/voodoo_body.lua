@@ -341,11 +341,7 @@ ARAOI.EIDWrapper(function ()
         "#{{Tearsize}} Pins copy the majority of Isaac's tear effects"..
         "#{{Collectible"..CollectibleType.COLLECTIBLE_VOODOO_HEAD.."}} If Isaac has Voodo Head, the pins will deal {{Damage}} "..(Config.DAMAGE_SCALE + Config.VOODOO_HEAD_ADD).."% damage instead"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Voodoo Body Abyss Synergy",
-        ARAOI.CollectibleType.VOODOO_BODY,
-        "Gray locust that spawns pins on random enemies on hit"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.VOODOO_BODY, "1 locust, pins on hit")
 end)
 
 

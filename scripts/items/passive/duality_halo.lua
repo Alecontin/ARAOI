@@ -132,27 +132,6 @@ end
 ARAOI:AddCallback(ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR, ARAOI._OnDualityHaloPreRoomTriggerClear)
 
 
--------------
--- LOCUSTS --
--------------
-
----@param locust EntityFamiliar
-function ARAOI:_OnDualityHaloFamiliarInit(locust)
-    if locust.SubType == ARAOI.CollectibleType.DUALITY_HALO then
-        local locusts = ARAOI.PlayerUtils.GetLocusts(locust.SpawnerEntity:ToPlayer(), ARAOI.CollectibleType.DUALITY_HALO)
-        if locusts then
-            if #locusts%2 == 1 then
-                locust:GetSprite().Color:SetTint(1, 1, 1, 1)
-            end
-            if #locusts%2 == 0 then
-                locust:GetSprite().Color:SetTint(0, 0, 0, 1)
-            end
-        end
-    end
-end
-ARAOI:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, ARAOI._OnDualityHaloFamiliarInit, FamiliarVariant.ABYSS_LOCUST)
-
-
 ----------------------
 -- ITEM DESCRIPTION --
 ----------------------
@@ -163,9 +142,5 @@ ARAOI.EIDWrapper(function ()
         "# Having multiple deal chances combines them and spawns a choice between deals"..
         "#{{Collectible}} Taking an item spawned this way will not future deals"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Duality Halo Abyss Synergy",
-        ARAOI.CollectibleType.DUALITY_HALO,
-        "Small black and white locusts that deal 0.5x Isaac's damage"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.DUALITY_HALO, "2 locusts (0.5x Isaac's damage)")
 end)

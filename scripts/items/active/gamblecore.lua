@@ -545,16 +545,9 @@ ARAOI.EIDWrapper(function ()
         "#{{Collectible}} Getting a 3 symbols in a row spawns an item related to the respective stat"..
         "#{{Coin}} Costs 7 coins to use if it's not fully charged"
     )
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "gamblecore car battery synergy",
-        ARAOI.CollectibleType.GAMBLECORE,
-        "Spawns 2 extra reels"
-    )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "gamblecore abyss synergy",
-        ARAOI.CollectibleType.GAMBLECORE,
-        "Spawns 7 small locusts that deal 0.14x Isaac's damage"
-    )
+
+    EID:addCarBatteryCondition(ARAOI.CollectibleType.GAMBLECORE, "Spawns 2 extra reels")
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.GAMBLECORE, "7 locusts (0.14x Isaac's damage)")
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "gamblecore book of vietues synergy",
         ARAOI.CollectibleType.GAMBLECORE,

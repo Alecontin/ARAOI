@@ -556,11 +556,7 @@ ARAOI.EIDWrapper(function ()
         "#{{TreasureRoom}} If the used item was a passive item, it will instead be given to Isaac for the rest of the floor"
     )
 
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "Spellbook Car Battery Synergy",
-        ARAOI.CollectibleType.SPELLBOOK,
-        "Will cast the spells twice"
-    )
+    EID:addCarBatteryCondition(ARAOI.CollectibleType.SPELLBOOK, "Will cast the spells twice")
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Spellbook Book Of Virtues",
         ARAOI.CollectibleType.SPELLBOOK,

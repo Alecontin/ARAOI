@@ -278,11 +278,7 @@ ARAOI.EIDWrapper(function ()
         ARAOI.CollectibleType.ETERNAL_DPLOPIA,
         Config.WISP_DELETE_CHANCE.."% chance of a wisp getting deleted instead of an item"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Eternal Dplopia Abyss Synergy",
-        ARAOI.CollectibleType.ETERNAL_DPLOPIA,
-        "2 white locusts that deal normal damage"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.ETERNAL_DPLOPIA, "2 locusts (1x Isaac's damage)")
 
     local function condition(descObject)
         if descObject.ObjType == EntityType.ENTITY_PICKUP

@@ -188,26 +188,6 @@ end
 ARAOI:AddCallback(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, ARAOI._On3DGlassesPreProjectileCollision)
 
 
--------------
--- LOCUSTS --
--------------
-
----@param locust EntityFamiliar
-function ARAOI:_On3DGlassesFamiliarInit(locust)
-    if locust.SubType == ARAOI.CollectibleType.THREED_GLASSES then
-        local locusts = ARAOI.PlayerUtils.GetLocusts(locust.SpawnerEntity:ToPlayer(), ARAOI.CollectibleType.THREED_GLASSES)
-        if locusts then
-            if #locusts%2 == 1 then
-                locust:GetSprite().Color:SetTint(1, 0, 0, 1)
-            end
-            if #locusts%2 == 0 then
-                locust:GetSprite().Color:SetTint(0, 0, 1, 1)
-            end
-        end
-    end
-end
-ARAOI:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, ARAOI._On3DGlassesFamiliarInit, FamiliarVariant.ABYSS_LOCUST)
-
 
 ----------------------
 -- ITEM DESCRIPTION --
@@ -230,9 +210,7 @@ ARAOI.EIDWrapper(function ()
         ARAOI.CollectibleType.THREED_GLASSES,
         "Does nothing"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "3D Glasses Abyss Synergy",
-        ARAOI.CollectibleType.THREED_GLASSES,
-        "Small red and blue locusts that deal 0.5x Isaac's damage"
-    )
+
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.THREED_GLASSES, "2 locusts (0.5x Isaac's damage)")
+
 end)

@@ -284,11 +284,7 @@ ARAOI.EIDWrapper(function ()
         PlayerType.PLAYER_THELOST,
         "The Lost will not spawn slots that require health"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Gambling Chips Abyss Synergy",
-        ARAOI.CollectibleType.GAMBLING_CHIPS,
-        "Yellow locust with a 5% chance per hit of spawning a coin"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.GAMBLING_CHIPS, "1 locust, 5% chance of coin on hit (1x Isaac's damage)")
 end)
 
 

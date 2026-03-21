@@ -168,14 +168,6 @@ ARAOI.EIDWrapper(function ()
         PlayerType.PLAYER_THELOST,
         "When used within a {{DevilRoom}} Devil Deal or Black Market, consumes all charges and makes all items free"
     )
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "Wire Cutter Car Battery Synergy",
-        ARAOI.CollectibleType.WIRE_CUTTER,
-        "Has double the charges"
-    )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Wire Cutter Abyss Synergy",
-        ARAOI.CollectibleType.WIRE_CUTTER,
-        "2 small red locusts that deal 0.5x Isaac's damage"
-    )
+    EID:addCarBatteryCondition(ARAOI.CollectibleType.WIRE_CUTTER, "Has double the charges")
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.WIRE_CUTTER, "2 locusts (0.5x Isaac's damage)")
 end)

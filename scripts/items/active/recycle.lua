@@ -228,19 +228,11 @@ ARAOI.EIDWrapper(function ()
         "#{{Luck}} 1 in 5 chance of spawning a collectible from a random pool instead"..
         "#!!! Recycling this item will yield no rewards !!!"
     )
-    ARAOI.EIDUtils.CarBatterySynergy(
-        "Recycle Book of Virtues synergy",
-        ARAOI.CollectibleType.RECYCLE,
-        "Spawns 1 random extra pickup"
-    )
+    EID:addCarBatteryCondition(ARAOI.CollectibleType.RECYCLE, "Spawns 1 random extra pickup")
     ARAOI.EIDUtils.BookOfVirtuesSynergy(
         "Recycle Book of Virtues synergy",
         ARAOI.CollectibleType.RECYCLE,
         "Spawns a {{Collectible"..CollectibleType.COLLECTIBLE_LEMEGETON.."}} Lemegeton Wisp of the removed item"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Recycle Abyss Synergy",
-        ARAOI.CollectibleType.RECYCLE,
-        "Green locust that poisons enemies"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.RECYCLE, "1 locust, contact poison (1x Isaac's damage)")
 end)

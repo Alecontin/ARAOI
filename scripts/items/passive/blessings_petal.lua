@@ -93,9 +93,5 @@ ARAOI.EIDWrapper(function ()
         "# Spawns a random pickup at the start of the next run"..
         "# Pickups can be any variant of: #{{Blank}} {{Coin}} {{Key}} {{Bomb}} {{Heart}} {{Battery}} {{Chest}}"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Blessing's Petal Abyss Synergy",
-        ARAOI.CollectibleType.BLESSINGS_PETAL,
-        "Small white locust that deals 0.5x Isaac's damage"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.BLESSINGS_PETAL, "1 locust (0.5x Isaac's damage)")
 end)

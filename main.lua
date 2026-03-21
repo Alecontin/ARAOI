@@ -40,6 +40,7 @@ local files = {
     active.."gamblecore",
     active.."katana",
     active.."soda", -- & Passive
+    active.."void_die",
 
     --[[ PASSIVE ITEMS ]]--
     passive.."gambling_chips",

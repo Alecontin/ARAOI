@@ -21,6 +21,8 @@
   <active id="19" name="Katana" achievement="594" quality="4" maxcharges="600" chargetype="timed" devilprice="2" gfx="katana.png" description="Bringing a sword to a tear fight" tags="offensive nocantrip" customtags="nometronome" />
   <!-- Complete the Boss Rush as Maggie -->
   <active id="20" name="Soda" achievement="109" quality="3" maxcharges="0" devilprice="2" gfx="soda.png" description="Highly concentrated caffeine!" tags="offensive nocantrip" />
+  <!-- TBA -->
+  <active id="22" name="Void Die" achievement="0" quality="4" maxcharges="5" devilprice="2" gfx="void_die.png" description="Quality consumer" tags="offensive nocantrip" customtags="nometronome" />
 
   <!-- Beat Greedier Mode with Lilith -->
   <passive id="0" name="Duality Halo" achievement="306" quality="2" devilprice="1" gfx="duality_halo.png" description="May you get a second chance" tags="offensive summonable nogreed lazarussharedglobal" />

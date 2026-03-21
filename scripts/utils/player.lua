@@ -524,4 +524,28 @@ function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound, aff
     return woosh
 end
 
+
+
+
+
+---@param player EntityPlayer
+function PlayerUtils.GetClosestCollectible(player)
+    local collectibles = Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)
+    local closest = nil
+    local distance = nil
+    for _, collectible in ipairs(collectibles) do
+        if collectible.SubType ~= 0 then
+            local new_distance = collectible.Position:Distance(player.Position)
+            if (distance == nil) or (new_distance < distance) then
+                closest = collectible
+                distance = new_distance
+            end
+        end
+    end
+
+    if closest then
+        return closest:ToPickup()
+    end
+end
+
 return PlayerUtils

@@ -256,11 +256,7 @@ ARAOI.EIDWrapper(function ()
         "#{{Luck}} Every 1 Luck adds "..Config.CHANCE_PER_LUCK.."% chance towards doubling the damage"..
         "#!!! Only works for tears !!!"
     )
-    ARAOI.EIDUtils.AbyssSynergy(
-        "Lucky Coin Abyss Synergy",
-        ARAOI.CollectibleType.LUCKY_COIN,
-        "Yellow locust with a 1.5% chance per hit of spawning a coin"
-    )
+    EID:addAbyssSynergiesCondition(ARAOI.CollectibleType.LUCKY_COIN, "1 locust, 1.5% coin on hit (1x Isaac's damage)")
 end)
 
 

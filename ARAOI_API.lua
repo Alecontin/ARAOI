@@ -56,6 +56,7 @@ ARAOI = {}
 ---@field KATANA integer
 ---@field SODA integer
 ---@field SODA_PASSIVE integer
+---@field VOID_DIE integer
 ARAOI.CollectibleType = {}
 
 ---@class TrinketType
@@ -182,6 +183,7 @@ end
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param description string
+---@deprecated Use `EID:addAbyssSynergiesCondition()` instead
 function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
 end
 
@@ -299,6 +301,17 @@ end
 ---@param allowExtremelyRareOccurrences? boolean -- Default: `false` — Should we allow extremely rare occurrences? Like spawning Mom's Chest.
 ---@return PickupVariant
 function ItemUtils.GetRandomPickup(rng, allowHearts, allowCoins, allowKeys, allowBombs, allowBatteries, allowChests, allowExtremelyRareOccurrences)
+end
+
+-- Updates the Item Quality List, this is done automatically when calling `ItemUtils.GetItemFromQuality()`
+function ItemUtils.UpdateItemQualityList()
+end
+
+-- Returns an item of the given quality
+---@param quality integer
+---@param seed integer
+---@param pool ItemPoolType
+function ItemUtils.GetItemFromQuality(quality, seed, pool)
 end
 
 ARAOI.ItemUtils = ItemUtils
@@ -624,6 +637,11 @@ end
 ---@param direction? Vector -- The direction to spawn the attack towards
 ---@param playSound? boolean -- Should we play the attack sound
 function PlayerUtils.FireMelee(player, sizeMultiplier, direction, playSound)
+end
+
+---@param player EntityPlayer
+---@return EntityPickup|nil
+function PlayerUtils.GetClosestCollectible(player)
 end
 
 ARAOI.PlayerUtils = PlayerUtils
@@ -979,6 +997,16 @@ end
 ---@param item CollectibleType
 function ARAOI.Spellbook.AddItemToBlacklist(item)
 end
+
+ARAIU.Void_Die = {}
+
+ARAIU.Void_Die.Config = {
+    PERMANENT_QUALITY = false, -- *Default: `false` — Should the stored quality be permanent?*
+    AFFECTS_ALL_ITEMS = false, -- *Default: `false` — Should we affect all items? Stores the highest quality and rerolls all items into that quality*
+    CHAOS_MODE        = false, -- *Default: `false` — Reroll into any pool?*
+
+    CAR_BATTERY_CHANCE = 25 -- *Default: `25` — Chance of the Car Battery synergy to take effect*
+}
 
 ARAOI.Blessings_Petal = {}
 

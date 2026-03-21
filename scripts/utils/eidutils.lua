@@ -81,7 +81,7 @@ function EIDUtils.BookOfVirtuesSynergy(modifier_id, to_this_item, description)
         then return true end
     end
     local function modifier(descObject)
-        EID:appendToDescription(descObject, "#{{Collectible"..Book_Of_Virtues.."}} "..description)
+        EID:appendToDescription(descObject, "#{{Collectible"..Book_Of_Virtues.."}} {{ColorPastelBlue}}"..description.."{{CR}}")
         return descObject
     end
     EID:addDescriptionModifier(modifier_id, condition, modifier)
@@ -93,18 +93,20 @@ end
 ---@param modifier_id string
 ---@param to_this_item CollectibleType
 ---@param description string
+---@deprecated Use `EID:addAbyssSynergiesCondition()` instead
 function EIDUtils.AbyssSynergy(modifier_id, to_this_item, description)
     local Abyss = CollectibleType.COLLECTIBLE_ABYSS
-    local function condition(descObject)
-        if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
-        and PlayerManager.AnyoneHasCollectible(Abyss)
-        then return true end
-    end
-    local function modifier(descObject)
-        EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..description.."{{CR}}")
-        return descObject
-    end
-    EID:addDescriptionModifier(modifier_id, condition, modifier)
+    EID:addAbyssSynergiesCondition(to_this_item, description, nil, nil, nil)
+    -- local function condition(descObject)
+    --     if EIDUtils.DescObjIs(descObject, 5, 100, to_this_item)
+    --     and PlayerManager.AnyoneHasCollectible(Abyss)
+    --     then return true end
+    -- end
+    -- local function modifier(descObject)
+    --     EID:appendToDescription(descObject, "#{{Collectible"..Abyss.."}} {{ColorRed}}"..description.."{{CR}}")
+    --     return descObject
+    -- end
+    -- EID:addDescriptionModifier(modifier_id, condition, modifier)
 end
 
 -- Function that makes it easier to append Car Battery synergies to items
