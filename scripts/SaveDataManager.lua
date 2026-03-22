@@ -191,7 +191,10 @@ function SaveDataManager:init(Mod)
         end
     end
     Mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, onGameExit)
-    Mod:AddCallback(ModCallbacks.MC_POST_GAME_END, onGameExit)
+
+    Mod:AddCallback(ModCallbacks.MC_POST_GAME_END, function ()
+        Mod:SaveData(saveData())
+    end)
 
     -------------------------------
     -- GLOWING HOURGLASS SUPPORT --
@@ -261,7 +264,7 @@ function SaveDataManager:init(Mod)
     --
     -- Well, yes, but this persists across saving and loading.
     ---@param callbackID string -- The ID of the callback to be ran
-    ---@param time number -- Time, in seconds, after which the callback will run
+    ---@param time number -- Time, in frames, after which the callback will run
     ---@param ... any -- Parameters to pass to the callback
     function SaveDataManager:CreateTimerInFrames(callbackID, time, ...)
         local timer = Timer:New()
