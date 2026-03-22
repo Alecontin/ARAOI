@@ -108,8 +108,8 @@ function ARAOI:_OnVoidDieUse(_, _, player, useFlag, slot)
                 -- Get the closest one
                 local closest_collectible = ARAOI.PlayerUtils.GetClosestCollectible(player)
 
-                -- If we successfully found a collectible
-                if closest_collectible then
+                -- If we successfully found a collectible and it's free
+                if closest_collectible and not closest_collectible:IsShopItem() then
                     -- Get it's id and quality, then change our item's stored quality
                     local collectible_id = closest_collectible.SubType
                     local quality = ItemConfig:GetCollectible(collectible_id).Quality
@@ -162,10 +162,12 @@ function ARAOI:_OnVoidDieUse(_, _, player, useFlag, slot)
             local highest_quality = -1
             -- Find every collectible in the room
             for _, collectible in ipairs(Isaac.FindByType(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE)) do
-                -- Get the collectible's id and check if it's not an empty pedestal
-                -- Didn't need to check this for the other code because it was done automatically
+                -- Turning it into a pickup for some additional checks
+                local collectible_pickup = collectible:ToPickup()
+                assert(collectible_pickup)
+                -- Get the collectible's id and check if it's not an empty pedestal and if it's free
                 local collectible_id = collectible.SubType
-                if collectible_id ~= 0 then
+                if collectible_id ~= 0 and not collectible_pickup:IsShopItem() then
                     -- Check if the quality is higher than the highest one so far, if it is, update the highest one
                     local quality = ItemConfig:GetCollectible(collectible_id).Quality
                     if quality > highest_quality then highest_quality = quality end
