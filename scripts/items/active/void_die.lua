@@ -332,7 +332,7 @@ if ModConfigMenu then
     ModConfigMenu.AddSpace("ARAOI", "Actives")
 
     ARAOI.MCMUtils.AddNumberSetting("Actives", "Void Die", Config, "CAR_BATTERY_CHANCE",
-    ConfigDefaults, ConfigDefaults.CAR_BATTERY_CHANCE, 0, 100, 10, function ()
+    ConfigDefaults, ConfigDefaults.CAR_BATTERY_CHANCE .. "%", 0, 100, 10, function ()
         return "Car Battery Upgrade Chance: " .. Config.CAR_BATTERY_CHANCE .. "%"
     end, "Chance of the Car Battery synergy to take effect")
 

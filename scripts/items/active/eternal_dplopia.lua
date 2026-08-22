@@ -315,14 +315,14 @@ if ModConfigMenu then
     end, "The minimum chance of an item being deleted when picking up a cursed item")
 
     ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "ITEM_DELETE_CHANCE_STEP",
-    ConfigDefaults, ConfigDefaults.ITEM_DELETE_CHANCE_STEP .. "%", 0, 100, 10, function ()
+    ConfigDefaults, "+" .. ConfigDefaults.ITEM_DELETE_CHANCE_STEP .. "%", 0, 100, 10, function ()
         return "Item Delete Chance Step: +" .. Config.ITEM_DELETE_CHANCE_STEP .. "%"
     end, "Added chance for an item of getting deleted after picking up a cursed item")
 
     ModConfigMenu.AddSpace("ARAOI", "Actives")
 
     ARAOI.MCMUtils.AddNumberSetting("Actives", "Eternal Dplopia", Config, "LUCK_DECREASE_DELETION_CHANCE",
-    ConfigDefaults, ConfigDefaults.LUCK_DECREASE_DELETION_CHANCE .. "% per 1 luck", 0, 100, 10, function ()
+    ConfigDefaults, "-" .. ConfigDefaults.LUCK_DECREASE_DELETION_CHANCE .. "% per 1 luck", 0, 100, 10, function ()
         return "Luck Decrease Modifier: -" .. Config.LUCK_DECREASE_DELETION_CHANCE .. "% per 1 luck"
     end, "By how much should 1 luck decrease the chance of an item being deleted?")
 

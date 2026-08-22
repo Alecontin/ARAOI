@@ -576,7 +576,7 @@ if ModConfigMenu then
         return "Enable EID History: "
     end, "Enables the EID history for the Spellbook")
 
-    ARAOI.MCMUtils.AddNumberSetting("Actives", "Spellbook", Config, "MAX_EID_HISTORY", ConfigDefaults, ConfigDefaults.MAX_EID_HISTORY .. "%", 1, 20, 5, function ()
+    ARAOI.MCMUtils.AddNumberSetting("Actives", "Spellbook", Config, "MAX_EID_HISTORY", ConfigDefaults, ConfigDefaults.MAX_EID_HISTORY, 1, 20, 5, function ()
         return "Max EID History: " .. Config.MAX_EID_HISTORY
     end, "Maximum number of spells displayed on the EID history")
 
@@ -584,7 +584,7 @@ if ModConfigMenu then
 
     ARAOI.MCMUtils.AddBooleanSetting("Actives", "Spellbook", Config, "KEEP_ITEMS", ConfigDefaults, function ()
         return "Keep Items: "
-    end, "Remove items on new floor?")
+    end, "Keep items on new floor?")
 
     ModConfigMenu.AddSpace("ARAOI", "Actives")
 

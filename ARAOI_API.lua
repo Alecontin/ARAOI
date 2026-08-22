@@ -55,7 +55,6 @@ ARAOI = {}
 ---@field LUNCHBOX integer
 ---@field KATANA integer
 ---@field SODA integer
----@field SODA_PASSIVE integer
 ---@field VOID_DIE integer
 ARAOI.CollectibleType = {}
 
@@ -1164,29 +1163,6 @@ end
 ---@param player EntityPlayer
 ---@return Sprite[]
 function ARAOI.Gamblecore.GetReels(player)
-end
-
-ARAOI.Soda = {}
-
-ARAOI.Soda.Config = {
-    ITEM_SPEED           = 70, -- *Default: `70` — The player's speed when set by the item. This value will be divided by 100.*
-    SPEED_ADDED_PER_ROOM = 10  -- *Default: `10` — The amount added to the player's speed each new room. This value will be divided by 1000.*
-}
-
----@param player EntityPlayer
----@return number
-function ARAOI.Soda.GetSpeed(player)
-end
-
----@param player EntityPlayer
----@param set? number
----@return number
-function ARAOI.Soda.SetSpeed(player, set)
-end
-
----@param player EntityPlayer
----@param add? number
-function ARAOI.Soda.AddSpeed(player, add)
 end
 
 ARAOI.Inverted_Spades = {}

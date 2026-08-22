@@ -4,5 +4,5 @@
     <costume id="3" anm2path="rainbow_headband.anm2" type="passive" />
     <costume id="7" anm2path="vampire_cloak.anm2" type="passive" />
     <costume id="10" anm2path="sacrificial_heart.anm2" type="passive" />
-    <costume id="21" anm2path="soda.anm2" type="passive" />
+    <costume id="20" anm2path="soda.anm2" type="passive" />
 </costumes>

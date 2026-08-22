@@ -33,7 +33,7 @@ end
 -- Save the fact that the item has been picked up
 ---@param player EntityPlayer
 ---@param firstTime boolean
-function ARAOI:_OnBlessingsPetalAddCollectible(player, _, firstTime)
+function ARAOI:_OnBlessingsPetalAddCollectible(_, _, firstTime, _, _, player)
     if firstTime then
         ARAOI.Blessings_Petal.PickupCount(1)
         player:GetEffects():AddNullEffect(TEARS_EFFECT, false, 1)

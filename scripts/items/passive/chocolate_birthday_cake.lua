@@ -75,6 +75,7 @@ function ARAOI:_OnChocolateBirthdayCakeNewRoom()
         -- If we succeeded and the pickup is a collectible
         if pickup and ARAOI.ItemUtils.IsCollectible(pickup) then
             -- Call the function to add the Mystery Gift to the cycle
+			---@diagnostic disable-next-line: missing-parameter
             ARAOI:_OnChocolateBirthdayCakeAddPresentToItemCycle(pickup)
         end
     end

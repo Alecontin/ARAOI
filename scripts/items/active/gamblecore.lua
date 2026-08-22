@@ -570,7 +570,7 @@ if ModConfigMenu then
     end, "Use different sounds when rolling and stopping reels?")
 
     ARAOI.MCMUtils.AddNumberSetting("Actives", "Gamblecore", Config, "ARTIFICIAL_PITY",
-    ConfigDefaults, ConfigDefaults.ARTIFICIAL_PITY, 0, 38, 5, function ()
+    ConfigDefaults, ConfigDefaults.ARTIFICIAL_PITY .. "%", 0, 38, 5, function ()
         return "Artificial Pity: " .. (Config.ARTIFICIAL_PITY == 0 and "" or "aprox. ") .. math.floor((Config.ARTIFICIAL_PITY / 38) * 100) ..  "%"
     end, "Pity added before the calculation", "Increases chance of payout")
 

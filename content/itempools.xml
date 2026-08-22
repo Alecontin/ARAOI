@@ -52,8 +52,8 @@
     <Item Name="Voodoo Body" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Vampire Cloak" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-    <Item Name="Soda" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-    <Item Name="Void Die" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.05" />
+    <Item Name="Soda" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
+    <Item Name="Void Die" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
   </Pool>
   <Pool Name="greedDevil">
     <Item Name="Gambling Chips" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -159,7 +159,7 @@
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Katana" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
-    <Item Name="Soda" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Soda" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
   </Pool>
   <Pool Name="greedSecret">
     <Item Name="Eternal Dplopia" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -169,7 +169,7 @@
     <Item Name="Gamblecore" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Chocolate Birthday Cake" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     <Item Name="Katana" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
-    <Item Name="Soda" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    <Item Name="Soda" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.01" />
   </Pool>
   <Pool Name="ultraSecret">
     <Item Name="Sacrificial Heart" Weight="1" DecreaseBy="0.4" RemoveOn="0.1" />

@@ -19,8 +19,6 @@
   <active id="16" name="Gamblecore" achievement="261" quality="4" maxcharges="7" devilprice="2" coins="7" gfx="gamblecore.png" description="Let's go gambling!" tags="offensive nocantrip" />
   <!-- Beat Delirium as Tainted Lost -->
   <active id="19" name="Katana" achievement="594" quality="4" maxcharges="600" chargetype="timed" devilprice="2" gfx="katana.png" description="Bringing a sword to a tear fight" tags="offensive nocantrip" customtags="nometronome" />
-  <!-- Complete the Boss Rush as Maggie -->
-  <active id="20" name="Soda" achievement="109" quality="3" maxcharges="0" devilprice="2" gfx="soda.png" description="Highly concentrated caffeine!" tags="offensive nocantrip" />
   <!-- Defeat Delirium as Apollyon -->
   <active id="22" name="Void Die" achievement="295" quality="4" maxcharges="5" devilprice="2" gfx="void_die.png" description="Quality consumer" tags="offensive nocantrip" customtags="nometronome" />
 
@@ -44,8 +42,8 @@
   <passive id="17" name="Chocolate Birthday Cake" quality="3" devilprice="2" gfx="chocolate_birthday_cake.png" description="Happy birthday to me..." tags="offensive lazarussharedglobal" hidden="true" />
   <!-- Use 5 Gulp! pills in one run -->
   <passive id="18" name="Lunchbox" achievement="386" quality="2" gfx="lunchbox.png" description="Who put this in here?" tags="offensive summonable"/>
-  <!-- Only obtainable when using the Active counterpart -->
-  <passive id="21" name="Soda Passive" achievement="109" quality="3" devilprice="2" gfx="soda_opened.png" description="Highly concentrated caffeine and sugar!" cache="speed damage" tags="offensive lazarussharedglobal" hidden="true" />
+  <!-- Complete Boss Rush as Maggie -->
+  <passive id="20" name="Soda" achievement="109" quality="4" devilprice="2" gfx="soda.png" description="Highly concentrated caffeine and sugar!" cache="speed damage" tags="offensive" />
 
   <!-- Bomb 10 Charge Beggars -->
   <trinket name="Spare Battery" achievement="545" gfx="spare_battery.png" description="No charge? No problem!" tags="offensive" />
